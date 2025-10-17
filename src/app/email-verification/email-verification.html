@@ -1,0 +1,67 @@
+<div class="verification-container">
+  <div class="decorative-logo left"></div>
+
+  <div class="verification-card">
+    <div class="icon-wrapper">
+      <i class="bi bi-envelope-check"></i>
+    </div>
+
+    <h1 class="title">Verify Your Email</h1>
+    <p class="subtitle">
+      We've sent a verification code to<br /><strong>{{ userEmail }}</strong>
+    </p>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert-error">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert-success">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <form [formGroup]="verificationForm" (ngSubmit)="onVerify()">
+      <div class="form-group">
+        <label>Verification Code</label>
+        <input
+          type="text"
+          class="form-control code-input"
+          formControlName="code"
+          placeholder="Enter 6-digit code"
+          maxlength="6"
+          [class.error]="
+            verificationForm.get('code')?.invalid && verificationForm.get('code')?.touched
+          "
+        />
+      </div>
+
+      <button type="submit" class="btn-verify" [disabled]="loading || verificationForm.invalid">
+        <span *ngIf="!loading">VERIFY & CREATE ACCOUNT</span>
+        <span *ngIf="loading">VERIFYING...</span>
+      </button>
+
+      <div class="resend-section">
+        <p *ngIf="!canResend">Didn't receive code? Resend in {{ resendTimer }}s</p>
+        <button
+          *ngIf="canResend"
+          type="button"
+          class="btn-resend"
+          (click)="onResendCode()"
+          [disabled]="resending"
+        >
+          <span *ngIf="!resending">Resend Code</span>
+          <span *ngIf="resending">Sending...</span>
+        </button>
+      </div>
+
+      <div class="back-link">
+        <a routerLink="/register">Back to Registration</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="decorative-logo right"></div>
+</div>

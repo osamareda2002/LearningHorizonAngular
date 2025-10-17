@@ -1,0 +1,131 @@
+<div class="home-container" [class.sidebar-open]="isSidebarOpen">
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img
+        src="assets/logo.png"
+        alt="Learning Horizon"
+        class="sidebar-logo"
+        style="cursor: pointer"
+      />
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/home" class="nav-item active">
+        <i class="bi bi-grid"></i>
+        <span>Home</span>
+      </a>
+      <a href="/material" class="nav-item">
+        <i class="bi bi-collection"></i>
+        <span>Material</span>
+      </a>
+      <a href="/books" class="nav-item">
+        <i class="bi bi-book"></i>
+        <span>Books</span>
+      </a>
+      <a *ngIf="isAdmin" href="/add" class="nav-item">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add Content</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="user-navbar">
+      <div class="page-title-container">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <h2 class="page-title">Home</h2>
+        <span class="welcome-text" *ngIf="isLoggedIn">Welcome, {{ userName }}</span>
+      </div>
+
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="!isLoggedIn" (click)="handleAuth()">Login</a>
+            <a *ngIf="isLoggedIn" (click)="handleAuth()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="welcome-section">
+      <div class="slider">
+        <div class="slides" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+          <div class="slide" *ngFor="let banner of Sliders">
+            <img [src]="banner.imageUrl" (click)="onBannerClick(banner.id)" alt="Banner" />
+          </div>
+        </div>
+
+        <button class="slide-btn prev" (click)="prevSlide()">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="slide-btn next" (click)="nextSlide()">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+
+        <div class="slide-dots">
+          <span
+            *ngFor="let banner of Sliders; let i = index"
+            [class.active]="i === currentSlide"
+            (click)="goToSlide(i)"
+          ></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-header">
+      <h2>Recommended For You</h2>
+      <button class="btn-more">
+        <i class="bi bi-three-dots"></i>
+      </button>
+    </div>
+
+    <div class="video-cards">
+      <div class="video-card" *ngFor="let s of suggestions; let i = index">
+        <div class="video-thumbnail">
+          <div class="instructor-info">
+            <img
+              src="https://i.pinimg.com/736x/18/94/b6/1894b69f6c8c416112da2dab73f741f3.jpg"
+              alt="Instructor"
+              class="instructor-img"
+            />
+            <div>
+              <p class="instructor-name">{{ s.instructorName || 'Dr. Essam Fares' }}</p>
+            </div>
+            <span class="video-duration" *ngIf="s.duration">{{ s.duration }}</span>
+          </div>
+
+          <div
+            class="video-preview-overlay"
+            *ngIf="!s.isPlaying"
+            (click)="playVideo(s)"
+            [style.background-image]="'url(' + s.thumbnailUrl + ')'"
+          >
+            <div class="dimmer-overlay"></div>
+            <button class="play-btn">
+              <i class="bi bi-play-fill"></i>
+            </button>
+          </div>
+
+          <video
+            *ngIf="s.videoUrl && s.isPlaying"
+            width="100%"
+            height="240"
+            controls
+            autoplay
+            preload="metadata"
+            [src]="s.videoUrl"
+          ></video>
+
+          <p class="video-title">{{ s.title || 'Untitled Suggestion' }}</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

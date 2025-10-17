@@ -1,0 +1,585 @@
+/* Base Layout & Responsiveness */
+.home-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+  position: relative;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: #503e9d;
+  padding: 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 1050;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* ... (Sidebar styles - no functional change) ... */
+.logo-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.sidebar-logo {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.sidebar-nav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 35px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.nav-item i {
+  font-size: 20px;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ff6b6b;
+  border-left: 4px solid #ff6b6b;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 280px;
+  flex: 1;
+  padding: 40px 60px;
+  background: white;
+  border-radius: 30px 0 0 30px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Menu Toggle Button (Default hidden on desktop) */
+.menu-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #503e9d;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* --- User Navbar --- */
+.user-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* ... (Navbar, Dropdown, Slider styles - no functional change for this fix) ... */
+.page-title-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.welcome-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: #503e9d;
+  margin-top: 4px;
+  transition: all 0.3s;
+}
+
+.welcome-text:hover {
+  background: rgba(80, 62, 157, 0.2);
+  transform: translateY(-2px);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  background: #f5f5f5;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #666;
+  transition: background 0.3s;
+}
+
+.dropdown-toggle:hover {
+  background: #e0e0e0;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 120px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s;
+  z-index: 1000;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px 20px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-menu a:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.dropdown-menu a:last-child {
+  border-radius: 0 0 10px 10px;
+}
+
+.slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  height: 250px;
+  margin-bottom: 40px;
+}
+
+.slides {
+  display: flex;
+  transition: transform 1s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+}
+
+.slide img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+/* Arrows */
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  font-size: 28px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+  z-index: 10;
+}
+
+.slide-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.slide-btn.prev {
+  left: 15px;
+}
+
+.slide-btn.next {
+  right: 15px;
+}
+
+/* Dots */
+.slide-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.slide-dots span {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.slide-dots span.active {
+  background: #ffb84c;
+  width: 12px;
+  height: 12px;
+}
+
+/* --- Video Cards --- */
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.content-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.btn-more {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+.video-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.video-card {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.video-thumbnail {
+  /* Removed initial background, as the wrapper/overlay will handle the visual part */
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #2d5016; /* Fallback/base color */
+}
+
+/* New: Wrapper for the video player/overlay */
+.video-wrapper {
+  position: relative;
+  flex-grow: 1; /* Allows it to take up available vertical space */
+  margin-top: 10px; /* Space between instructor info and video area */
+  border-radius: 15px;
+  overflow: hidden;
+  background: #1a2e0d; /* Background color for video area */
+  height: 240px; /* Fixed height for consistency */
+}
+
+/* Custom Thumbnail/Play Overlay Styles */
+.video-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.dimmer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  transition: background 0.3s;
+}
+
+.video-preview-overlay:hover .dimmer-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #503e9d;
+  transition: transform 0.2s, background 0.2s;
+  z-index: 10;
+}
+
+.play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: #fff;
+}
+/* END Custom Player Styles */
+
+/* The video element itself needs to fit neatly inside the video-wrapper */
+.video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Instructor info needs to be on top */
+.instructor-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  margin-bottom: 0; /* Remove bottom margin to reduce gap to video */
+  position: relative;
+  z-index: 15;
+}
+
+.instructor-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.instructor-name {
+  font-weight: 600;
+  margin: 0;
+  font-size: 14px;
+}
+
+.video-duration {
+  margin-left: auto;
+  background: rgba(139, 69, 19, 0.8);
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  position: relative;
+  z-index: 15;
+}
+
+/* FIX: Video Title Positioning */
+.video-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  /* Removed margin-top: 15px; and margin-top: -5px; which caused the overlap */
+  margin-top: 20px; /* Add clean space after the video wrapper */
+  background: rgba(80, 62, 157, 0.8);
+  padding: 15px;
+  border-radius: 0 0 20px 20px;
+  margin-left: -20px; /* Offset the padding of .video-thumbnail to achieve edge-to-edge title width */
+  margin-right: -20px;
+  margin-bottom: -20px; /* Offset the padding of .video-thumbnail to achieve edge-to-edge title height */
+  position: relative;
+  z-index: 10;
+}
+
+/* ========================================================================= */
+/* --- Media Queries (Retained from previous step) --- */
+/* ========================================================================= */
+
+@media (max-width: 992px) {
+  .main-content {
+    padding: 30px 40px;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-toggle-btn {
+    display: flex;
+    align-items: center;
+    order: -1;
+  }
+
+  .sidebar {
+    width: 250px;
+    transform: translateX(-100%);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .home-container.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .home-container.sidebar-open .main-content {
+    margin-left: 250px;
+  }
+
+  .user-navbar {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+  }
+
+  .page-title-container {
+    gap: 10px;
+    width: 100%;
+    order: 1;
+  }
+
+  .user-menu {
+    order: 0;
+    margin-left: auto;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .page-title,
+  .content-header h2 {
+    font-size: 22px;
+  }
+
+  .welcome-text {
+    display: none;
+  }
+
+  .video-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .slider {
+    height: 180px;
+  }
+  .slide img {
+    height: 180px;
+  }
+
+  .video-thumbnail {
+    min-height: 250px;
+    padding: 15px;
+  }
+
+  /* Adjusted for mobile */
+  .video-title {
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: -15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .slider {
+    height: 150px;
+  }
+
+  .slide img {
+    height: 150px;
+  }
+
+  .slide-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .video-title {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .video-thumbnail {
+    min-height: 220px;
+    padding: 10px;
+  }
+  /* Adjusted for smallest mobile */
+  .video-title {
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-bottom: -10px;
+  }
+}

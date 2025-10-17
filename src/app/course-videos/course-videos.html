@@ -1,0 +1,124 @@
+<div class="course-videos-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading course...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && course" class="content-wrapper">
+    <!-- Left Side - Video Player & Course Info -->
+    <div class="left-section">
+      <!-- Back Button -->
+      <button class="btn-back" (click)="goBackToCourses()">
+        <i class="bi bi-arrow-left"></i>
+        <span>Back to Courses</span>
+      </button>
+
+      <!-- Course Title -->
+      <div class="course-header">
+        <h1 class="course-title">{{ course.courseTitle }}</h1>
+        <span class="title-underline"></span>
+      </div>
+
+      <!-- Video Player -->
+      <div class="video-player-wrapper">
+        <video
+          #videoPlayer
+          class="video-player"
+          [src]="currentVideoUrl"
+          controls
+          controlsList="nodownload"
+          (timeupdate)="onTimeUpdate($event)"
+          (ended)="onVideoEnded()"
+        >
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <!-- Current Lesson Title & Enroll Button -->
+      <div class="lesson-actions">
+        <div class="current-lesson-info">
+          <i class="bi bi-play-circle-fill"></i>
+          <h2>{{ currentLesson?.title || 'Select a lesson' }}</h2>
+        </div>
+
+        <button
+          *ngIf="!isEnrolled"
+          class="btn-enroll"
+          (click)="enrollInCourse()"
+          [disabled]="loadingEnroll"
+        >
+          <ng-container *ngIf="!loadingEnroll">
+            <i class="bi bi-bookmark-check"></i>
+            Enroll Now
+          </ng-container>
+
+          <!-- Loader Spinner -->
+          <ng-container *ngIf="loadingEnroll">
+            <span class="loader"></span>
+            Processing...
+          </ng-container>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Side - Lessons List -->
+    <div class="right-section">
+      <div class="lessons-container">
+        <div class="lessons-header">
+          <i class="bi bi-collection-play"></i>
+          <h3>Lessons</h3>
+        </div>
+
+        <div class="lessons-list">
+          <div
+            *ngFor="let lesson of lessons; let i = index"
+            class="lesson-item"
+            [class.active]="currentLesson?.id === lesson.id"
+            [class.locked]="!canAccessLesson(lesson)"
+            (click)="selectLesson(lesson)"
+          >
+            <div class="lesson-number">
+              <i *ngIf="canAccessLesson(lesson)" class="bi bi-play-circle"></i>
+              <i *ngIf="!canAccessLesson(lesson)" class="bi bi-lock-fill"></i>
+            </div>
+
+            <div class="lesson-info">
+              <h4>{{ lesson.title }}</h4>
+              <p>{{ lesson.subtitle }}</p>
+            </div>
+
+            <span *ngIf="lesson.isFree" class="free-badge">Free</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Locked Lesson Modal -->
+  <div class="modal-overlay" *ngIf="showLockedModal" (click)="closeLockedModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-icon">
+        <i class="bi bi-lock-fill"></i>
+      </div>
+      <h3>This lesson is locked</h3>
+      <p>Enroll in this course to unlock all lessons and get full access to the content.</p>
+
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" (click)="closeLockedModal()">Maybe Later</button>
+        <button class="btn-modal-enroll" (click)="enrollFromModal()">
+          <i class="bi bi-bookmark-check"></i>
+          Enroll Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage && !loading" class="error-container">
+    <i class="bi bi-exclamation-circle"></i>
+    <p>{{ errorMessage }}</p>
+    <button class="btn-retry" (click)="loadCourseData()">Retry</button>
+  </div>
+</div>

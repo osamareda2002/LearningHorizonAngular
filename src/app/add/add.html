@@ -1,0 +1,552 @@
+<div class="add-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img
+        src="assets/logo.png"
+        alt="Learning Horizon"
+        class="sidebar-logo"
+        style="cursor: pointer"
+      />
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/home" class="nav-item">
+        <i class="bi bi-grid"></i>
+        <span>Home</span>
+      </a>
+      <a routerLink="/material" class="nav-item">
+        <i class="bi bi-collection"></i>
+        <span>Material</span>
+      </a>
+      <a routerLink="/books" class="nav-item">
+        <i class="bi bi-book"></i>
+        <span>Books</span>
+      </a>
+      <a routerLink="/add" class="nav-item active">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add Content</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <h2 class="page-title">Add Content</h2>
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="isLoggedIn" (click)="handleLogout()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'course'"
+          (click)="switchTab('course')"
+        >
+          <i class="bi bi-play-circle"></i>
+          Add Course
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'lesson'"
+          (click)="switchTab('lesson')"
+        >
+          <i class="bi bi-film"></i>
+          Add Lesson
+        </button>
+        <!-- <button class="tab-btn" [class.active]="activeTab === 'book'" (click)="switchTab('book')">
+          <i class="bi bi-book"></i>
+          Add Book
+        </button> -->
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'slider'"
+          (click)="switchTab('slider')"
+        >
+          <i class="bi bi-images"></i>
+          Slider
+        </button>
+
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'suggestion'"
+          (click)="switchTab('suggestion')"
+        >
+          <i class="bi bi-lightbulb"></i>
+          Suggestion
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tabs-content">
+        <!-- Course Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'course'">
+          <h3 class="tab-title">The Details Course</h3>
+          <form [formGroup]="courseForm" (ngSubmit)="submitCourse()" class="form-container">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Course Title <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="title"
+                  placeholder="Give Your Course A Title"
+                  [class.error]="
+                    courseForm.get('title')?.invalid && courseForm.get('title')?.touched
+                  "
+                />
+              </div>
+              <div class="form-group">
+                <label>Price <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="price"
+                  placeholder="0 for free course"
+                  [class.error]="
+                    courseForm.get('price')?.invalid && courseForm.get('price')?.touched
+                  "
+                />
+              </div>
+              <div class="form-group">
+                <label>Instructor Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="instructorName"
+                  placeholder="Your Name"
+                  [class.error]="
+                    courseForm.get('instructorName')?.invalid &&
+                    courseForm.get('instructorName')?.touched
+                  "
+                />
+              </div>
+
+              <div class="form-group full-width">
+                <label>Course Thumbnail <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-image"></i>
+                  <p>Upload Course Cover Image</p>
+                  <p class="upload-info">PNG and JPG files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onThumbnailSelected($event, 'course')"
+                    accept="image/jpeg, image/png"
+                  />
+                </div>
+
+                <!-- ✅ Preview the selected image -->
+                <div *ngIf="courseThumbnailPreview" class="thumbnail-preview">
+                  <img [src]="courseThumbnailPreview" alt="Thumbnail Preview" />
+                  <p class="file-name">{{ courseThumbnail?.name }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="resetCourseForm()">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="courseForm.invalid || submitting"
+              >
+                {{ submitting ? 'Publishing...' : 'Publish now' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Lesson Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'lesson'">
+          <h3 class="tab-title">The Details Lesson</h3>
+          <form [formGroup]="lessonForm" (ngSubmit)="submitLesson()" class="form-container">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Select Course <span class="required">*</span></label>
+                <select
+                  class="form-control"
+                  formControlName="courseId"
+                  [class.error]="
+                    lessonForm.get('courseId')?.invalid && lessonForm.get('courseId')?.touched
+                  "
+                >
+                  <option value="">Choose a Course</option>
+                  <option *ngFor="let course of courses" [value]="course.courseId">
+                    {{ course.courseTitle }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Lesson Title <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="title"
+                  placeholder="Lesson Title"
+                  [class.error]="
+                    lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched
+                  "
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Lesson Order <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="order"
+                  placeholder="Lesson Number"
+                  [class.error]="
+                    lessonForm.get('order')?.invalid && lessonForm.get('order')?.touched
+                  "
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Is Free? <span class="required">*</span></label>
+                <select
+                  class="form-control"
+                  formControlName="isFree"
+                  [class.error]="
+                    lessonForm.get('isFree')?.invalid && lessonForm.get('isFree')?.touched
+                  "
+                >
+                  <option [value]="true">Free</option>
+                  <option [value]="false">Premium</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Lesson Video <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-play-btn"></i>
+                  <p>Upload Lesson Video</p>
+                  <p class="upload-info">MP4 and WebM files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onVideoSelected($event, 'lesson')"
+                    accept="video/mp4, video/webm"
+                  />
+                </div>
+
+                <!-- ✅ Preview -->
+                <div *ngIf="lessonVideoPreview">
+                  <video
+                    [src]="lessonVideoPreview"
+                    width="100%"
+                    height="240"
+                    controls
+                    (loadedmetadata)="onVideoLoadedMetadata($event, 'lesson')"
+                  ></video>
+                  <p *ngIf="lessonDurationInSeconds">
+                    ⏱ Duration: {{ lessonDurationInMinutes }} Min
+                  </p>
+                </div>
+
+                <div *ngIf="uploadProgress > 0" class="upload-progress">
+                  <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+                  <span class="progress-label">{{ uploadProgress | number : '1.0-0' }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="resetLessonForm()">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="lessonForm.invalid || submitting"
+              >
+                {{ submitting ? 'Uploading...' : 'Submit' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Book Tab -->
+        <!-- <div class="tab-pane" *ngIf="activeTab === 'book'">
+          <h3 class="tab-title">The Details Book</h3>
+          <form [formGroup]="bookForm" (ngSubmit)="submitBook()" class="form-container">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Book Title <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="title"
+                  placeholder="Give Your Book A Title"
+                  [class.error]="bookForm.get('title')?.invalid && bookForm.get('title')?.touched"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Price <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="price"
+                  placeholder="0 for free book"
+                  [class.error]="bookForm.get('price')?.invalid && bookForm.get('price')?.touched"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Author Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="authorName"
+                  placeholder="Author Name"
+                  [class.error]="
+                    bookForm.get('authorName')?.invalid && bookForm.get('authorName')?.touched
+                  "
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Number of Pages <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="pages"
+                  placeholder="Number of Pages"
+                  [class.error]="bookForm.get('pages')?.invalid && bookForm.get('pages')?.touched"
+                />
+              </div>
+
+              <div class="form-group full-width">
+                <label>Description <span class="required">*</span></label>
+                <textarea
+                  class="form-control textarea"
+                  formControlName="description"
+                  placeholder="Write Description About Your Book"
+                  rows="5"
+                  [class.error]="
+                    bookForm.get('description')?.invalid && bookForm.get('description')?.touched
+                  "
+                ></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Book Cover <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-image"></i>
+                  <p>Upload Book Cover</p>
+                  <p class="upload-info">PNG, JPG, and GIF files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onThumbnailSelected($event, 'book')"
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Book PDF <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-file-pdf"></i>
+                  <p>Upload Book PDF</p>
+                  <p class="upload-info">PDF files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onBookPdfSelected($event)"
+                    accept=".pdf"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="resetBookForm()">Cancel</button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="bookForm.invalid || submitting"
+              >
+                {{ submitting ? 'Publishing...' : 'Publish now' }}
+              </button>
+            </div>
+          </form>
+        </div> -->
+
+        <!-- Slider Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'slider'">
+          <h3 class="tab-title">Add New Slider</h3>
+
+          <form [formGroup]="sliderForm" (ngSubmit)="submitSlider()" class="form-container">
+            <div class="form-grid">
+              <!-- Slider Title -->
+              <div class="form-group">
+                <label>Slider Title <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="title"
+                  placeholder="Enter a title for the slider (e.g., New Course: Eye Anatomy)"
+                  [class.error]="
+                    sliderForm.get('title')?.invalid && sliderForm.get('title')?.touched
+                  "
+                />
+              </div>
+
+              <!-- Redirect URL -->
+              <div class="form-group">
+                <label>Redirect URL (Optional)</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="redirectUrl"
+                  placeholder="Example: /courses/1"
+                />
+              </div>
+
+              <!-- Upload Image -->
+              <div class="form-group full-width">
+                <label>Slider Image <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-image"></i>
+                  <p>Upload Slider Image</p>
+                  <p class="upload-info">PNG and JPG files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onSliderImageSelected($event)"
+                    accept="image/jpeg, image/png"
+                  />
+                </div>
+
+                <!-- ✅ Preview the selected image -->
+                <div *ngIf="sliderImagePreview" class="thumbnail-preview">
+                  <img [src]="sliderImagePreview" alt="Slider Preview" />
+                  <p class="file-name">{{ sliderImage?.name }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="resetSliderForm()">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="sliderForm.invalid || submitting"
+              >
+                {{ submitting ? 'Uploading...' : 'Add Slider' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Suggestion Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'suggestion'">
+          <h3 class="tab-title">Add New Suggestion</h3>
+
+          <form [formGroup]="suggestionForm" (ngSubmit)="submitSuggestion()" class="form-container">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Title <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="title"
+                  placeholder="Video Title"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Instructor Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="instructorName"
+                  placeholder="Instructor Name"
+                />
+              </div>
+
+              <!-- ✅ Video Upload Box -->
+              <div class="form-group full-width">
+                <label>Video File <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-play-btn"></i>
+                  <p>Upload Suggestion Video</p>
+                  <p class="upload-info">MP4 and WebM files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onVideoSelected($event, 'suggestion')"
+                    accept="video/mp4, video/webm"
+                  />
+                </div>
+
+                <!-- ✅ Video loaded preview -->
+                <div *ngIf="suggestionVideoPreview">
+                  <video
+                    [src]="suggestionVideoPreview"
+                    width="100%"
+                    height="240"
+                    controls
+                    (loadedmetadata)="onVideoLoadedMetadata($event, 'suggestion')"
+                  ></video>
+                </div>
+
+                <!-- ✅ Upload Progress -->
+                <div *ngIf="uploadProgress > 0" class="upload-progress">
+                  <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+                  <span class="progress-label">{{ uploadProgress | number : '1.0-0' }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="resetSuggestionForm()">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="suggestionForm.invalid || submitting"
+              >
+                {{ submitting ? 'Uploading...' : 'Add Suggestion' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

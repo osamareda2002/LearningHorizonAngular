@@ -1,0 +1,115 @@
+.info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #503e9d;
+  position: relative;
+  overflow: hidden;
+}
+
+.decorative-logo {
+  position: absolute;
+  width: 300px;
+  height: 400px;
+  background: url('/assets/logo.png') no-repeat center;
+  background-size: contain;
+  opacity: 0.15;
+}
+
+.decorative-logo.left {
+  left: -50px;
+  top: 50px;
+  transform: rotate(-15deg);
+}
+
+.decorative-logo.right {
+  right: -50px;
+  bottom: 50px;
+  transform: rotate(15deg);
+}
+
+.info-card {
+  background: #503e9d;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 50px 60px;
+  width: 100%;
+  max-width: 620px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-title {
+  color: white;
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.info-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 35px;
+  line-height: 1.6;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-create {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, #667eea 0%, #f093fb 50%, #f5576c 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s;
+}
+
+.btn-create:hover {
+  transform: translateY(-2px);
+}
