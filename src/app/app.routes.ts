@@ -13,6 +13,7 @@ import { EmailVerification } from './email-verification/email-verification';
 import { Material } from './material/material';
 import { CourseVideos } from './course-videos/course-videos';
 import { Add } from './add/add';
+import { EditDelete } from './edit-delete/edit-delete';
 
 export const routes: Routes = [
   { path: '', component: SplashComponent },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'material', component: Material },
   { path: 'course-videos/:id', component: CourseVideos },
   { path: 'add', component: Add, canActivate: [AuthGuard] },
+  { path: 'edit-delete', component: EditDelete, canActivate: [AuthGuard] },
   { path: 'books', component: Books },
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'reset-password', component: ResetPassword },

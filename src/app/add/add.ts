@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-add',
@@ -325,16 +326,12 @@ export class Add implements OnInit {
     this.submitting = true;
     this.uploadProgress = 0;
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.auth.getToken()}`,
-    });
-
     this.http
       .post(`${this.apiUrl}/AddLesson`, formData, {
-        headers,
         reportProgress: true,
         observe: 'events',
       })
+      .pipe(timeout(0))
       .subscribe({
         next: (event: any) => {
           if (event.type === 1 && event.total) {

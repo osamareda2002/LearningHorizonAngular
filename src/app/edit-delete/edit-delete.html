@@ -1,0 +1,572 @@
+<div class="manage-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img
+        src="assets/logo.png"
+        alt="Learning Horizon"
+        class="sidebar-logo"
+        style="cursor: pointer"
+      />
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/home" class="nav-item">
+        <i class="bi bi-grid"></i>
+        <span>Home</span>
+      </a>
+      <a routerLink="/material" class="nav-item">
+        <i class="bi bi-collection"></i>
+        <span>Material</span>
+      </a>
+      <a routerLink="/books" class="nav-item">
+        <i class="bi bi-book"></i>
+        <span>Books</span>
+      </a>
+      <a routerLink="/add" class="nav-item">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add Content</span>
+      </a>
+      <a routerLink="/manage" class="nav-item active">
+        <i class="bi bi-pencil-square"></i>
+        <span>Manage Content</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <h2 class="page-title">Manage Content</h2>
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="isLoggedIn" (click)="handleLogout()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'course'"
+          (click)="switchTab('course')"
+        >
+          <i class="bi bi-play-circle"></i>
+          Courses
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'lesson'"
+          (click)="switchTab('lesson')"
+        >
+          <i class="bi bi-film"></i>
+          Lessons
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'slider'"
+          (click)="switchTab('slider')"
+        >
+          <i class="bi bi-images"></i>
+          Sliders
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'suggestion'"
+          (click)="switchTab('suggestion')"
+        >
+          <i class="bi bi-lightbulb"></i>
+          Suggestions
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tabs-content">
+        <!-- Courses Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'course'">
+          <h3 class="tab-title">Manage Courses</h3>
+
+          <div *ngIf="loadingCourses" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading courses...</p>
+          </div>
+
+          <div *ngIf="!loadingCourses && courses.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No courses found</p>
+          </div>
+
+          <div *ngIf="!loadingCourses && courses.length > 0" class="items-grid">
+            <div *ngFor="let course of courses" class="item-card">
+              <img [src]="course.courseImage" [alt]="course.courseTitle" class="item-thumbnail" />
+              <div class="item-content">
+                <h4 class="item-title">{{ course.courseTitle }}</h4>
+                <p class="item-meta">By {{ course.courseCreator }}</p>
+                <p class="item-meta">Price: ${{ course.coursePrice }}</p>
+              </div>
+              <div class="item-actions">
+                <button
+                  class="btn-icon btn-edit"
+                  (click)="openEditCourseModal(course)"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="deleteCourse(course.courseId)"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lessons Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'lesson'">
+          <h3 class="tab-title">Manage Lessons</h3>
+
+          <div *ngIf="loadingLessons" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading lessons...</p>
+          </div>
+
+          <div *ngIf="!loadingLessons && lessons.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No lessons found</p>
+          </div>
+
+          <div *ngIf="!loadingLessons && lessons.length > 0" class="items-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Lesson Title</th>
+                  <th>Course</th>
+                  <th>Order</th>
+                  <th>Type</th>
+                  <th>Duration</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let lesson of lessons">
+                  <td class="lesson-title">{{ lesson.lessonTitle }}</td>
+                  <td>{{ lesson.courseName }}</td>
+                  <td>{{ lesson.lessonOrder }}</td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge-free]="lesson.isFree"
+                      [class.badge-premium]="!lesson.isFree"
+                    >
+                      {{ lesson.isFree ? 'Free' : 'Premium' }}
+                    </span>
+                  </td>
+                  <td>{{ lesson.durationInSeconds }}</td>
+                  <td class="actions-cell">
+                    <button
+                      class="btn-icon btn-edit"
+                      (click)="openEditLessonModal(lesson)"
+                      title="Edit"
+                    >
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button
+                      class="btn-icon btn-delete"
+                      (click)="deleteLesson(lesson.lessonId)"
+                      title="Delete"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sliders Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'slider'">
+          <h3 class="tab-title">Manage Sliders</h3>
+
+          <div *ngIf="loadingSliders" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading sliders...</p>
+          </div>
+
+          <div *ngIf="!loadingSliders && sliders.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No sliders found</p>
+          </div>
+
+          <div *ngIf="!loadingSliders && sliders.length > 0" class="items-grid">
+            <div *ngFor="let slider of sliders" class="item-card">
+              <img [src]="slider.sliderImage" [alt]="slider.title" class="item-thumbnail" />
+              <div class="item-content">
+                <h4 class="item-title">{{ slider.title }}</h4>
+                <p class="item-meta" *ngIf="slider.link">Link: {{ slider.link }}</p>
+              </div>
+              <div class="item-actions">
+                <button
+                  class="btn-icon btn-edit"
+                  (click)="openEditSliderModal(slider)"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="deleteSlider(slider.sliderId)"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggestions Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'suggestion'">
+          <h3 class="tab-title">Manage Suggestions</h3>
+
+          <div *ngIf="loadingSuggestions" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading suggestions...</p>
+          </div>
+
+          <div *ngIf="!loadingSuggestions && suggestions.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No suggestions found</p>
+          </div>
+
+          <div *ngIf="!loadingSuggestions && suggestions.length > 0" class="items-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Video Title</th>
+                  <th>Instructor</th>
+                  <th>Date Added</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let suggestion of suggestions">
+                  <td>{{ suggestion.title }}</td>
+                  <td>{{ suggestion.instructorName }}</td>
+                  <td>{{ suggestion.dateAdded | date : 'short' }}</td>
+                  <td class="actions-cell">
+                    <button
+                      class="btn-icon btn-edit"
+                      (click)="openEditSuggestionModal(suggestion)"
+                      title="Edit"
+                    >
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button
+                      class="btn-icon btn-delete"
+                      (click)="deleteSuggestion(suggestion.suggestionId)"
+                      title="Delete"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit Course Modal -->
+  <div class="modal" [class.show]="showEditCourseModal" *ngIf="showEditCourseModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Course</h3>
+        <button class="modal-close" (click)="closeModals()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <form [formGroup]="editCourseForm" (ngSubmit)="submitEditCourse()" class="modal-body">
+        <div class="form-group">
+          <label>Course Title <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="title"
+            [class.error]="
+              editCourseForm.get('title')?.invalid && editCourseForm.get('title')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Price <span class="required">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="price"
+            [class.error]="
+              editCourseForm.get('price')?.invalid && editCourseForm.get('price')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Instructor Name <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="instructorName"
+            [class.error]="
+              editCourseForm.get('instructorName')?.invalid &&
+              editCourseForm.get('instructorName')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Course Thumbnail</label>
+          <div class="upload-box">
+            <i class="bi bi-image"></i>
+            <p>Upload New Thumbnail (Optional)</p>
+            <input
+              type="file"
+              class="file-input"
+              (change)="onCourseImageChange($event)"
+              accept="image/jpeg, image/png"
+            />
+          </div>
+          <div *ngIf="editCourseImagePreview" class="thumbnail-preview">
+            <img [src]="editCourseImagePreview" alt="Preview" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="editCourseForm.invalid || submitting"
+          >
+            {{ submitting ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Lesson Modal -->
+  <div class="modal" [class.show]="showEditLessonModal" *ngIf="showEditLessonModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Lesson</h3>
+        <button class="modal-close" (click)="closeModals()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <form [formGroup]="editLessonForm" (ngSubmit)="submitEditLesson()" class="modal-body">
+        <div class="form-group">
+          <label>Lesson Title <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="title"
+            [class.error]="
+              editLessonForm.get('title')?.invalid && editLessonForm.get('title')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Lesson Order <span class="required">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="order"
+            [class.error]="
+              editLessonForm.get('order')?.invalid && editLessonForm.get('order')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Is Free? <span class="required">*</span></label>
+          <select class="form-control" formControlName="isFree">
+            <option [value]="true">Free</option>
+            <option [value]="false">Premium</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="editLessonForm.invalid || submitting"
+          >
+            {{ submitting ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Slider Modal -->
+  <div class="modal" [class.show]="showEditSliderModal" *ngIf="showEditSliderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Slider</h3>
+        <button class="modal-close" (click)="closeModals()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <form [formGroup]="editSliderForm" (ngSubmit)="submitEditSlider()" class="modal-body">
+        <div class="form-group">
+          <label>Slider Title <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="title"
+            [class.error]="
+              editSliderForm.get('title')?.invalid && editSliderForm.get('title')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Redirect URL</label>
+          <input type="text" class="form-control" formControlName="redirectUrl" />
+        </div>
+        <div class="form-group">
+          <label>Slider Image</label>
+          <div class="upload-box">
+            <i class="bi bi-image"></i>
+            <p>Upload New Image (Optional)</p>
+            <input
+              type="file"
+              class="file-input"
+              (change)="onSliderImageChange($event)"
+              accept="image/jpeg, image/png"
+            />
+          </div>
+          <div *ngIf="editSliderImagePreview" class="thumbnail-preview">
+            <img [src]="editSliderImagePreview" alt="Preview" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="editSliderForm.invalid || submitting"
+          >
+            {{ submitting ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Suggestion Modal -->
+  <div class="modal" [class.show]="showEditSuggestionModal" *ngIf="showEditSuggestionModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Suggestion</h3>
+        <button class="modal-close" (click)="closeModals()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <form [formGroup]="editSuggestionForm" (ngSubmit)="submitEditSuggestion()" class="modal-body">
+        <div class="form-group">
+          <label>Title <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="title"
+            [class.error]="
+              editSuggestionForm.get('title')?.invalid && editSuggestionForm.get('title')?.touched
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label>Instructor Name <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="instructorName"
+            [class.error]="
+              editSuggestionForm.get('instructorName')?.invalid &&
+              editSuggestionForm.get('instructorName')?.touched
+            "
+          />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="editSuggestionForm.invalid || submitting"
+          >
+            {{ submitting ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal modal-danger" [class.show]="showDeleteConfirm" *ngIf="showDeleteConfirm">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h3>Confirm Delete</h3>
+        <button class="modal-close" (click)="cancelDelete()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" (click)="cancelDelete()">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmDelete()"
+          [disabled]="submitting"
+        >
+          {{ submitting ? 'Deleting...' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Overlay -->
+<div
+  class="modal-overlay"
+  [class.show]="
+    showEditCourseModal ||
+    showEditLessonModal ||
+    showEditSliderModal ||
+    showEditSuggestionModal ||
+    showDeleteConfirm
+  "
+  (click)="closeModals()"
+></div>
