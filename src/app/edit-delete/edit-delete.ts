@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
 import { MaterialService } from '../services/materialService';
+import { Slider } from '../services/slider';
 
 @Component({
   selector: 'app-edit-delete',
@@ -71,7 +72,8 @@ export class EditDelete implements OnInit {
     private auth: AuthService,
     private router: Router,
     private http: HttpClient,
-    private materialService: MaterialService
+    private materialService: MaterialService,
+    private sliderService: Slider
   ) {}
 
   ngOnInit() {
@@ -182,16 +184,17 @@ export class EditDelete implements OnInit {
 
   loadSliders() {
     this.loadingSliders = true;
-    this.http.get(`${this.apiUrl}/GetAllSliders`).subscribe({
-      next: (res: any) => {
-        this.sliders = res || [];
-        this.loadingSliders = false;
+    this.sliderService.getAllSliders().subscribe({
+      next: (res: any[]) => {
+        this.sliders = res.map((s) => ({
+          ...s,
+          sliderImage: this.sliderService.getSliderFileUrl(s.id),
+        }));
       },
-      error: (err) => {
-        console.error('Failed to load sliders:', err);
-        this.loadingSliders = false;
-      },
+      error: (err) => console.error('❌ Error fetching sliders:', err),
     });
+
+    this.loadingSliders = false;
   }
 
   loadSuggestions() {
@@ -404,7 +407,6 @@ export class EditDelete implements OnInit {
     const body = {
       suggestionId: this.currentEditSuggestion.suggestionId,
       title: this.editSuggestionForm.value.title,
-      instructorName: this.editSuggestionForm.value.instructorName,
     };
 
     this.http.put(`${this.apiUrl}/UpdateSuggestion`, body).subscribe({
