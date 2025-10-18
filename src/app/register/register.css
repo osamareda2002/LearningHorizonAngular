@@ -6,6 +6,7 @@
   background: #503e9d;
   position: relative;
   overflow: hidden;
+  padding: 20px;
 }
 
 .decorative-logo {
@@ -38,6 +39,7 @@
   max-width: 520px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
 }
 
 .register-title {
@@ -75,6 +77,7 @@
 
 .half-input {
   flex: 1;
+  min-width: 0;
 }
 
 .form-control {
@@ -86,6 +89,7 @@
   color: white;
   font-size: 15px;
   transition: all 0.3s;
+  box-sizing: border-box;
 }
 
 .form-control::placeholder {
@@ -111,11 +115,18 @@
   cursor: pointer;
   margin-top: 10px;
   transition: transform 0.2s;
+  box-sizing: border-box;
 }
 
-.btn-next:hover {
+.btn-next:hover:not(:disabled) {
   transform: translateY(-2px);
 }
+
+.btn-next:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Password visibility toggle */
 .password-wrapper {
   position: relative;
@@ -129,10 +140,15 @@
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   font-size: 18px;
+  transition: color 0.3s ease;
 }
 
 .password-icon:hover {
   color: rgba(255, 255, 255, 0.9);
+}
+
+.password-wrapper .form-control {
+  padding-right: 45px;
 }
 
 /* Form control error state */
@@ -158,11 +174,13 @@
   align-items: center;
   gap: 10px;
   animation: slideDown 0.3s ease-out;
+  flex-wrap: wrap;
 }
 
 .alert-error i {
   color: #ff4444;
   font-size: 18px;
+  flex-shrink: 0;
 }
 
 .alert-error span {
@@ -182,12 +200,6 @@
   }
 }
 
-/* Button disabled state */
-.btn-next:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 /* Login link */
 .login-link {
   text-align: center;
@@ -204,4 +216,242 @@
 
 .login-link a:hover {
   text-decoration: underline;
+}
+
+/* Tablet - Medium screens (768px and above) */
+@media (max-width: 768px) {
+  .register-card {
+    padding: 40px 35px;
+    border-radius: 16px;
+  }
+
+  .register-title {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .register-subtitle {
+    font-size: 13px;
+    margin-bottom: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .name-group {
+    gap: 12px;
+  }
+
+  .form-control {
+    padding: 13px 18px;
+    font-size: 14px;
+  }
+
+  .password-wrapper .form-control {
+    padding-right: 40px;
+  }
+
+  .password-icon {
+    right: 18px;
+    font-size: 16px;
+  }
+
+  .btn-next {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .error-text {
+    font-size: 11px;
+  }
+
+  .alert-error {
+    padding: 11px;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .alert-error i {
+    font-size: 16px;
+  }
+
+  .alert-error span {
+    font-size: 13px;
+  }
+
+  .login-link {
+    font-size: 13px;
+    margin-top: 18px;
+  }
+
+  .decorative-logo {
+    width: 200px;
+    height: 280px;
+    opacity: 0.1;
+  }
+
+  .decorative-logo.left {
+    left: -80px;
+    top: 30px;
+  }
+
+  .decorative-logo.right {
+    right: -80px;
+    bottom: 30px;
+  }
+}
+
+/* Mobile - Small screens (480px and above, less than 768px) */
+@media (max-width: 480px) {
+  .register-container {
+    padding: 15px;
+  }
+
+  .register-card {
+    padding: 30px 20px;
+    border-radius: 16px;
+    max-width: 100%;
+  }
+
+  .register-title {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .register-subtitle {
+    font-size: 12px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .name-group {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .half-input {
+    width: 100%;
+  }
+
+  .form-control {
+    padding: 12px 15px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .password-wrapper .form-control {
+    padding-right: 35px;
+  }
+
+  .password-icon {
+    right: 12px;
+    font-size: 16px;
+  }
+
+  .btn-next {
+    padding: 13px;
+    font-size: 14px;
+    margin-top: 8px;
+    border-radius: 10px;
+  }
+
+  .error-text {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  .alert-error {
+    padding: 10px 12px;
+    gap: 8px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+  }
+
+  .alert-error i {
+    font-size: 16px;
+  }
+
+  .alert-error span {
+    font-size: 12px;
+  }
+
+  .login-link {
+    font-size: 12px;
+    margin-top: 15px;
+  }
+
+  .decorative-logo {
+    width: 150px;
+    height: 200px;
+    opacity: 0.08;
+    display: none;
+  }
+
+  .decorative-logo.left {
+    display: none;
+  }
+
+  .decorative-logo.right {
+    display: none;
+  }
+}
+
+/* Extra small devices (320px - 479px) */
+@media (max-width: 320px) {
+  .register-card {
+    padding: 20px 15px;
+  }
+
+  .register-title {
+    font-size: 24px;
+  }
+
+  .register-subtitle {
+    font-size: 11px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+  }
+
+  .form-control {
+    padding: 11px 13px;
+    font-size: 13px;
+  }
+
+  .btn-next {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .alert-error {
+    padding: 10px;
+  }
+
+  .alert-error i {
+    font-size: 14px;
+  }
+
+  .alert-error span {
+    font-size: 11px;
+  }
+
+  .login-link {
+    font-size: 11px;
+  }
 }

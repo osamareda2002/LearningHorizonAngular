@@ -1,4 +1,4 @@
-<div class="material-container">
+<div class="material-container" [class.sidebar-open]="isSidebarOpen">
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo-container">
@@ -31,11 +31,19 @@
     </nav>
   </aside>
 
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+
   <!-- Main Content -->
   <main class="main-content">
     <!-- User Navbar -->
     <div class="user-navbar">
-      <h2 class="page-title">Material</h2>
+      <div class="navbar-left">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <h2 class="page-title">Material</h2>
+      </div>
       <div class="user-menu">
         <span class="user-name">{{ userName }}</span>
         <div class="dropdown">

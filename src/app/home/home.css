@@ -20,15 +20,16 @@
   top: 0;
   z-index: 1050;
   transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
 }
 
-/* ... (Sidebar styles - no functional change) ... */
 .logo-container {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 20px;
   margin-bottom: 30px;
+  box-sizing: border-box;
 }
 
 .sidebar-logo {
@@ -54,10 +55,12 @@
   text-decoration: none;
   font-size: 16px;
   transition: all 0.3s;
+  box-sizing: border-box;
 }
 
 .nav-item i {
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .nav-item.active {
@@ -79,6 +82,9 @@
   background: white;
   border-radius: 30px 0 0 30px;
   transition: margin-left 0.3s ease-in-out;
+  box-sizing: border-box;
+  overflow-y: auto;
+  max-height: 100vh;
 }
 
 /* Menu Toggle Button (Default hidden on desktop) */
@@ -100,13 +106,15 @@
   padding: 20px 0;
   margin-bottom: 30px;
   border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
-/* ... (Navbar, Dropdown, Slider styles - no functional change for this fix) ... */
 .page-title-container {
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .page-title {
@@ -158,6 +166,7 @@
   font-size: 18px;
   color: #666;
   transition: background 0.3s;
+  flex-shrink: 0;
 }
 
 .dropdown-toggle:hover {
@@ -192,6 +201,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
+  box-sizing: border-box;
 }
 
 .dropdown-menu a:hover {
@@ -229,6 +239,7 @@
   object-fit: cover;
   cursor: pointer;
   border-radius: 20px;
+  display: block;
 }
 
 /* Arrows */
@@ -294,6 +305,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .content-header h2 {
@@ -323,7 +336,6 @@
 }
 
 .video-thumbnail {
-  /* Removed initial background, as the wrapper/overlay will handle the visual part */
   padding: 20px;
   border-radius: 20px;
   position: relative;
@@ -331,18 +343,19 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #2d5016; /* Fallback/base color */
+  background: #2d5016;
+  box-sizing: border-box;
 }
 
 /* New: Wrapper for the video player/overlay */
 .video-wrapper {
   position: relative;
-  flex-grow: 1; /* Allows it to take up available vertical space */
-  margin-top: 10px; /* Space between instructor info and video area */
+  flex-grow: 1;
+  margin-top: 10px;
   border-radius: 15px;
   overflow: hidden;
-  background: #1a2e0d; /* Background color for video area */
-  height: 240px; /* Fixed height for consistency */
+  background: #1a2e0d;
+  height: 240px;
 }
 
 /* Custom Thumbnail/Play Overlay Styles */
@@ -399,7 +412,6 @@
   transform: translate(-50%, -50%) scale(1.1);
   background: #fff;
 }
-/* END Custom Player Styles */
 
 /* The video element itself needs to fit neatly inside the video-wrapper */
 .video-wrapper video {
@@ -415,15 +427,17 @@
   align-items: center;
   gap: 12px;
   color: white;
-  margin-bottom: 0; /* Remove bottom margin to reduce gap to video */
+  margin-bottom: 0;
   position: relative;
   z-index: 15;
+  flex-wrap: wrap;
 }
 
 .instructor-img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .instructor-name {
@@ -440,36 +454,50 @@
   font-size: 12px;
   position: relative;
   z-index: 15;
+  flex-shrink: 0;
 }
 
-/* FIX: Video Title Positioning */
+/* Video Title Positioning */
 .video-title {
   color: white;
   font-size: 16px;
   font-weight: 600;
-  /* Removed margin-top: 15px; and margin-top: -5px; which caused the overlap */
-  margin-top: 20px; /* Add clean space after the video wrapper */
+  margin-top: 20px;
   background: rgba(80, 62, 157, 0.8);
   padding: 15px;
   border-radius: 0 0 20px 20px;
-  margin-left: -20px; /* Offset the padding of .video-thumbnail to achieve edge-to-edge title width */
+  margin-left: -20px;
   margin-right: -20px;
-  margin-bottom: -20px; /* Offset the padding of .video-thumbnail to achieve edge-to-edge title height */
+  margin-bottom: -20px;
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
 }
 
 /* ========================================================================= */
-/* --- Media Queries (Retained from previous step) --- */
+/* --- Media Queries --- */
 /* ========================================================================= */
 
+/* Large Desktop (1200px+) - No changes needed */
+
+/* Laptop/Desktop (992px - 1199px) */
 @media (max-width: 992px) {
   .main-content {
     padding: 30px 40px;
     border-radius: 0;
   }
+
+  .video-cards {
+    gap: 25px;
+  }
+
+  .content-header h2,
+  .page-title {
+    font-size: 24px;
+  }
 }
 
+/* Tablet (768px - 991px) */
 @media (max-width: 768px) {
   .menu-toggle-btn {
     display: flex;
@@ -485,6 +513,7 @@
   .main-content {
     margin-left: 0;
     padding: 20px;
+    border-radius: 0;
   }
 
   .home-container.sidebar-open .sidebar {
@@ -499,7 +528,7 @@
   .user-navbar {
     flex-wrap: wrap;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     padding: 15px 0;
   }
 
@@ -515,7 +544,8 @@
   }
 
   .user-name {
-    display: none;
+    display: block;
+    font-size: 13px;
   }
 
   .page-title,
@@ -527,59 +557,323 @@
     display: none;
   }
 
+  .user-name {
+    font-size: 13px;
+  }
+
   .video-cards {
     grid-template-columns: 1fr;
     gap: 20px;
   }
 
   .slider {
-    height: 180px;
+    height: 200px;
+    margin-bottom: 30px;
   }
+
   .slide img {
-    height: 180px;
+    height: 200px;
   }
 
   .video-thumbnail {
-    min-height: 250px;
+    min-height: 280px;
     padding: 15px;
   }
 
-  /* Adjusted for mobile */
+  .video-wrapper {
+    height: 200px;
+    margin-top: 8px;
+  }
+
+  .play-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
   .video-title {
+    font-size: 15px;
+    padding: 12px;
     margin-left: -15px;
     margin-right: -15px;
     margin-bottom: -15px;
   }
+
+  .instructor-name {
+    font-size: 13px;
+  }
+
+  .video-duration {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .slide-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+
+  .content-header {
+    margin-bottom: 20px;
+  }
+
+  .logo-container {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo {
+    width: 100px;
+  }
+
+  .nav-item {
+    padding: 12px 30px;
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .nav-item i {
+    font-size: 18px;
+  }
 }
 
-@media (max-width: 576px) {
+/* Mobile (480px - 767px) */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 15px;
+  }
+
   .slider {
-    height: 150px;
+    height: 160px;
+    margin-bottom: 25px;
+    border-radius: 15px;
   }
 
   .slide img {
-    height: 150px;
+    height: 160px;
+    border-radius: 15px;
   }
 
   .slide-btn {
     width: 30px;
     height: 30px;
+    font-size: 16px;
+  }
+
+  .slide-btn.prev {
+    left: 10px;
+  }
+
+  .slide-btn.next {
+    right: 10px;
+  }
+
+  .slide-dots {
+    bottom: 10px;
+  }
+
+  .slide-dots span {
+    width: 8px;
+    height: 8px;
+  }
+
+  .slide-dots span.active {
+    width: 10px;
+    height: 10px;
+  }
+
+  .user-navbar {
+    gap: 8px;
+    padding: 12px 0;
+    margin-bottom: 20px;
+  }
+
+  .welcome-text {
+    display: block;
+    font-size: 16px;
+    margin-top: 2px;
+  }
+
+  .page-title-container {
+    gap: 8px;
+  }
+
+  .menu-toggle-btn {
+    font-size: 24px;
+  }
+
+  .dropdown-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .video-cards {
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .video-thumbnail {
+    min-height: 240px;
+    padding: 12px;
+  }
+
+  .video-wrapper {
+    height: 160px;
+    margin-top: 6px;
+    border-radius: 12px;
+  }
+
+  .play-btn {
+    width: 45px;
+    height: 45px;
     font-size: 18px;
   }
 
   .video-title {
-    font-size: 14px;
+    font-size: 13px;
     padding: 10px;
+    margin-left: -12px;
+    margin-right: -12px;
+    margin-bottom: -12px;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .instructor-info {
+    gap: 8px;
+  }
+
+  .instructor-img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .instructor-name {
+    font-size: 12px;
+  }
+
+  .video-duration {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  .content-header {
+    margin-bottom: 15px;
+  }
+
+  .btn-more {
+    font-size: 20px;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .logo-container {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+
+  .sidebar-logo {
+    width: 90px;
+  }
+
+  .nav-item {
+    padding: 10px 25px;
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .nav-item i {
+    font-size: 16px;
+  }
+
+  .nav-item.active {
+    border-left: 3px solid #ff6b6b;
+  }
+}
+
+/* Small Mobile (320px - 479px) */
+@media (max-width: 320px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .page-title,
+  .content-header h2 {
+    font-size: 16px;
+  }
+
+  .slider {
+    height: 140px;
+    margin-bottom: 20px;
+  }
+
+  .slide img {
+    height: 140px;
+  }
+
+  .user-navbar {
+    gap: 6px;
+    padding: 10px 0;
+    margin-bottom: 15px;
   }
 
   .video-thumbnail {
     min-height: 220px;
     padding: 10px;
   }
-  /* Adjusted for smallest mobile */
+
+  .video-wrapper {
+    height: 140px;
+  }
+
+  .play-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
   .video-title {
+    font-size: 12px;
+    padding: 8px;
     margin-left: -10px;
     margin-right: -10px;
     margin-bottom: -10px;
+  }
+
+  .instructor-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .instructor-name {
+    font-size: 11px;
+  }
+
+  .video-duration {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .sidebar-logo {
+    width: 80px;
+  }
+
+  .nav-item {
+    padding: 8px 20px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .nav-item i {
+    font-size: 14px;
+  }
+
+  .dropdown-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 }

@@ -22,6 +22,7 @@ export class Add implements OnInit {
   isAdmin = false;
   userName = 'Guest';
   isDropdownOpen = false;
+  isSidebarOpen = false;
   submitting = false;
 
   errorMessage = '';
@@ -130,6 +131,10 @@ export class Add implements OnInit {
   // ------------------------------
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 
   handleLogout() {
@@ -460,5 +465,9 @@ export class Add implements OnInit {
     this.bookForm.reset();
     this.bookCover = null;
     this.bookPdf = null;
+  }
+
+  goBackToHome() {
+    this.router.navigate(['/home']);
   }
 }

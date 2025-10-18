@@ -24,6 +24,7 @@ interface Book {
 })
 export class Books implements OnInit {
   isDropdownOpen = false;
+  isSidebarOpen = false;
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
@@ -87,6 +88,10 @@ export class Books implements OnInit {
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 
   handleAuth() {

@@ -2,9 +2,10 @@
   display: flex;
   min-height: 100vh;
   background: #f5f5f5;
+  position: relative;
 }
 
-/* Sidebar - Same as Material */
+/* Sidebar */
 .sidebar {
   width: 280px;
   background: #503e9d;
@@ -17,6 +18,8 @@
   left: 0;
   top: 0;
   overflow-y: auto;
+  z-index: 1050;
+  transition: transform 0.3s ease-in-out;
 }
 
 .logo-container {
@@ -25,12 +28,14 @@
   justify-content: center;
   padding: 20px;
   margin-bottom: 30px;
+  box-sizing: border-box;
 }
 
 .sidebar-logo {
   width: 120px;
   height: auto;
   object-fit: contain;
+  cursor: pointer;
 }
 
 .sidebar-nav {
@@ -50,10 +55,12 @@
   font-size: 16px;
   transition: all 0.3s;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .nav-item i {
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .nav-item.active {
@@ -74,6 +81,21 @@
   padding: 40px 60px;
   background: white;
   border-radius: 30px 0 0 30px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Menu Toggle Button */
+.menu-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #503e9d;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .user-navbar {
@@ -83,6 +105,14 @@
   padding: 20px 0;
   margin-bottom: 40px;
   border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .page-title {
@@ -96,6 +126,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  margin-left: auto;
 }
 
 .user-name {
@@ -121,6 +152,7 @@
   font-size: 18px;
   color: #666;
   transition: background 0.3s;
+  flex-shrink: 0;
 }
 
 .dropdown-toggle:hover {
@@ -155,10 +187,19 @@
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
+  box-sizing: border-box;
 }
 
 .dropdown-menu a:hover {
   background: #f5f5f5;
+}
+
+.dropdown-menu a:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.dropdown-menu a:last-child {
+  border-radius: 0 0 10px 10px;
 }
 
 /* Search Section */
@@ -172,12 +213,14 @@
   background: #f5f5f5;
   border-radius: 12px;
   padding: 12px 20px;
+  box-sizing: border-box;
 }
 
 .search-box i {
   font-size: 18px;
   color: #999;
   margin-right: 10px;
+  flex-shrink: 0;
 }
 
 .search-box input {
@@ -186,6 +229,7 @@
   background: transparent;
   font-size: 15px;
   color: #333;
+  box-sizing: border-box;
 }
 
 .search-box input::placeholder {
@@ -204,6 +248,7 @@
   justify-content: center;
   padding: 80px 20px;
   color: #999;
+  text-align: center;
 }
 
 .spinner {
@@ -263,6 +308,7 @@
   border-radius: 15px;
   padding: 25px;
   transition: all 0.3s;
+  box-sizing: border-box;
 }
 
 .book-card:hover {
@@ -284,6 +330,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 /* Book Info */
@@ -292,6 +339,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .book-title {
@@ -299,6 +347,7 @@
   font-weight: 700;
   color: #2c3e50;
   margin: 0;
+  word-wrap: break-word;
 }
 
 .book-description {
@@ -315,6 +364,7 @@
   gap: 12px;
   align-items: flex-end;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .book-action-link {
@@ -325,6 +375,7 @@
   transition: all 0.3s;
   padding: 5px 0;
   position: relative;
+  white-space: nowrap;
 }
 
 .book-action-link::after {
@@ -346,30 +397,32 @@
   width: 100%;
 }
 
-/* =============================
-   ✅ Responsive Design Updates
-============================= */
-
-/* Large screens (below 1200px) */
-@media (max-width: 1200px) {
-  .main-content {
-    padding: 30px 40px;
-  }
-
-  .book-title {
-    font-size: 22px;
-  }
-
-  .book-description {
-    font-size: 14px;
-  }
-
-  .book-card {
-    gap: 20px;
-  }
+/* Sidebar backdrop overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
 }
 
-/* Tablets (below 992px) */
+.material-container.sidebar-open .sidebar-overlay {
+  display: block;
+  opacity: 1;
+}
+
+/* ========================================================================= */
+/* --- Media Queries --- */
+/* ========================================================================= */
+
+/* Large screens (1200px+) - No changes needed */
+
+/* Desktop to Tablet (992px - 1199px) */
 @media (max-width: 992px) {
   .sidebar {
     width: 220px;
@@ -378,11 +431,53 @@
   .main-content {
     margin-left: 220px;
     padding: 25px 30px;
+    border-radius: 0;
+  }
+
+  .logo-container {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo {
+    width: 100px;
+  }
+
+  .nav-item {
+    padding: 12px 20px;
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .nav-item i {
+    font-size: 18px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .user-navbar {
+    padding: 15px 0;
+    margin-bottom: 30px;
+  }
+
+  .search-box {
+    padding: 10px 15px;
+  }
+
+  .search-box i {
+    font-size: 16px;
+    margin-right: 8px;
+  }
+
+  .search-box input {
+    font-size: 14px;
   }
 
   .book-card {
-    flex-direction: row;
     gap: 20px;
+    padding: 20px;
   }
 
   .book-cover {
@@ -397,62 +492,94 @@
   .book-description {
     font-size: 13px;
   }
+
+  .book-action-link {
+    font-size: 14px;
+  }
 }
 
-/* Tablets & Small Laptops (below 768px) */
+/* Tablet (768px - 991px) */
 @media (max-width: 768px) {
-  .books-container {
-    flex-direction: column;
-  }
-
-  /* Sidebar becomes top nav */
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    justify-content: space-around;
+  .menu-toggle-btn {
+    display: flex;
     align-items: center;
-    padding: 10px;
-    overflow-y: visible;
+    order: -1;
   }
 
-  .logo-container {
-    width: auto;
-    margin-bottom: 0;
-    padding: 0;
+  .sidebar {
+    width: 250px;
+    transform: translateX(-100%);
   }
 
-  .sidebar-logo {
-    width: 70px;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .nav-item {
-    font-size: 13px;
-    padding: 8px 10px;
-  }
-
-  .nav-item span {
-    display: none; /* Hide labels, keep icons */
+  .books-container.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
   }
 
   .main-content {
     margin-left: 0;
-    padding: 20px;
     border-radius: 0;
+    padding: 20px;
+  }
+
+  .navbar-left {
+    width: 100%;
+    order: 1;
   }
 
   .user-navbar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
+    padding: 15px 0;
+    margin-bottom: 25px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .user-menu {
+    order: 0;
+    margin-left: auto;
+    width: auto;
+  }
+
+  .user-name {
+    font-size: 14px;
+  }
+
+  .logo-container {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo {
+    width: 90px;
+  }
+
+  .sidebar-nav {
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .nav-item {
+    font-size: 13px;
+    padding: 12px 25px;
+    gap: 12px;
+  }
+
+  .nav-item i {
+    font-size: 18px;
+  }
+
+  .search-section {
+    margin-bottom: 30px;
+  }
+
+  .search-box {
+    padding: 10px 15px;
   }
 
   .books-list {
@@ -464,11 +591,16 @@
     align-items: center;
     text-align: center;
     padding: 20px;
+    gap: 15px;
   }
 
   .book-cover {
     width: 140px;
     height: 190px;
+  }
+
+  .book-info {
+    text-align: center;
   }
 
   .book-title {
@@ -490,26 +622,65 @@
   .book-action-link {
     font-size: 13px;
   }
+
+  .no-books {
+    padding: 60px 20px;
+  }
+
+  .no-books i {
+    font-size: 60px;
+  }
+
+  .no-books p {
+    font-size: 16px;
+  }
+
+  .loading-container {
+    padding: 60px 20px;
+  }
 }
 
-/* Small phones (below 480px) */
+/* Mobile (480px - 767px) */
 @media (max-width: 480px) {
+  .menu-toggle-btn {
+    font-size: 24px;
+  }
+
   .sidebar {
-    flex-wrap: wrap;
-    padding: 8px 0;
+    width: 220px;
+  }
+
+  .logo-container {
+    padding: 12px;
+    margin-bottom: 15px;
   }
 
   .sidebar-logo {
-    width: 60px;
+    width: 80px;
   }
 
   .nav-item {
-    padding: 6px;
+    padding: 10px 20px;
     font-size: 12px;
+    gap: 10px;
+  }
+
+  .nav-item i {
+    font-size: 16px;
   }
 
   .page-title {
     font-size: 20px;
+  }
+
+  .user-name {
+    font-size: 13px;
+  }
+
+  .dropdown-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
   }
 
   .search-box {
@@ -518,6 +689,7 @@
 
   .search-box i {
     font-size: 16px;
+    margin-right: 8px;
   }
 
   .search-box input {
@@ -549,5 +721,135 @@
 
   .book-action-link {
     font-size: 12px;
+  }
+
+  .main-content {
+    padding: 15px;
+  }
+
+  .user-navbar {
+    padding: 12px 0;
+    margin-bottom: 20px;
+  }
+
+  .search-section {
+    margin-bottom: 25px;
+  }
+
+  .books-section {
+    margin-bottom: 30px;
+  }
+
+  .no-books {
+    padding: 40px 15px;
+  }
+
+  .no-books i {
+    font-size: 50px;
+  }
+
+  .no-books p {
+    font-size: 14px;
+  }
+
+  .loading-container {
+    padding: 40px 15px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Small Mobile (320px - 479px) */
+@media (max-width: 320px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .user-navbar {
+    padding: 10px 0;
+    margin-bottom: 15px;
+    gap: 8px;
+  }
+
+  .sidebar-logo {
+    width: 70px;
+  }
+
+  .nav-item {
+    padding: 8px 15px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .nav-item i {
+    font-size: 14px;
+  }
+
+  .search-box {
+    padding: 8px 10px;
+    border-radius: 10px;
+  }
+
+  .search-box i {
+    font-size: 14px;
+  }
+
+  .search-box input {
+    font-size: 12px;
+  }
+
+  .book-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .book-cover {
+    width: 100px;
+    height: 140px;
+  }
+
+  .book-title {
+    font-size: 14px;
+  }
+
+  .book-description {
+    font-size: 11px;
+  }
+
+  .book-action-link {
+    font-size: 11px;
+  }
+
+  .no-books {
+    padding: 30px 12px;
+  }
+
+  .no-books i {
+    font-size: 40px;
+  }
+
+  .no-books p {
+    font-size: 12px;
+  }
+
+  .loading-container {
+    padding: 30px 12px;
+  }
+
+  .user-name {
+    font-size: 12px;
+  }
+
+  .dropdown-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 }
