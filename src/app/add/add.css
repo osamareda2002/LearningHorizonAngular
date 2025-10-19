@@ -2,6 +2,7 @@
   display: flex;
   min-height: 100vh;
   background: #f5f5f5;
+  position: relative;
 }
 
 /* Sidebar */
@@ -16,6 +17,9 @@
   height: 100vh;
   left: 0;
   top: 0;
+  z-index: 1050;
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
 }
 
 .logo-container {
@@ -24,12 +28,14 @@
   justify-content: center;
   padding: 20px;
   margin-bottom: 30px;
+  box-sizing: border-box;
 }
 
 .sidebar-logo {
   width: 120px;
   height: auto;
   object-fit: contain;
+  cursor: pointer;
 }
 
 .sidebar-nav {
@@ -48,11 +54,12 @@
   text-decoration: none;
   font-size: 16px;
   transition: all 0.3s;
-  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .nav-item i {
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .nav-item.active {
@@ -73,6 +80,22 @@
   padding: 40px 60px;
   background: white;
   border-radius: 30px 0 0 30px;
+  transition: margin-left 0.3s ease-in-out;
+  box-sizing: border-box;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Menu Toggle Button (Default hidden on desktop) */
+.menu-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #503e9d;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1051;
 }
 
 /* User Navbar */
@@ -121,6 +144,7 @@
   font-size: 18px;
   color: #666;
   transition: background 0.3s;
+  flex-shrink: 0;
 }
 
 .dropdown-toggle:hover {
@@ -155,6 +179,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
+  box-sizing: border-box;
 }
 
 .dropdown-menu a:hover {
@@ -216,6 +241,7 @@
   display: flex;
   border-bottom: 2px solid #e0e0e0;
   padding: 0;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -234,6 +260,7 @@
   transition: all 0.3s;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
+  min-width: 120px;
 }
 
 .tab-btn i {
@@ -407,6 +434,7 @@
   border-radius: 10px;
   padding: 15px;
 }
+
 .video-duration {
   color: #444;
   font-size: 14px;
@@ -506,76 +534,17 @@
   cursor: not-allowed;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
+/* ========================================================================= */
+/* --- Media Queries --- */
+/* ========================================================================= */
+
+/* Large Desktop (1200px+) - No changes needed */
+
+/* Laptop/Desktop (992px - 1199px) */
+@media (max-width: 992px) {
   .main-content {
     padding: 30px 40px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .add-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 10px 0;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .nav-item {
-    padding: 10px;
-    font-size: 12px;
-  }
-
-  .main-content {
-    margin-left: 0;
     border-radius: 0;
-    padding: 20px;
-  }
-
-  .tabs-header {
-    flex-wrap: wrap;
-  }
-
-  .tab-btn {
-    flex: 1;
-    min-width: 150px;
-  }
-
-  .tabs-content {
-    padding: 20px;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* Responsive Breakpoints */
-
-/* ✅ Large screens (below 1200px) */
-@media (max-width: 1200px) {
-  .main-content {
-    padding: 30px 40px;
   }
 
   .form-grid {
@@ -591,91 +560,69 @@
   }
 }
 
-/* ✅ Tablets (below 992px) */
-@media (max-width: 992px) {
-  .sidebar {
-    width: 220px;
-  }
-
-  .main-content {
-    margin-left: 220px;
-    padding: 25px 30px;
-  }
-
-  .tab-btn {
-    font-size: 14px;
-    padding: 15px;
-  }
-
-  .upload-box {
-    padding: 30px 15px;
-  }
-
-  .form-control,
-  .textarea {
-    font-size: 13px;
-  }
-}
-
-/* ✅ Mobile devices (below 768px) */
+/* Tablet (768px - 991px) */
 @media (max-width: 768px) {
-  .add-container {
-    flex-direction: column;
+  .menu-toggle-btn {
+    display: flex;
+    align-items: center;
+    order: -1;
   }
 
-  /* Sidebar becomes top nav */
   .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 10px;
-  }
-
-  .sidebar-logo {
-    width: 80px;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  .nav-item {
-    padding: 8px 12px;
-    font-size: 13px;
-    gap: 8px;
+    width: 250px;
+    transform: translateX(-100%);
   }
 
   .main-content {
     margin-left: 0;
+    padding: 20px;
     border-radius: 0;
-    padding: 15px;
+  }
+
+  .add-container.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .add-container.sidebar-open .main-content {
+    margin-left: 250px;
   }
 
   .user-navbar {
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
-    align-items: flex-start;
+    padding: 15px 0;
+  }
+
+  .page-title {
+    font-size: 22px;
   }
 
   .tabs-header {
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 0;
   }
 
   .tab-btn {
-    flex: 1 1 45%;
+    flex: 1 1 auto;
     font-size: 13px;
-    padding: 12px;
-    border-bottom: 2px solid transparent;
+    padding: 12px 8px;
+    min-width: 100px;
+    gap: 5px;
+  }
+
+  .tab-btn i {
+    font-size: 16px;
   }
 
   .tabs-content {
-    padding: 15px;
+    padding: 20px;
+  }
+
+  .tab-title {
+    font-size: 20px;
+    margin-bottom: 20px;
   }
 
   .form-container {
@@ -685,17 +632,22 @@
   .form-grid {
     grid-template-columns: 1fr;
     gap: 15px;
+    margin-bottom: 20px;
   }
 
   .form-actions {
     flex-direction: column;
     gap: 10px;
+    justify-content: stretch;
+    margin-top: 30px;
+    padding-top: 20px;
   }
 
   .btn {
     width: 100%;
     justify-content: center;
     font-size: 14px;
+    padding: 12px 20px;
   }
 
   .thumbnail-preview img {
@@ -705,42 +657,304 @@
   }
 
   .upload-box {
-    padding: 25px 10px;
+    padding: 25px 15px;
   }
 
   .upload-box i {
     font-size: 36px;
   }
 
+  .upload-box p {
+    font-size: 14px;
+  }
+
   .upload-info {
     font-size: 12px;
   }
-}
 
-/* ✅ Small phones (below 480px) */
-@media (max-width: 480px) {
-  .page-title,
-  .tab-title {
-    font-size: 20px;
+  .form-group label {
+    font-size: 14px;
+    margin-bottom: 8px;
   }
 
-  .nav-item span {
-    display: none; /* icons only for super small screens */
+  .form-control,
+  .textarea {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .alert {
+    font-size: 13px;
+    padding: 12px 15px;
+  }
+
+  .user-name {
+    font-size: 14px;
+  }
+
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .logo-container {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo {
+    width: 100px;
+  }
+
+  .nav-item {
+    padding: 12px 30px;
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .nav-item i {
+    font-size: 18px;
+  }
+}
+
+/* Mobile (480px - 767px) */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 15px;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .add-container.sidebar-open .main-content {
+    margin-left: 220px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .tab-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .tabs-header {
+    gap: 2px;
   }
 
   .tab-btn {
     flex: 1 1 100%;
+    font-size: 11px;
+    padding: 10px 6px;
+    margin-bottom: -1px;
+    min-width: auto;
+  }
+
+  .tab-btn i {
+    font-size: 14px;
+    display: none;
+  }
+
+  .tabs-content {
+    padding: 15px;
+  }
+
+  .form-grid {
+    gap: 12px;
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .form-control,
+  .textarea {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .textarea {
+    min-height: 100px;
+  }
+
+  .btn {
     font-size: 12px;
+    padding: 10px 16px;
+  }
+
+  .upload-box {
+    padding: 20px 10px;
+  }
+
+  .upload-box i {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  .upload-box p {
+    font-size: 13px;
+    margin: 8px 0;
+  }
+
+  .upload-info {
+    font-size: 11px;
+  }
+
+  .form-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+  }
+
+  .alert {
+    font-size: 12px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .alert-error i,
+  .alert-success i {
+    font-size: 16px;
+  }
+
+  .user-navbar {
+    padding: 10px 0;
+  }
+
+  .user-name {
+    font-size: 13px;
+  }
+
+  .thumbnail-preview img {
+    max-width: 200px;
+  }
+
+  .file-name {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .file-name i {
+    font-size: 14px;
+  }
+
+  .logo-container {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+
+  .sidebar-logo {
+    width: 90px;
+  }
+
+  .nav-item {
+    padding: 10px 25px;
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .nav-item i {
+    font-size: 16px;
+  }
+
+  .nav-item.active {
+    border-left: 3px solid #ff6b6b;
+  }
+}
+
+/* Small Mobile (320px - 479px) */
+@media (max-width: 320px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .page-title,
+  .tab-title {
+    font-size: 16px;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+
+  .add-container.sidebar-open .main-content {
+    margin-left: 200px;
+  }
+
+  .user-navbar {
+    gap: 6px;
+    padding: 10px 0;
+    margin-bottom: 15px;
+  }
+
+  .tab-btn {
+    flex: 1 1 100%;
+    font-size: 10px;
+    padding: 8px 4px;
+  }
+
+  .tabs-content {
+    padding: 12px;
+  }
+
+  .form-grid {
+    gap: 10px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 5px;
   }
 
   .form-control,
   .textarea {
     font-size: 12px;
-    padding: 10px;
+    padding: 8px;
   }
 
   .btn {
-    font-size: 13px;
-    padding: 12px;
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+
+  .upload-box {
+    padding: 15px 8px;
+  }
+
+  .upload-box i {
+    font-size: 28px;
+  }
+
+  .upload-box p {
+    font-size: 12px;
+    margin: 6px 0;
+  }
+
+  .alert {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+
+  .sidebar-logo {
+    width: 80px;
+  }
+
+  .nav-item {
+    padding: 8px 20px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .nav-item i {
+    font-size: 14px;
+  }
+
+  .dropdown-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 }
