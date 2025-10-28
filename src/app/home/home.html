@@ -58,7 +58,7 @@
       <div class="slider">
         <div class="slides" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
           <div class="slide" *ngFor="let banner of Sliders">
-            <img [src]="banner.imageUrl" (click)="onBannerClick(banner.id)" alt="Banner" />
+            <img [src]="banner.path" (click)="onBannerClick(banner.id)" alt="Banner" />
           </div>
         </div>
 
@@ -114,13 +114,13 @@
           </div>
 
           <video
-            *ngIf="s.videoUrl && s.isPlaying"
+            *ngIf="s.path && s.isPlaying"
             width="100%"
             height="240"
             controls
             autoplay
             preload="metadata"
-            [src]="s.videoUrl"
+            [src]="s.path"
           ></video>
 
           <p class="video-title">{{ s.title || 'Untitled Suggestion' }}</p>

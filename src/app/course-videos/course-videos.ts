@@ -107,7 +107,7 @@ export class CourseVideos implements OnInit {
           title: lesson.title,
           subtitle: lesson.subtitle || `Lesson -${index + 1}`,
           isFree: lesson.isFree || false,
-          videoUrl: this.materialService.getLessonVideoFile(lesson.id),
+          videoUrl: lesson.path,
           duration: lesson.duration,
         }));
 

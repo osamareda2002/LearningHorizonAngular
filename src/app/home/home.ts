@@ -45,7 +45,6 @@ export class Home {
       next: (res: any[]) => {
         this.suggestions = res.map((s) => ({
           ...s,
-          videoUrl: this.suggestionService.getSuggestionFileUrl(s.id),
           duration: null,
         }));
         this.suggestions.forEach((s) => this.loadVideoDuration(s));
@@ -58,7 +57,6 @@ export class Home {
       next: (res: any[]) => {
         this.Sliders = res.map((s) => ({
           ...s,
-          imageUrl: this.sliderService.getSliderFileUrl(s.id),
         }));
       },
       error: (err) => console.error('❌ Error fetching sliders:', err),

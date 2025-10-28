@@ -325,6 +325,7 @@ export class Add implements OnInit {
     formData.append('title', this.lessonForm.value.title);
     formData.append('isFree', this.lessonForm.value.isFree);
     formData.append('courseId', this.lessonForm.value.courseId);
+    formData.append('lessonOrder', this.lessonForm.value.order);
     formData.append('lessonFile', this.lessonVideo);
     formData.append('durationInSeconds', this.lessonDurationInSeconds.toString());
 

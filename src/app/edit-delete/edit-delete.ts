@@ -153,7 +153,7 @@ export class EditDelete implements OnInit {
             courseId: res.courseId,
             courseTitle: res.courseTitle,
             courseCreator: res.courseCreator,
-            courseImage: this.materialService.getCourseThumbnailFile(res.courseId),
+            courseImage: res.courseImagePath,
             coursePrice: res.coursePrice,
           };
           this.courses.push(course);
@@ -167,12 +167,11 @@ export class EditDelete implements OnInit {
       },
     });
   }
-
   loadLessons() {
     this.loadingLessons = true;
     this.http.get(`${this.apiUrl}/GetAllLessons`).subscribe({
       next: (res: any) => {
-        this.lessons = res || [];
+        this.lessons = [...res];
         this.loadingLessons = false;
       },
       error: (err) => {
@@ -188,7 +187,6 @@ export class EditDelete implements OnInit {
       next: (res: any[]) => {
         this.sliders = res.map((s) => ({
           ...s,
-          sliderImage: this.sliderService.getSliderFileUrl(s.id),
         }));
       },
       error: (err) => console.error('❌ Error fetching sliders:', err),
@@ -300,15 +298,11 @@ export class EditDelete implements OnInit {
     const body = {
       lessonId: this.currentEditLesson.lessonId,
       lessonTitle: this.editLessonForm.value.title,
-      lessonOrder: this.editLessonForm.value.order,
+      // lessonOrder: this.editLessonForm.value.order,
       isFree: this.editLessonForm.value.isFree,
     };
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.auth.getToken()}`,
-    });
-
-    this.http.put(`${this.apiUrl}/UpdateLesson`, body, { headers }).subscribe({
+    this.http.put(`${this.apiUrl}/UpdateLesson`, body).subscribe({
       next: (res) => {
         this.successMessage = 'Lesson updated successfully!';
         this.submitting = false;
@@ -324,67 +318,70 @@ export class EditDelete implements OnInit {
   }
 
   // ✅ Edit Slider
-  openEditSliderModal(slider: any) {
-    this.currentEditSlider = slider;
-    this.editSliderForm.patchValue({
-      title: slider.title,
-      redirectUrl: slider.link || '',
-    });
-    this.editSliderImagePreview = slider.sliderImage;
-    this.editSliderImage = null;
-    this.showEditSliderModal = true;
-  }
+  //#region
 
-  onSliderImageChange(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
+  // openEditSliderModal(slider: any) {
+  //   this.currentEditSlider = slider;
+  //   this.editSliderForm.patchValue({
+  //     title: slider.title,
+  //     redirectUrl: slider.link || '',
+  //   });
+  //   this.editSliderImagePreview = slider.sliderImage;
+  //   this.editSliderImage = null;
+  //   this.showEditSliderModal = true;
+  // }
 
-    const allowedTypes = ['image/jpeg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('Invalid file type! Only PNG and JPG files are allowed.');
-      event.target.value = '';
-      return;
-    }
+  // onSliderImageChange(event: any) {
+  //   const file = event.target.files[0];
+  //   if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.editSliderImage = file;
-      this.editSliderImagePreview = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
+  //   const allowedTypes = ['image/jpeg', 'image/png'];
+  //   if (!allowedTypes.includes(file.type)) {
+  //     alert('Invalid file type! Only PNG and JPG files are allowed.');
+  //     event.target.value = '';
+  //     return;
+  //   }
 
-  submitEditSlider() {
-    if (this.editSliderForm.invalid || !this.currentEditSlider) {
-      this.errorMessage = 'Please fill in all required fields.';
-      return;
-    }
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     this.editSliderImage = file;
+  //     this.editSliderImagePreview = reader.result as string;
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
 
-    this.submitting = true;
+  // submitEditSlider() {
+  //   if (this.editSliderForm.invalid || !this.currentEditSlider) {
+  //     this.errorMessage = 'Please fill in all required fields.';
+  //     return;
+  //   }
 
-    const formData = new FormData();
-    formData.append('sliderId', this.currentEditSlider.sliderId);
-    formData.append('title', this.editSliderForm.value.title);
-    formData.append('link', this.editSliderForm.value.redirectUrl || '');
+  //   this.submitting = true;
 
-    if (this.editSliderImage) {
-      formData.append('file', this.editSliderImage);
-    }
+  //   const formData = new FormData();
+  //   formData.append('sliderId', this.currentEditSlider.sliderId);
+  //   formData.append('title', this.editSliderForm.value.title);
+  //   formData.append('link', this.editSliderForm.value.redirectUrl || '');
 
-    this.http.put(`${this.apiUrl}/UpdateSlider`, formData).subscribe({
-      next: (res) => {
-        this.successMessage = 'Slider updated successfully!';
-        this.submitting = false;
-        this.closeModals();
-        this.loadSliders();
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to update slider.';
-        this.submitting = false;
-        console.error(err);
-      },
-    });
-  }
+  //   if (this.editSliderImage) {
+  //     formData.append('file', this.editSliderImage);
+  //   }
+
+  //   this.http.put(`${this.apiUrl}/UpdateSlider`, formData).subscribe({
+  //     next: (res) => {
+  //       this.successMessage = 'Slider updated successfully!';
+  //       this.submitting = false;
+  //       this.closeModals();
+  //       this.loadSliders();
+  //     },
+  //     error: (err) => {
+  //       this.errorMessage = 'Failed to update slider.';
+  //       this.submitting = false;
+  //       console.error(err);
+  //     },
+  //   });
+  // }
+  //#endregion
 
   // ✅ Edit Suggestion
   openEditSuggestionModal(suggestion: any) {
@@ -451,52 +448,55 @@ export class EditDelete implements OnInit {
 
   confirmDelete() {
     if (!this.currentDeleteItem || !this.deleteType) return;
+    console.log('osama');
 
     this.submitting = true;
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.auth.getToken()}`,
-    });
 
     let endpoint = '';
 
     switch (this.deleteType) {
       case 'course':
-        endpoint = `${this.apiUrl}/DeleteCourse/${this.currentDeleteItem}`;
+        endpoint = `${this.apiUrl}/DeleteCourse?id=${this.currentDeleteItem}`;
         break;
       case 'lesson':
         endpoint = `${this.apiUrl}/DeleteLesson/${this.currentDeleteItem}`;
         break;
       case 'slider':
-        endpoint = `${this.apiUrl}/DeleteSlider/${this.currentDeleteItem}`;
+        endpoint = `${this.apiUrl}/DeleteSlider?id=${this.currentDeleteItem}`;
         break;
       case 'suggestion':
         endpoint = `${this.apiUrl}/DeleteSuggestion/${this.currentDeleteItem}`;
         break;
     }
 
-    this.http.delete(endpoint, { headers }).subscribe({
-      next: (res) => {
-        this.successMessage = `${
-          this.deleteType.charAt(0).toUpperCase() + this.deleteType.slice(1)
-        } deleted successfully!`;
-        this.submitting = false;
-        this.closeModals();
-
-        if (this.deleteType === 'course') {
-          this.loadCourses();
-        } else if (this.deleteType === 'lesson') {
-          this.loadLessons();
-        } else if (this.deleteType === 'slider') {
-          this.loadSliders();
-        } else if (this.deleteType === 'suggestion') {
-          this.loadSuggestions();
+    this.http.get(endpoint).subscribe({
+      next: (res: any) => {
+        if (res.status == 200) {
+          this.closeModals();
+          this.successMessage = `${
+            this.deleteType.charAt(0).toUpperCase() + this.deleteType.slice(1)
+          } deleted successfully!`;
+          this.submitting = false;
+          if (this.deleteType == 'course') {
+            this.loadCourses();
+          } else if (this.deleteType === 'lesson') {
+            this.loadLessons();
+          } else if (this.deleteType === 'slider') {
+            this.loadSliders();
+          } else if (this.deleteType === 'suggestion') {
+            this.loadSuggestions();
+          }
+          this.deleteType = null;
+        } else {
+          this.submitting = false;
+          this.closeModals();
         }
       },
       error: (err) => {
         this.errorMessage = `Failed to delete ${this.deleteType}.`;
         this.submitting = false;
         console.error(err);
+        this.closeModals();
       },
     });
   }
@@ -520,7 +520,6 @@ export class EditDelete implements OnInit {
     this.currentEditSlider = null;
     this.currentEditSuggestion = null;
     this.currentDeleteItem = null;
-    this.deleteType = null;
 
     this.editCourseImage = null;
     this.editCourseImagePreview = null;

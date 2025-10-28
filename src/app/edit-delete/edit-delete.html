@@ -172,9 +172,9 @@
               </thead>
               <tbody>
                 <tr *ngFor="let lesson of lessons">
-                  <td class="lesson-title">{{ lesson.lessonTitle }}</td>
-                  <td>{{ lesson.courseName }}</td>
-                  <td>{{ lesson.lessonOrder }}</td>
+                  <td class="lesson-title">{{ lesson.title }}</td>
+                  <td>{{ lesson.courseTitle }}</td>
+                  <td>{{ lesson.arrange }}</td>
                   <td>
                     <span
                       class="badge"
@@ -184,7 +184,7 @@
                       {{ lesson.isFree ? 'Free' : 'Premium' }}
                     </span>
                   </td>
-                  <td>{{ lesson.durationInSeconds }}</td>
+                  <td>{{ lesson.durationInMinutes }} Min</td>
                   <td class="actions-cell">
                     <button
                       class="btn-icon btn-edit"
@@ -223,22 +223,22 @@
 
           <div *ngIf="!loadingSliders && sliders.length > 0" class="items-grid">
             <div *ngFor="let slider of sliders" class="item-card">
-              <img [src]="slider.sliderImage" [alt]="slider.title" class="item-thumbnail" />
+              <img [src]="slider.path" [alt]="slider.title" class="item-thumbnail" />
               <div class="item-content">
                 <h4 class="item-title">{{ slider.title }}</h4>
                 <p class="item-meta" *ngIf="slider.link">Link: {{ slider.link }}</p>
               </div>
               <div class="item-actions">
-                <button
+                <!-- <button
                   class="btn-icon btn-edit"
                   (click)="openEditSliderModal(slider)"
                   title="Edit"
                 >
                   <i class="bi bi-pencil"></i>
-                </button>
+                </button> -->
                 <button
                   class="btn-icon btn-delete"
-                  (click)="deleteSlider(slider.sliderId)"
+                  (click)="deleteSlider(slider.id)"
                   title="Delete"
                 >
                   <i class="bi bi-trash"></i>
@@ -393,7 +393,7 @@
             "
           />
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label>Lesson Order <span class="required">*</span></label>
           <input
             type="number"
@@ -403,7 +403,7 @@
               editLessonForm.get('order')?.invalid && editLessonForm.get('order')?.touched
             "
           />
-        </div>
+        </div> -->
         <div class="form-group">
           <label>Is Free? <span class="required">*</span></label>
           <select class="form-control" formControlName="isFree">
@@ -426,7 +426,7 @@
   </div>
 
   <!-- Edit Slider Modal -->
-  <div class="modal" [class.show]="showEditSliderModal" *ngIf="showEditSliderModal">
+  <!-- <div class="modal" [class.show]="showEditSliderModal" *ngIf="showEditSliderModal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Edit Slider</h3>
@@ -478,7 +478,7 @@
         </div>
       </form>
     </div>
-  </div>
+  </div> -->
 
   <!-- Edit Suggestion Modal -->
   <div class="modal" [class.show]="showEditSuggestionModal" *ngIf="showEditSuggestionModal">

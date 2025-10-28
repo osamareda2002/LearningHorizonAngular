@@ -57,7 +57,7 @@ export class Material implements OnInit {
             courseId: s.courseId,
             courseTitle: s.courseTitle,
             courseCreator: s.courseCreator,
-            thumbnail: this.materialService.getCourseThumbnailFile(s.courseId),
+            thumbnail: s.courseImagePath,
             coursePrice: s.coursePrice,
             duration: Math.round(parseFloat(s.courseDurationInSeconds) / 60.0),
             durationHourse: Math.round(

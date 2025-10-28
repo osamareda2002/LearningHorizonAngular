@@ -19,10 +19,6 @@ export class MaterialService {
     return this.http.get(`${this.apiUrl}/GetPurchasedCourses`);
   }
 
-  getCourseThumbnailFile(id: number): string {
-    return `${this.apiUrl}/GetCourseThumbnailFile?id=${id}`;
-  }
-
   // Get course by ID
   getCourseById(courseId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/GetCourseById?id=${courseId}`);
@@ -31,10 +27,6 @@ export class MaterialService {
   // Get course lessons
   getCourseLessons(courseId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/GetLessonsByCourseId?courseId=${courseId}`);
-  }
-
-  getLessonVideoFile(lessonId: number): string {
-    return `${this.apiUrl}/GetLessonFile?id=${lessonId}`;
   }
 
   goToPayment(courseId: number): Observable<any> {
