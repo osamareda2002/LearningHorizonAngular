@@ -23,11 +23,11 @@
         <i class="bi bi-book"></i>
         <span>Books</span>
       </a>
-      <a routerLink="/add" class="nav-item">
+      <a *ngIf="isAdmin" routerLink="/add" class="nav-item">
         <i class="bi bi-plus-circle"></i>
         <span>Add Content</span>
       </a>
-      <a routerLink="/manage" class="nav-item active">
+      <a routerLink="/edit-delete" class="nav-item active">
         <i class="bi bi-pencil-square"></i>
         <span>Manage Content</span>
       </a>
@@ -118,7 +118,11 @@
 
           <div *ngIf="!loadingCourses && courses.length > 0" class="items-grid">
             <div *ngFor="let course of courses" class="item-card">
-              <img [src]="course.courseImage" [alt]="course.courseTitle" class="item-thumbnail" />
+              <img
+                [src]="course.courseImagePath"
+                [alt]="course.courseTitle"
+                class="item-thumbnail"
+              />
               <div class="item-content">
                 <h4 class="item-title">{{ course.courseTitle }}</h4>
                 <p class="item-meta">By {{ course.courseCreator }}</p>
@@ -148,17 +152,46 @@
         <div class="tab-pane" *ngIf="activeTab === 'lesson'">
           <h3 class="tab-title">Manage Lessons</h3>
 
-          <div *ngIf="loadingLessons" class="loading-state">
+          <!-- Course Filter -->
+          <div class="filter-section">
+            <div class="filter-group">
+              <label for="courseFilter">Select Course to View Lessons</label>
+              <select
+                id="courseFilter"
+                class="form-control filter-select"
+                [value]="selectedCourseId"
+                (change)="onCourseFilterChange($event)"
+              >
+                <option value="">-- Choose a Course --</option>
+                <option *ngFor="let course of courses" [value]="course.courseId">
+                  {{ course.courseTitle }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div *ngIf="!selectedCourseId" class="info-state">
+            <i class="bi bi-info-circle"></i>
+            <p>Please select a course to view its lessons</p>
+          </div>
+
+          <div *ngIf="selectedCourseId && loadingLessons" class="loading-state">
             <i class="bi bi-hourglass-split"></i>
             <p>Loading lessons...</p>
           </div>
 
-          <div *ngIf="!loadingLessons && lessons.length === 0" class="empty-state">
+          <div
+            *ngIf="selectedCourseId && !loadingLessons && lessons.length === 0"
+            class="empty-state"
+          >
             <i class="bi bi-inbox"></i>
-            <p>No lessons found</p>
+            <p>No lessons found for this course</p>
           </div>
 
-          <div *ngIf="!loadingLessons && lessons.length > 0" class="items-table">
+          <div
+            *ngIf="selectedCourseId && !loadingLessons && lessons.length > 0"
+            class="items-table"
+          >
             <table>
               <thead>
                 <tr>
@@ -184,7 +217,7 @@
                       {{ lesson.isFree ? 'Free' : 'Premium' }}
                     </span>
                   </td>
-                  <td>{{ lesson.durationInMinutes }} Min</td>
+                  <td>{{ formatDuration(lesson.durationInMinutes) }}</td>
                   <td class="actions-cell">
                     <button
                       class="btn-icon btn-edit"
@@ -195,7 +228,7 @@
                     </button>
                     <button
                       class="btn-icon btn-delete"
-                      (click)="deleteLesson(lesson.lessonId)"
+                      (click)="deleteLesson(lesson.id)"
                       title="Delete"
                     >
                       <i class="bi bi-trash"></i>
@@ -283,7 +316,7 @@
                     </button>
                     <button
                       class="btn-icon btn-delete"
-                      (click)="deleteSuggestion(suggestion.suggestionId)"
+                      (click)="deleteSuggestion(suggestion.id)"
                       title="Delete"
                     >
                       <i class="bi bi-trash"></i>
@@ -393,7 +426,7 @@
             "
           />
         </div>
-        <!-- <div class="form-group">
+        <div class="form-group">
           <label>Lesson Order <span class="required">*</span></label>
           <input
             type="number"
@@ -403,7 +436,7 @@
               editLessonForm.get('order')?.invalid && editLessonForm.get('order')?.touched
             "
           />
-        </div> -->
+        </div>
         <div class="form-group">
           <label>Is Free? <span class="required">*</span></label>
           <select class="form-control" formControlName="isFree">
@@ -501,6 +534,18 @@
             "
           />
         </div>
+        <!-- <div class="form-group">
+          <label>Instructor Name <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="instructorName"
+            [class.error]="
+              editSuggestionForm.get('instructorName')?.invalid &&
+              editSuggestionForm.get('instructorName')?.touched
+            "
+          />
+        </div> -->
         <div class="modal-actions">
           <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
           <button
