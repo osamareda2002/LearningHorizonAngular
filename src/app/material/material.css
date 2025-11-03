@@ -448,6 +448,12 @@
   opacity: 1;
 }
 
+/* Keep overlay off the visible sidebar so its links remain clickable */
+.material-container.sidebar-open .sidebar-overlay {
+  left: 280px;
+  width: calc(100% - 280px);
+}
+
 /* ========================================================================= */
 /* --- Media Queries --- */
 /* ========================================================================= */
@@ -475,9 +481,19 @@
   }
 
   .main-content {
-    margin-left: 220px;
+    margin-left: 0;
     padding: 25px 30px;
     border-radius: 0;
+  }
+
+  .material-container.sidebar-open .main-content {
+    margin-left: 220px;
+  }
+
+  /* Adjust overlay to sidebar width on tablet */
+  .material-container.sidebar-open .sidebar-overlay {
+    left: 220px;
+    width: calc(100% - 220px);
   }
 
   .logo-container {
@@ -571,6 +587,16 @@
     margin-left: 0;
     border-radius: 0;
     padding: 20px;
+  }
+
+  .material-container.sidebar-open .main-content {
+    margin-left: 250px;
+  }
+
+  /* Align overlay edge with 250px sidebar at this breakpoint */
+  .material-container.sidebar-open .sidebar-overlay {
+    left: 250px;
+    width: calc(100% - 250px);
   }
 
   .navbar-left {
@@ -702,7 +728,7 @@
   }
 
   .sidebar {
-    width: 220px;
+    width: 200px;
   }
 
   .logo-container {
@@ -727,6 +753,15 @@
   .page-title {
     font-size: 20px;
   }
+
+  /* Keep overlay clear of sidebar on small phones */
+  .material-container.sidebar-open .sidebar-overlay {
+    left: 200px;
+    width: calc(100% - 200px);
+  }
+
+  .main-content { margin-left: 0; }
+  .material-container.sidebar-open .main-content { margin-left: 200px; }
 
   .user-name {
     font-size: 13px;

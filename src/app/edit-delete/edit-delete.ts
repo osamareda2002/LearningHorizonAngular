@@ -5,11 +5,12 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
+import { SidebarComponent } from '../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-edit-delete',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SidebarComponent],
   templateUrl: './edit-delete.html',
   styleUrl: './edit-delete.css',
 })

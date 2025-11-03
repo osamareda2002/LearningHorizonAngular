@@ -1,37 +1,6 @@
 <div class="home-container" [class.sidebar-open]="isSidebarOpen">
-  <aside class="sidebar">
-    <div class="logo-container">
-      <img
-        src="assets/logo.png"
-        alt="Learning Horizon"
-        class="sidebar-logo"
-        style="cursor: pointer"
-      />
-    </div>
-
-    <nav class="sidebar-nav">
-      <a href="/home" class="nav-item active">
-        <i class="bi bi-grid"></i>
-        <span>Home</span>
-      </a>
-      <a href="/material" class="nav-item">
-        <i class="bi bi-collection"></i>
-        <span>Material</span>
-      </a>
-      <a href="/books" class="nav-item">
-        <i class="bi bi-book"></i>
-        <span>Books</span>
-      </a>
-      <a *ngIf="isAdmin" href="/add" class="nav-item">
-        <i class="bi bi-plus-circle"></i>
-        <span>Add Content</span>
-      </a>
-      <a *ngIf="isAdmin" href="/edit-delete" class="nav-item">
-        <i class="bi bi-pencil-square"></i>
-        <span>Manage Content</span>
-      </a>
-    </nav>
-  </aside>
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
 
   <main class="main-content">
     <div class="user-navbar">

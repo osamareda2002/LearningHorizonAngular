@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
+import { SidebarComponent } from '../shared/sidebar/sidebar';
 
 interface Course {
   courseId: number;
@@ -20,7 +21,7 @@ interface Course {
 @Component({
   selector: 'app-material',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
   templateUrl: './material.html',
   styleUrl: './material.css',
 })

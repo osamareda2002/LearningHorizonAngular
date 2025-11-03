@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { BookService } from '../services/books';
+import { SidebarComponent } from '../shared/sidebar/sidebar';
 
 interface Book {
   id: number;
@@ -18,7 +19,7 @@ interface Book {
 @Component({
   selector: 'app-books',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
   templateUrl: './books.html',
   styleUrl: './books.css',
 })

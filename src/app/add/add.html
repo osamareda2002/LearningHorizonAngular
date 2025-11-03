@@ -1,38 +1,9 @@
 <div class="add-container" [class.sidebar-open]="isSidebarOpen">
   <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo-container">
-      <img
-        src="assets/logo.png"
-        alt="Learning Horizon"
-        class="sidebar-logo"
-        style="cursor: pointer"
-      />
-    </div>
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
 
-    <nav class="sidebar-nav">
-      <a routerLink="/home" class="nav-item">
-        <i class="bi bi-grid"></i>
-        <span>Home</span>
-      </a>
-      <a routerLink="/material" class="nav-item">
-        <i class="bi bi-collection"></i>
-        <span>Material</span>
-      </a>
-      <a routerLink="/books" class="nav-item">
-        <i class="bi bi-book"></i>
-        <span>Books</span>
-      </a>
-      <a routerLink="/add" class="nav-item active">
-        <i class="bi bi-plus-circle"></i>
-        <span>Add Content</span>
-      </a>
-      <a *ngIf="isAdmin" routerLink="/edit-delete" class="nav-item">
-        <i class="bi bi-pencil-square"></i>
-        <span>Manage Content</span>
-      </a>
-    </nav>
-  </aside>
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
 
   <!-- Main Content -->
   <main class="main-content">

@@ -6,11 +6,12 @@ import { AuthService } from '../services/auth';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
 import { timeout } from 'rxjs';
+import { SidebarComponent } from '../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SidebarComponent],
   templateUrl: './add.html',
   styleUrl: './add.css',
 })

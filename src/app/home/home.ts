@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../shared/sidebar/sidebar';
 import { Suggestion } from '../services/suggestion';
 import { Slider } from '../services/slider';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
