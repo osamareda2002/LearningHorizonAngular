@@ -22,7 +22,7 @@ export class EditDelete implements OnInit {
   userName = 'Guest';
   isDropdownOpen = false;
   submitting = false;
-
+  isSidebarOpen = false;
   errorMessage = '';
   successMessage = '';
 
@@ -126,6 +126,10 @@ export class EditDelete implements OnInit {
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 
   handleLogout() {

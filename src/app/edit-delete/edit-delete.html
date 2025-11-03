@@ -1,4 +1,4 @@
-<div class="manage-container">
+<div class="manage-container" [class.sidebar-open]="isSidebarOpen">
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo-container">
@@ -36,6 +36,10 @@
 
   <!-- Main Content -->
   <main class="main-content">
+    <button class="menu-toggle-btn" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+
     <!-- User Navbar -->
     <div class="user-navbar">
       <h2 class="page-title">Manage Content</h2>
