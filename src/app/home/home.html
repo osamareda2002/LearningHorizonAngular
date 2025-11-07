@@ -86,15 +86,14 @@
             </button>
           </div>
 
-          <video
+          <app-video-player
             *ngIf="s.path && s.isPlaying"
-            width="100%"
-            height="240"
-            controls
-            autoplay
-            preload="metadata"
             [src]="s.path"
-          ></video>
+            [poster]="s.thumbnailUrl"
+            [autoplay]="true"
+            [controls]="true"
+            [muted]="false"
+          ></app-video-player>
 
           <p class="video-title">{{ s.title || 'Untitled Suggestion' }}</p>
         </div>

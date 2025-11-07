@@ -1,0 +1,131 @@
+<div class="users-container" [class.sidebar-open]="isSidebarOpen">
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+
+  <main class="main-content">
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <h2 class="page-title">Users Management</h2>
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="isLoggedIn" (click)="handleLogout()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="controls-section">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          placeholder="Search by name..."
+          (input)="onSearchChange($event)"
+          class="search-input"
+        />
+      </div>
+
+      <div class="filter-buttons">
+        <button
+          class="filter-btn"
+          [class.active]="filterType === 'all'"
+          (click)="onFilterChange('all')"
+        >
+          All Users ({{ users.length }})
+        </button>
+        <button
+          class="filter-btn"
+          [class.active]="filterType === 'admin'"
+          (click)="onFilterChange('admin')"
+        >
+          Admins ({{ getAdminCount() }})
+        </button>
+        <button
+          class="filter-btn"
+          [class.active]="filterType === 'user'"
+          (click)="onFilterChange('user')"
+        >
+          Users ({{ getNormalUserCount() }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading users...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage && !isLoading" class="error-container">
+      <i class="bi bi-exclamation-circle"></i>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-btn" (click)="loadUsers()">
+        <i class="bi bi-arrow-clockwise"></i> Retry
+      </button>
+    </div>
+
+    <!-- Users Grid -->
+    <div *ngIf="!isLoading && !errorMessage" class="users-grid">
+      <div *ngIf="filteredUsers.length === 0" class="no-results">
+        <i class="bi bi-inbox"></i>
+        <p>No users found</p>
+      </div>
+
+      <div *ngFor="let user of filteredUsers" class="user-card" [class.admin-card]="user.isAdmin">
+        <div class="user-avatar">
+          <!-- Show profile picture if exists -->
+          <img
+            *ngIf="user.profilePicURL"
+            [src]="user.profilePicURL"
+            alt="{{ getUserFullName(user) }}"
+            class="avatar-image"
+          />
+
+          <!-- Otherwise show initials -->
+          <span *ngIf="!user.profilePicURL" class="avatar-initials">
+            {{ getUserInitials(user) }}
+          </span>
+
+          <!-- Admin badge -->
+          <span *ngIf="user.isAdmin" class="admin-badge" title="Administrator">
+            <i class="bi bi-shield-check"></i>
+          </span>
+        </div>
+
+        <div class="user-info">
+          <h3 class="user-full-name">{{ getUserFullName(user) }}</h3>
+          <div class="user-details">
+            <!-- <span class="user-id">ID: {{ user.id }}</span> -->
+            <span class="user-role" [class.admin-role]="user.isAdmin">
+              {{ user.isAdmin ? 'Administrator' : 'User' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- <div class="user-actions">
+          <button class="action-btn view-btn" title="View Details">
+            <i class="bi bi-eye"></i>
+          </button>
+          <button class="action-btn edit-btn" title="Edit User">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="action-btn delete-btn" title="Delete User">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- Summary Footer -->
+    <div *ngIf="!isLoading && !errorMessage && filteredUsers.length > 0" class="summary-footer">
+      <p>Showing {{ filteredUsers.length }} of {{ users.length }} users</p>
+    </div>
+  </main>
+</div>

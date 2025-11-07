@@ -21,7 +21,7 @@ interface Course {
 @Component({
   selector: 'app-material',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './material.html',
   styleUrl: './material.css',
 })

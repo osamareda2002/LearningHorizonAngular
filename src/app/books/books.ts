@@ -19,7 +19,7 @@ interface Book {
 @Component({
   selector: 'app-books',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './books.html',
   styleUrl: './books.css',
 })

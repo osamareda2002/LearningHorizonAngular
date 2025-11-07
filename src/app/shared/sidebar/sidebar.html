@@ -1,32 +1,40 @@
 <aside class="sidebar">
   <div class="logo-container">
-    <a routerLink="/home" class="logo-link" aria-label="Learning Horizon Home">
-      <img src="assets/logo.png" alt="Learning Horizon" class="sidebar-logo" />
-    </a>
+    <img src="assets/logo.png" alt="Logo" class="sidebar-logo" routerLink="/home" />
   </div>
 
-  <nav class="sidebar-nav" aria-label="Primary">
+  <nav class="sidebar-nav">
     <a routerLink="/home" routerLinkActive="active" class="nav-item">
-      <i class="bi bi-grid"></i>
+      <i class="bi bi-house-door"></i>
       <span>Home</span>
     </a>
+
     <a routerLink="/material" routerLinkActive="active" class="nav-item">
-      <i class="bi bi-collection"></i>
+      <i class="bi bi-folder"></i>
       <span>Material</span>
     </a>
+
     <a routerLink="/books" routerLinkActive="active" class="nav-item">
       <i class="bi bi-book"></i>
       <span>Books</span>
     </a>
-    <a *ngIf="isAdmin" routerLink="/add" routerLinkActive="active" class="nav-item">
-      <i class="bi bi-plus-circle"></i>
-      <span>Add Content</span>
-    </a>
-    <a *ngIf="isAdmin" routerLink="/edit-delete" routerLinkActive="active" class="nav-item">
-      <i class="bi bi-pencil-square"></i>
-      <span>Manage Content</span>
-    </a>
+
+    <!-- Admin Only Items -->
+    <ng-container *ngIf="isAdmin">
+      <a routerLink="/add" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add Content</span>
+      </a>
+
+      <a routerLink="/edit-delete" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-pencil-square"></i>
+        <span>Manage Content</span>
+      </a>
+
+      <a routerLink="/users" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-people"></i>
+        <span>Users</span>
+      </a>
+    </ng-container>
   </nav>
 </aside>
-
-

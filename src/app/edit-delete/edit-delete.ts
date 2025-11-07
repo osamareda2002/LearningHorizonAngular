@@ -10,7 +10,7 @@ import { SidebarComponent } from '../shared/sidebar/sidebar';
 @Component({
   selector: 'app-edit-delete',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
   templateUrl: './edit-delete.html',
   styleUrl: './edit-delete.css',
 })

@@ -3,13 +3,14 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
+import { VideoPlayerComponent } from '../shared/video-player/video-player';
 import { Suggestion } from '../services/suggestion';
 import { Slider } from '../services/slider';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, SidebarComponent, VideoPlayerComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

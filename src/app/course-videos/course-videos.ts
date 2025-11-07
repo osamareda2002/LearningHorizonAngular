@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
+import { VideoPlayerComponent } from '../shared/video-player/video-player';
 
 interface Course {
   courseId: number;
@@ -23,12 +24,11 @@ interface Lesson {
 @Component({
   selector: 'app-course-videos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, VideoPlayerComponent],
   templateUrl: './course-videos.html',
   styleUrl: './course-videos.css',
 })
 export class CourseVideos implements OnInit {
-  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
   loading = true;
   errorMessage = '';
@@ -148,14 +148,7 @@ export class CourseVideos implements OnInit {
     this.currentVideoUrl = lesson.videoUrl;
 
     // Wait for video element to be ready
-    setTimeout(() => {
-      if (this.videoPlayer) {
-        this.videoPlayer.nativeElement.load();
-        // this.videoPlayer.nativeElement.play().catch((err) => {
-        //   console.error('Error playing video:', err);
-        // });
-      }
-    }, 100);
+    // Plyr handles load; no manual video element handling required
   }
 
   enrollInCourse() {

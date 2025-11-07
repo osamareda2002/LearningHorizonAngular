@@ -23,17 +23,12 @@
 
       <!-- Video Player -->
       <div class="video-player-wrapper">
-        <video
-          #videoPlayer
-          class="video-player"
+        <app-video-player
           [src]="currentVideoUrl"
-          controls
-          controlsList="nodownload"
-          (timeupdate)="onTimeUpdate($event)"
-          (ended)="onVideoEnded()"
-        >
-          Your browser does not support the video tag.
-        </video>
+          [controls]="true"
+          [autoplay]="false"
+          [muted]="false"
+        ></app-video-player>
       </div>
 
       <!-- Current Lesson Title & Enroll Button -->

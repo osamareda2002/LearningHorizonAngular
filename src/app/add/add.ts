@@ -11,7 +11,7 @@ import { SidebarComponent } from '../shared/sidebar/sidebar';
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
   templateUrl: './add.html',
   styleUrl: './add.css',
 })
