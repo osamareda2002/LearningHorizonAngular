@@ -397,25 +397,6 @@
   width: 100%;
 }
 
-/* Sidebar backdrop overlay */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.material-container.sidebar-open .sidebar-overlay {
-  display: block;
-  opacity: 1;
-}
-
 /* ========================================================================= */
 /* --- Media Queries --- */
 /* ========================================================================= */

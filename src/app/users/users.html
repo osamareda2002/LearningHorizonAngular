@@ -1,11 +1,15 @@
 <div class="users-container" [class.sidebar-open]="isSidebarOpen">
   <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
-  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
 
   <main class="main-content">
     <!-- User Navbar -->
     <div class="user-navbar">
-      <h2 class="page-title">Users Management</h2>
+      <div class="page-title-container">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <h2 class="page-title">Users Management</h2>
+      </div>
       <div class="user-menu">
         <span class="user-name">{{ userName }}</span>
         <div class="dropdown">

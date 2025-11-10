@@ -1,0 +1,29 @@
+<div class="zoom-meeting-container">
+  <!-- Header (only show when loading or error) -->
+  <div class="meeting-header" *ngIf="isLoading || errorMessage">
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        Back to Sessions
+      </button>
+      <h2 class="meeting-title" *ngIf="meetingInfo">{{ meetingInfo.topic }}</h2>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading && !errorMessage" class="loading-container">
+    <div class="spinner"></div>
+    <p>Connecting to meeting...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <h3>Unable to Join Meeting</h3>
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-primary" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      Return to Sessions
+    </button>
+  </div>
+</div>

@@ -110,7 +110,9 @@ export class UsersComponent implements OnInit {
   }
 
   getUserInitials(user: DtoGetUser): string {
-    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+    const firstInitial = user.firstName?.charAt(0)?.toUpperCase() || '';
+    const lastInitial = user.lastName?.charAt(0)?.toUpperCase() || '';
+    return `${firstInitial}${lastInitial}` || 'U';
   }
 
   getAdminCount(): number {

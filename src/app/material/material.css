@@ -429,31 +429,6 @@
   opacity: 0.9;
 }
 
-/* Sidebar backdrop overlay */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.material-container.sidebar-open .sidebar-overlay {
-  display: block;
-  opacity: 1;
-}
-
-/* Keep overlay off the visible sidebar so its links remain clickable */
-.material-container.sidebar-open .sidebar-overlay {
-  left: 280px;
-  width: calc(100% - 280px);
-}
-
 /* ========================================================================= */
 /* --- Media Queries --- */
 /* ========================================================================= */
@@ -488,12 +463,6 @@
 
   .material-container.sidebar-open .main-content {
     margin-left: 220px;
-  }
-
-  /* Adjust overlay to sidebar width on tablet */
-  .material-container.sidebar-open .sidebar-overlay {
-    left: 220px;
-    width: calc(100% - 220px);
   }
 
   .logo-container {
@@ -591,12 +560,6 @@
 
   .material-container.sidebar-open .main-content {
     margin-left: 250px;
-  }
-
-  /* Align overlay edge with 250px sidebar at this breakpoint */
-  .material-container.sidebar-open .sidebar-overlay {
-    left: 250px;
-    width: calc(100% - 250px);
   }
 
   .navbar-left {
@@ -754,14 +717,12 @@
     font-size: 20px;
   }
 
-  /* Keep overlay clear of sidebar on small phones */
-  .material-container.sidebar-open .sidebar-overlay {
-    left: 200px;
-    width: calc(100% - 200px);
+  .main-content {
+    margin-left: 0;
   }
-
-  .main-content { margin-left: 0; }
-  .material-container.sidebar-open .main-content { margin-left: 200px; }
+  .material-container.sidebar-open .main-content {
+    margin-left: 200px;
+  }
 
   .user-name {
     font-size: 13px;
@@ -941,20 +902,6 @@
 /* ============================= */
 /* Sidebar overlay improvements */
 /* ============================= */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.material-container.sidebar-open .sidebar-overlay {
-  display: block;
-  opacity: 1;
-}
 
 /* Disable scrolling when sidebar is open */
 .material-container.sidebar-open {

@@ -45,6 +45,7 @@
   color: #503e9d;
   cursor: pointer;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .page-title {
@@ -481,11 +482,44 @@
   margin: 0;
 }
 
-/* Responsive Design */
+/* ========================================================================= */
+/* --- Responsive Design --- */
+/* ========================================================================= */
+
+/* Laptop/Desktop (992px - 1199px) */
+@media (max-width: 1200px) {
+  .main-content {
+    padding: 30px 40px;
+  }
+
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .main-content {
+    padding: 25px 30px;
+    border-radius: 0;
+  }
+
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+}
+
+/* Tablet (768px - 991px) */
 @media (max-width: 768px) {
   .menu-toggle-btn {
     display: flex;
     align-items: center;
+    order: -1;
   }
 
   .main-content {
@@ -498,8 +532,23 @@
     margin-left: 250px;
   }
 
+  .page-title-container {
+    gap: 10px;
+    width: 100%;
+    order: 1;
+  }
+
+  .user-menu {
+    order: 0;
+    margin-left: auto;
+  }
+
   .page-title {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .user-name {
+    font-size: 14px;
   }
 
   .controls-section {
@@ -538,11 +587,26 @@
     height: 70px;
     font-size: 22px;
   }
+
+  .admin-badge {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .user-full-name {
+    font-size: 18px;
+  }
 }
 
+/* Mobile (480px - 767px) */
 @media (max-width: 480px) {
   .main-content {
     padding: 15px;
+  }
+
+  .users-container.sidebar-open .main-content {
+    margin-left: 220px;
   }
 
   .page-title {
@@ -551,6 +615,54 @@
 
   .user-navbar {
     gap: 10px;
+    padding: 12px 0;
+  }
+
+  .menu-toggle-btn {
+    font-size: 24px;
+  }
+
+  .dropdown-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .user-name {
+    font-size: 13px;
+  }
+
+  .controls-section {
+    gap: 15px;
+  }
+
+  .search-box {
+    min-width: 100%;
+  }
+
+  .search-input {
+    font-size: 14px;
+    padding: 10px 10px 10px 40px;
+  }
+
+  .search-box i {
+    font-size: 16px;
+    left: 12px;
+  }
+
+  .filter-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .users-grid {
+    gap: 15px;
   }
 
   .user-card {
@@ -569,13 +681,153 @@
     font-size: 20px;
   }
 
+  .admin-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+    border: 2px solid white;
+  }
+
   .user-full-name {
-    font-size: 18px;
+    font-size: 17px;
+  }
+
+  .user-role {
+    font-size: 11px;
+    padding: 3px 10px;
   }
 
   .action-btn {
     width: 36px;
     height: 36px;
     font-size: 14px;
+  }
+
+  .summary-footer p {
+    font-size: 13px;
+  }
+
+  .loading-container p,
+  .error-container p {
+    font-size: 14px;
+  }
+
+  .no-results p {
+    font-size: 16px;
+  }
+}
+
+/* Small Mobile (320px - 479px) */
+@media (max-width: 320px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .users-container.sidebar-open .main-content {
+    margin-left: 200px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .user-navbar {
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .menu-toggle-btn {
+    font-size: 22px;
+  }
+
+  .user-name {
+    font-size: 12px;
+  }
+
+  .dropdown-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .search-input {
+    font-size: 13px;
+    padding: 8px 8px 8px 38px;
+  }
+
+  .filter-btn {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .user-card {
+    padding: 15px;
+  }
+
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .avatar-initials,
+  .avatar-image {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+
+  .admin-badge {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .user-full-name {
+    font-size: 16px;
+  }
+
+  .user-role {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .summary-footer p {
+    font-size: 12px;
+  }
+}
+
+/* ============================= */
+/* Sidebar overlay improvements - Match Material Page */
+/* ============================= */
+
+/* Disable scrolling when sidebar is open */
+.users-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Ensure sidebar overlays content on mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 1050;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .users-container.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
   }
 }

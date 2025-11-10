@@ -1,0 +1,213 @@
+.zoom-meeting-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+
+/* Header */
+.meeting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.meeting-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.back-btn,
+.leave-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back-btn {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #4d4d4d;
+}
+
+.back-btn:hover {
+  background: #3d3d3d;
+}
+
+.leave-btn {
+  background: #ff4444;
+  color: white;
+}
+
+.leave-btn:hover {
+  background: #cc0000;
+}
+
+/* Loading State */
+.loading-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: #ffffff;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p {
+  font-size: 16px;
+  color: #b0b0b0;
+}
+
+/* Error State */
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.error-container i {
+  font-size: 64px;
+  color: #ff4444;
+}
+
+.error-container h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.error-container p {
+  margin: 0;
+  font-size: 16px;
+  color: #b0b0b0;
+  max-width: 500px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Zoom SDK Container */
+.zoom-container {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  background: #000000;
+}
+
+/* Override Zoom SDK default styles if needed */
+#zoomSdkContainer {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .meeting-header {
+    padding: 12px 15px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .header-left {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .meeting-title {
+    font-size: 16px;
+  }
+
+  .back-btn,
+  .leave-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 15px;
+    font-size: 13px;
+  }
+
+  .error-container {
+    padding: 20px;
+  }
+
+  .error-container i {
+    font-size: 48px;
+  }
+
+  .error-container h3 {
+    font-size: 20px;
+  }
+
+  .error-container p {
+    font-size: 14px;
+  }
+}
