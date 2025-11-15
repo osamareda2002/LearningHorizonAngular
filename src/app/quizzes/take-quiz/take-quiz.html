@@ -1,0 +1,191 @@
+<div class="take-quiz-container" [class.sidebar-open]="isSidebarOpen">
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+
+  <main class="main-content">
+    <!-- Timer Bar -->
+    <div class="timer-bar" [class]="getTimerClass()">
+      <div class="timer-content">
+        <i class="bi bi-stopwatch"></i>
+        <span class="timer-label">Time Remaining:</span>
+        <span class="timer-value">{{ formatTime(timeRemaining) }}</span>
+      </div>
+    </div>
+
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <div class="page-title-container">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <h2 class="page-title">{{ examTitle }}</h2>
+      </div>
+
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="handleLogout()">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <i class="bi bi-hourglass-split"></i>
+      <p>Loading quiz...</p>
+    </div>
+
+    <!-- Quiz Content -->
+    <div *ngIf="!isLoading && !showResults && !showFinishConfirmation" class="quiz-content">
+      <div class="quiz-instructions" *ngIf="currentQuestionIndex === 0">
+        <h3>Instructions</h3>
+        <ul>
+          <li>Read each question carefully before selecting your answer.</li>
+          <li>You can only select one answer per question.</li>
+          <li>You cannot return to previous questions.</li>
+          <li>The quiz will automatically finish when the timer reaches zero.</li>
+        </ul>
+      </div>
+
+      <form class="quiz-form" *ngIf="getCurrentQuestion()">
+        <div class="question-card">
+          <div class="question-header">
+            <span class="question-number">Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</span>
+            <span class="question-mark">Mark: {{ getCurrentQuestion()!.Mark }}</span>
+          </div>
+
+          <div class="question-text">
+            <p>{{ getCurrentQuestion()!.questionText }}</p>
+          </div>
+
+          <div class="options-container">
+            <div
+              *ngFor="let option of getCurrentQuestion()!.options"
+              class="option-item"
+              (click)="selectAnswer(getCurrentQuestion()!.questionId!, option.answerId)"
+            >
+              <input
+                type="radio"
+                [name]="'question-' + getCurrentQuestion()!.questionId"
+                [checked]="isAnswerSelected(getCurrentQuestion()!.questionId!, option.answerId)"
+                [disabled]="showResults || showFinishConfirmation"
+                (change)="selectAnswer(getCurrentQuestion()!.questionId!, option.answerId)"
+              />
+              <label>{{ option.answerText }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz-actions">
+          <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="nextQuestion()"
+            [disabled]="showResults || showFinishConfirmation || isSubmitting"
+          >
+            <i class="bi bi-arrow-right"></i>
+            {{ isSubmitting ? 'Submitting...' : (currentQuestionIndex < questions.length - 1 ? 'Next' : 'Finish') }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Finish Confirmation -->
+    <div *ngIf="showFinishConfirmation && !showResults" class="finish-confirmation">
+      <div class="confirmation-card">
+        <div class="confirmation-header">
+          <i class="bi bi-question-circle-fill"></i>
+          <h2>Finish Exam?</h2>
+        </div>
+        <div class="confirmation-body">
+          <p>Are you sure you want to finish the exam?</p>
+          <p class="warning-text">Once you confirm, you cannot return to the questions.</p>
+        </div>
+        <div class="confirmation-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelFinish()">
+            <i class="bi bi-arrow-left"></i>
+            Go Back
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="confirmFinish()"
+            [disabled]="isLoading"
+          >
+            <i class="bi bi-check-circle"></i>
+            {{ isLoading ? 'Finishing...' : 'Confirm Finish' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div *ngIf="showResults && examScore" class="results-container">
+      <div class="results-card">
+        <div class="results-header">
+          <i class="bi bi-check-circle-fill"></i>
+          <h2>Quiz Submitted Successfully!</h2>
+        </div>
+
+        <div class="results-body">
+          <div class="score-summary">
+            <div class="score-item">
+              <span class="score-label">Total Score</span>
+              <span class="score-value">{{ examScore.totalScore }}</span>
+            </div>
+            <div class="score-item">
+              <span class="score-label">Your Score</span>
+              <span class="score-value highlight">{{ examScore.obtainedScore }}</span>
+            </div>
+            <div class="score-item">
+              <span class="score-label">Percentage</span>
+              <span class="score-value highlight">
+                {{
+                  examScore.totalScore > 0
+                    ? ((examScore.obtainedScore / examScore.totalScore) * 100).toFixed(1)
+                    : 0
+                }}%
+              </span>
+            </div>
+          </div>
+
+          <div class="results-details">
+            <div class="detail-row">
+              <span>Total Questions:</span>
+              <span>{{ examScore.totalQuestions }}</span>
+            </div>
+            <div class="detail-row">
+              <span>Answered:</span>
+              <span>{{ examScore.totalSubmittedQuestions }}</span>
+            </div>
+            <div class="detail-row correct">
+              <span>Correct Answers:</span>
+              <span>{{ examScore.rightAnswers }}</span>
+            </div>
+            <div class="detail-row wrong">
+              <span>Wrong Answers:</span>
+              <span>{{ examScore.wrongAnswers }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button type="button" class="btn btn-primary" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i>
+            Back to Quizzes
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
