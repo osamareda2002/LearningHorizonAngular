@@ -17,6 +17,9 @@ import { EditDelete } from './edit-delete/edit-delete';
 import { UsersComponent } from './users/users';
 import { SessionsComponent } from './sessions/sessions';
 import { ZoomMeetingComponent } from './zoom-meeting/zoom-meeting';
+import { QuizzesComponent } from './quizzes/quizzes';
+import { AddQuizComponent } from './quizzes/add-quiz/add-quiz';
+import { TakeQuizComponent } from './quizzes/take-quiz/take-quiz';
 
 export const routes: Routes = [
   { path: '', component: SplashComponent },
@@ -32,6 +35,9 @@ export const routes: Routes = [
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
   { path: 'sessions', component: SessionsComponent, canActivate: [AuthGuard] },
   { path: 'zoom-meeting/:id', component: ZoomMeetingComponent, canActivate: [AuthGuard] },
+  { path: 'quizzes', component: QuizzesComponent, canActivate: [AuthGuard] },
+  { path: 'quizzes/add', component: AddQuizComponent, canActivate: [AuthGuard] },
+  { path: 'quizzes/take/:id', component: TakeQuizComponent, canActivate: [AuthGuard] },
   { path: 'books', component: Books },
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'reset-password', component: ResetPassword },

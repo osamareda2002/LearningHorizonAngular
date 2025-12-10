@@ -1,0 +1,268 @@
+<div class="add-quiz-container" [class.sidebar-open]="isSidebarOpen">
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+
+  <main class="main-content">
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <div class="page-title-container">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <h2 class="page-title">Add New Quiz</h2>
+      </div>
+
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="isLoggedIn" (click)="handleLogout()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form [formGroup]="quizForm" class="quiz-form">
+      <!-- Basic Quiz Info -->
+      <div class="form-section">
+        <h3 class="section-title">Quiz Information</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quiz Title <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="examTitle"
+              placeholder="Enter quiz title"
+              [class.error]="
+                quizForm.get('examTitle')?.invalid && quizForm.get('examTitle')?.touched
+              "
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Course <span class="required">*</span></label>
+            <select
+              class="form-control"
+              formControlName="courseId"
+              [class.error]="
+                quizForm.get('courseId')?.invalid && quizForm.get('courseId')?.touched
+              "
+              [disabled]="loadingCourses || examId !== null"
+            >
+              <option value="">Select a course</option>
+              <option *ngFor="let course of courses" [value]="course.courseId || course.id">
+                {{ course.courseTitle || course.title }}
+              </option>
+            </select>
+            <small *ngIf="loadingCourses" class="form-text">Loading courses...</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Time <span class="required">*</span></label>
+            <input
+              type="datetime-local"
+              class="form-control"
+              formControlName="startTime"
+              [class.error]="
+                quizForm.get('startTime')?.invalid && quizForm.get('startTime')?.touched
+              "
+              [disabled]="examId !== null"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Duration (minutes) <span class="required">*</span></label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="duration"
+              placeholder="e.g., 30"
+              min="1"
+              [class.error]="
+                quizForm.get('duration')?.invalid && quizForm.get('duration')?.touched
+              "
+              [disabled]="examId !== null"
+            />
+          </div>
+        </div>
+
+        <!-- Create Quiz Button -->
+        <div class="quiz-details-actions" *ngIf="!examId">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="submitQuizDetails()"
+            [disabled]="submitting || quizForm.get('examTitle')?.invalid || quizForm.get('startTime')?.invalid || quizForm.get('duration')?.invalid || quizForm.get('courseId')?.invalid"
+          >
+            <i class="bi bi-plus-circle"></i>
+            {{ submitting ? 'Creating...' : 'Create Quiz' }}
+          </button>
+        </div>
+
+        <!-- Success Message -->
+        <div *ngIf="examId" class="quiz-created-message">
+          <i class="bi bi-check-circle-fill"></i>
+          <span>Quiz created successfully! Now add questions below.</span>
+        </div>
+      </div>
+
+      <!-- Questions Section -->
+      <div class="form-section" id="questions-section" [class.disabled]="!examId">
+        <div class="section-header">
+          <h3 class="section-title">Questions</h3>
+          <p *ngIf="!examId" class="section-hint">
+            <i class="bi bi-info-circle"></i>
+            Please create the quiz first before adding questions
+          </p>
+        </div>
+
+        <div formArrayName="questions" class="questions-container" [class.disabled]="!examId">
+          <div
+            *ngFor="let question of questions.controls; let i = index"
+            [formGroupName]="i"
+            class="question-card"
+          >
+            <div class="question-header">
+              <h4 class="question-number">Question {{ i + 1 }}</h4>
+              <button
+                type="button"
+                class="btn-remove"
+                (click)="removeQuestion(i)"
+                *ngIf="questions.length > 1"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label>Question Text <span class="required">*</span></label>
+              <textarea
+                class="form-control"
+                formControlName="questionText"
+                placeholder="Enter your question"
+                rows="3"
+                [class.error]="
+                  question.get('questionText')?.invalid && question.get('questionText')?.touched
+                "
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mark <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="Mark"
+                  placeholder="1"
+                  min="0.5"
+                  step="0.5"
+                  [class.error]="
+                    question.get('Mark')?.invalid && question.get('Mark')?.touched
+                  "
+                />
+              </div>
+            </div>
+
+            <!-- Options -->
+            <div class="options-section">
+              <div class="options-header">
+                <label>Answer Options <span class="required">*</span></label>
+                <button
+                  type="button"
+                  class="btn btn-small"
+                  (click)="addOption(i)"
+                  *ngIf="getOptions(i).length < 6"
+                >
+                  <i class="bi bi-plus"></i>
+                  Add Option
+                </button>
+              </div>
+
+              <div formArrayName="options" class="options-list">
+                <div
+                  *ngFor="let option of getOptions(i).controls; let j = index"
+                  [formGroupName]="j"
+                  class="option-item"
+                >
+                  <div class="option-input-group">
+                    <input
+                      type="radio"
+                      [name]="'correct-' + i"
+                      [checked]="option.get('isCorrect')?.value"
+                      (change)="onCorrectAnswerChange(i, j)"
+                    />
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="answerText"
+                      [placeholder]="'Option ' + (j + 1)"
+                      [class.error]="
+                        option.get('answerText')?.invalid && option.get('answerText')?.touched
+                      "
+                    />
+                    <button
+                      type="button"
+                      class="btn-remove-small"
+                      (click)="removeOption(i, j)"
+                      *ngIf="getOptions(i).length > 2"
+                    >
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="hidden"
+                    formControlName="isCorrect"
+                    [value]="option.get('isCorrect')?.value"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Question Button at Bottom -->
+        <div class="add-question-section">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="addQuestion()"
+            [disabled]="!examId"
+          >
+            <i class="bi bi-plus-circle"></i>
+            Add Question
+          </button>
+        </div>
+
+        <!-- Submit Questions Button -->
+        <div class="questions-actions" *ngIf="examId">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="submitQuestions()"
+            [disabled]="submittingQuestions || questions.length === 0"
+          >
+            <i class="bi bi-check-circle"></i>
+            {{ submittingQuestions ? 'Submitting...' : 'Submit Questions' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-cancel" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+

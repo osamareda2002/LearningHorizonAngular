@@ -24,6 +24,11 @@
       <span>Sessions</span>
     </a>
 
+    <a routerLink="/quizzes" routerLinkActive="active" class="nav-item">
+      <i class="bi bi-question-circle"></i>
+      <span>Quizzes</span>
+    </a>
+
     <!-- Admin Only Items -->
     <ng-container *ngIf="isAdmin">
       <a routerLink="/add" routerLinkActive="active" class="nav-item">

@@ -1,0 +1,145 @@
+<div class="quizzes-container" [class.sidebar-open]="isSidebarOpen">
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+
+  <main class="main-content">
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <div class="page-title-container">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <h2 class="page-title">Quizzes</h2>
+      </div>
+
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="isLoggedIn" (click)="handleLogout()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <!-- Add Quiz Button (Admin Only) -->
+    <div class="header-actions" *ngIf="isAdmin">
+      <button class="btn btn-primary" (click)="openAddQuiz()">
+        <i class="bi bi-plus-circle"></i>
+        Add New Quiz
+      </button>
+    </div>
+
+    <!-- Quizzes List -->
+    <div class="quizzes-container-list">
+      <div *ngIf="isLoading" class="loading-state">
+        <i class="bi bi-hourglass-split"></i>
+        <p>Loading quizzes...</p>
+      </div>
+
+      <div *ngIf="!isLoading && getExamsToShow().length === 0" class="empty-state">
+        <i class="bi bi-question-circle"></i>
+        <p>No quizzes available</p>
+      </div>
+
+      <div *ngIf="!isLoading && getExamsToShow().length > 0" class="quizzes-grid">
+        <div
+          *ngFor="let exam of getExamsToShow()"
+          class="quiz-card"
+          [class.finished]="getExamStatus(exam) === 'finished'"
+        >
+          <div class="quiz-header">
+            <div class="quiz-icon">
+              <i class="bi bi-question-circle-fill"></i>
+            </div>
+            <div
+              class="quiz-badge"
+              [class.badge-upcoming]="getExamStatus(exam) === 'not-started'"
+              [class.badge-live]="getExamStatus(exam) === 'running-not-started' || getExamStatus(exam) === 'running-started'"
+              [class.badge-finished]="getExamStatus(exam) === 'finished'"
+            >
+              <i
+                class="bi"
+                [class.bi-clock]="getExamStatus(exam) === 'not-started'"
+                [class.bi-record-circle]="getExamStatus(exam) === 'running-not-started' || getExamStatus(exam) === 'running-started'"
+                [class.bi-check-circle]="getExamStatus(exam) === 'finished'"
+              ></i>
+              <span>{{ getExamStatusText(exam) }}</span>
+            </div>
+          </div>
+
+          <div class="quiz-body">
+            <h3 class="quiz-title">{{ exam.title || exam.examTitle || 'Untitled Quiz' }}</h3>
+            <div class="quiz-info">
+              <div class="info-item" *ngIf="exam.courseName">
+                <i class="bi bi-book"></i>
+                <span>{{ exam.courseName }}</span>
+              </div>
+              <div class="info-item">
+                <i class="bi bi-calendar3"></i>
+                <span>{{ exam.startTime | date : 'MMM d, y' }}</span>
+              </div>
+              <div class="info-item">
+                <i class="bi bi-clock"></i>
+                <span>{{ exam.startTime | date : 'h:mm a' }}</span>
+              </div>
+              <div class="info-item" *ngIf="exam.durationInMinutes">
+                <i class="bi bi-hourglass-split"></i>
+                <span>Duration: {{ exam.durationInMinutes }} minutes</span>
+              </div>
+              <div class="info-item" *ngIf="getExamStatus(exam) === 'not-started'">
+                <i class="bi bi-alarm"></i>
+                <span>Starts in: {{ getTimeUntilStart(exam) }}</span>
+              </div>
+              <div class="info-item" *ngIf="getExamStatus(exam) === 'running-not-started' || getExamStatus(exam) === 'running-started'">
+                <i class="bi bi-stopwatch"></i>
+                <span>Time remaining: {{ getTimeRemaining(exam) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quiz-actions">
+            <button
+              *ngIf="!isAdmin && canTakeQuiz(exam)"
+              class="btn btn-join"
+              (click)="takeQuiz(exam)"
+            >
+              <i class="bi bi-pencil-square"></i>
+              <span>Take Quiz</span>
+            </button>
+            <button *ngIf="!isAdmin && !canTakeQuiz(exam)" class="btn btn-disabled" disabled>
+              <i class="bi bi-lock"></i>
+              <span *ngIf="getExamStatus(exam) === 'not-started'">Not Started</span>
+              <span *ngIf="getExamStatus(exam) === 'finished'">Finished</span>
+            </button>
+            <div *ngIf="isAdmin" class="admin-actions">
+              <button *ngIf="canTakeQuiz(exam)" class="btn btn-join" (click)="takeQuiz(exam)">
+                <i class="bi bi-eye"></i>
+                <span>View Quiz</span>
+              </button>
+              <button class="btn btn-danger" (click)="deleteQuiz(exam)">
+                <i class="bi bi-trash"></i>
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
