@@ -24,6 +24,32 @@
   visibility: visible;
 }
 
+/* Copy Protection Styles */
+.question-text,
+.option-item label,
+.options-container {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.question-card {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: auto;
+}
+
+/* Allow clicking on radio buttons and labels */
+.option-item input[type='radio'],
+.option-item label {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 /* Timer Bar */
 .timer-bar {
   position: fixed;
@@ -401,7 +427,6 @@
   background: #e0e0e0;
 }
 
-/* Results */
 /* Finish Confirmation */
 .finish-confirmation {
   display: flex;
@@ -467,37 +492,7 @@
   min-width: 140px;
 }
 
-@media (max-width: 768px) {
-  .confirmation-card {
-    max-width: 100%;
-  }
-
-  .confirmation-header {
-    padding: 20px;
-  }
-
-  .confirmation-header i {
-    font-size: 36px;
-  }
-
-  .confirmation-header h2 {
-    font-size: 20px;
-  }
-
-  .confirmation-body {
-    padding: 20px;
-  }
-
-  .confirmation-actions {
-    flex-direction: column;
-    padding: 20px;
-  }
-
-  .confirmation-actions .btn {
-    width: 100%;
-  }
-}
-
+/* Results */
 .results-container {
   max-width: 700px;
   margin: 0 auto;
@@ -694,6 +689,35 @@
   .score-value {
     font-size: 24px;
   }
+
+  .confirmation-card {
+    max-width: 100%;
+  }
+
+  .confirmation-header {
+    padding: 20px;
+  }
+
+  .confirmation-header i {
+    font-size: 36px;
+  }
+
+  .confirmation-header h2 {
+    font-size: 20px;
+  }
+
+  .confirmation-body {
+    padding: 20px;
+  }
+
+  .confirmation-actions {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .confirmation-actions .btn {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -772,4 +796,3 @@
     font-size: 14px;
   }
 }
-

@@ -282,7 +282,7 @@ export class EditDelete implements OnInit {
       formData.append('courseImage', this.editCourseImage);
     }
 
-    this.http.put(`${this.apiUrl}/UpdateCourse`, formData).subscribe({
+    this.http.post(`${this.apiUrl}/UpdateCourse`, formData).subscribe({
       next: (res) => {
         this.successMessage = 'Course updated successfully!';
         this.submitting = false;

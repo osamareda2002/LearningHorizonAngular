@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -50,6 +50,47 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private quizService: QuizService
   ) {}
+
+  // Disable keyboard shortcuts for copying
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    // Disable Ctrl+C, Ctrl+A, Ctrl+X, Ctrl+S, Ctrl+P, F12, Ctrl+Shift+I
+    if (
+      (event.ctrlKey && (event.key === 'c' || event.key === 'C')) ||
+      (event.ctrlKey && (event.key === 'a' || event.key === 'A')) ||
+      (event.ctrlKey && (event.key === 'x' || event.key === 'X')) ||
+      (event.ctrlKey && (event.key === 's' || event.key === 'S')) ||
+      (event.ctrlKey && (event.key === 'p' || event.key === 'P')) ||
+      (event.ctrlKey && (event.key === 'u' || event.key === 'U')) ||
+      event.key === 'F12' ||
+      (event.ctrlKey && event.shiftKey && (event.key === 'i' || event.key === 'I')) ||
+      (event.ctrlKey && event.shiftKey && (event.key === 'j' || event.key === 'J')) ||
+      (event.ctrlKey && event.shiftKey && (event.key === 'c' || event.key === 'C'))
+    ) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  // Disable right-click context menu
+  @HostListener('contextmenu', ['$event'])
+  onRightClick(event: MouseEvent) {
+    event.preventDefault();
+    return false;
+  }
+
+  // Disable text selection via drag
+  @HostListener('selectstart', ['$event'])
+  onSelectStart(event: Event) {
+    const target = event.target as HTMLElement;
+    // Allow selection in input fields but not in question/answer areas
+    if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
@@ -165,20 +206,17 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const now = Date.now(); // faster & more precise
+    const now = Date.now();
     const end = this.examEndTime.getTime();
 
     let diffMs = end - now;
 
-    // Fix for negative milliseconds jitter (-100, -50, etc.)
     if (diffMs < 0) {
       diffMs = 0;
     }
 
-    // Convert ms → seconds
     this.timeRemaining = Math.floor(diffMs / 1000);
 
-    // Auto-submit when reaching 0
     if (this.timeRemaining === 0 && !this.isSubmitting) {
       this.autoSubmit();
     }
@@ -245,7 +283,7 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
     // Move to next question immediately (optimistic update)
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
-      this.errorMessage = ''; // Clear any previous errors
+      this.errorMessage = '';
     } else {
       // All questions answered, show finish confirmation
       this.showFinishConfirmation = true;
@@ -266,12 +304,10 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
         next: (res: any) => {
           this.isSubmitting = false;
           if (res?.status === 400 || res?.status !== 200) {
-            // API failed, go back to previous question
             this.errorMessage = res?.data || 'Failed to submit answer. Please try again.';
             if (this.currentQuestionIndex > 0) {
               this.currentQuestionIndex--;
             }
-            // Restore the answer selection
             if (this.pendingSubmission) {
               this.selectedAnswers.set(
                 this.pendingSubmission.questionId,
@@ -280,7 +316,6 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
             }
             this.pendingSubmission = null;
           } else {
-            // Success
             this.pendingSubmission = null;
           }
         },
@@ -288,11 +323,9 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
           console.error('Failed to submit answer:', err);
           this.isSubmitting = false;
           this.errorMessage = 'Failed to submit answer. Please try again.';
-          // Go back to previous question
           if (this.currentQuestionIndex > 0) {
             this.currentQuestionIndex--;
           }
-          // Restore the answer selection
           if (this.pendingSubmission) {
             this.selectedAnswers.set(
               this.pendingSubmission.questionId,
@@ -308,11 +341,9 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // First finish the exam
     this.quizService.finishExam(this.examId).subscribe({
       next: (res: any) => {
         if (res?.status === 200) {
-          // Then get results
           this.quizService.getExamResults(this.examId).subscribe({
             next: (resultsRes: any) => {
               this.isLoading = false;
@@ -346,7 +377,6 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
 
   cancelFinish() {
     this.showFinishConfirmation = false;
-    // Go back to the last question
     if (this.currentQuestionIndex >= this.questions.length) {
       this.currentQuestionIndex = this.questions.length - 1;
     }
@@ -356,7 +386,6 @@ export class TakeQuizComponent implements OnInit, OnDestroy {
     if (this.showResults || this.showFinishConfirmation) return;
 
     this.stopTimer();
-    // Auto-finish the exam
     this.confirmFinish();
   }
 

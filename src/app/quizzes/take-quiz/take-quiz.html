@@ -58,7 +58,9 @@
       <form class="quiz-form" *ngIf="getCurrentQuestion()">
         <div class="question-card">
           <div class="question-header">
-            <span class="question-number">Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</span>
+            <span class="question-number"
+              >Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</span
+            >
             <span class="question-mark">Mark: {{ getCurrentQuestion()!.Mark }}</span>
           </div>
 
@@ -93,7 +95,13 @@
             [disabled]="showResults || showFinishConfirmation || isSubmitting"
           >
             <i class="bi bi-arrow-right"></i>
-            {{ isSubmitting ? 'Submitting...' : (currentQuestionIndex < questions.length - 1 ? 'Next' : 'Finish') }}
+            {{
+              isSubmitting
+                ? 'Submitting...'
+                : currentQuestionIndex < questions.length - 1
+                ? 'Next'
+                : 'Finish'
+            }}
           </button>
         </div>
       </form>
@@ -188,4 +196,3 @@
     </div>
   </main>
 </div>
-
