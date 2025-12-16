@@ -8,6 +8,23 @@ import { environment } from '../services/enviroment';
 import { timeout } from 'rxjs';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 
+interface DtoExerciseAnswer {
+  answerText?: string;
+  isCorrect: boolean;
+}
+
+interface DtoLessonExercise {
+  questionText?: string;
+  explanation?: string;
+  image: File | null; // Required property, value can be null
+  answers: DtoExerciseAnswer[];
+}
+
+interface DtoLessonExerciseJson {
+  questionText?: string;
+  explanation?: string;
+  answers: DtoExerciseAnswer[];
+}
 @Component({
   selector: 'app-add',
   standalone: true,
@@ -54,6 +71,17 @@ export class Add implements OnInit {
   courseThumbnailPreview: string | null = null;
   bookCoverPreview: string | null = null;
 
+  //mcq
+
+  showMCQModal = false;
+  showMCQListModal = false;
+  mcqForm!: FormGroup;
+  mcqImage: File | null = null;
+  mcqImagePreview: string | null = null;
+  lessonExercises: DtoLessonExercise[] = [];
+  currentMcqImageFile: File | null = null;
+  editingMcqIndex: number | null = null;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -79,6 +107,7 @@ export class Add implements OnInit {
 
     this.userName = userData?.firstName + ' ' + userData?.lastName || 'Admin';
     this.initializeForms();
+    this.initializeMCQForm();
     this.loadCourses();
   }
 
@@ -115,6 +144,18 @@ export class Add implements OnInit {
     this.suggestionForm = this.fb.group({
       title: ['', Validators.required],
       instructorName: ['', Validators.required],
+    });
+  }
+
+  initializeMCQForm() {
+    this.mcqForm = this.fb.group({
+      questionText: ['', Validators.required],
+      answerA: ['', Validators.required],
+      answerB: ['', Validators.required],
+      answerC: ['', Validators.required],
+      answerD: ['', Validators.required],
+      correctAnswer: ['', Validators.required],
+      explanation: ['', Validators.required],
     });
   }
 
@@ -330,6 +371,30 @@ export class Add implements OnInit {
     formData.append('lessonFile', this.lessonVideo);
     formData.append('durationInSeconds', this.lessonDurationInSeconds.toString());
 
+    this.lessonExercises.forEach((exercise, exerciseIndex) => {
+      // 1. Define the base key for the current exercise
+      const exerciseBaseKey = `lessonExercises[${exerciseIndex}]`;
+
+      // 2. Append non-file properties (question, explanation)
+      formData.append(`${exerciseBaseKey}.questionText`, exercise.questionText || '');
+      formData.append(`${exerciseBaseKey}.explanation`, exercise.explanation || '');
+
+      // 3. Append the answer list properties
+      exercise.answers.forEach((answer, answerIndex) => {
+        const answerBaseKey = `${exerciseBaseKey}.answers[${answerIndex}]`;
+
+        formData.append(`${answerBaseKey}.answerText`, answer.answerText || '');
+        // Ensure boolean is converted to a string for form data binding
+        formData.append(`${answerBaseKey}.isCorrect`, answer.isCorrect.toString());
+      });
+
+      // 4. Append the exercise image file
+      if (exercise.image) {
+        // The file key remains the same, which will successfully bind the IFormFile property
+        const fileKey = `${exerciseBaseKey}.image`;
+        formData.append(fileKey, exercise.image, exercise.image.name);
+      }
+    });
     this.submitting = true;
     this.uploadProgress = 0;
 
@@ -352,6 +417,7 @@ export class Add implements OnInit {
             this.lessonVideoPreview = null;
             this.lessonDurationInSeconds = 0;
             this.uploadProgress = 0;
+            this.lessonExercises = []; // Clear MCQs after successful submission
           }
         },
         error: (err) => {
@@ -361,6 +427,198 @@ export class Add implements OnInit {
           console.error(err);
         },
       });
+  }
+
+  addMCQ() {
+    // If no MCQs exist, open the add MCQ modal directly
+    // Otherwise, open the list modal to view/edit existing MCQs
+    if (this.lessonExercises.length === 0) {
+      this.showMCQModal = true;
+      this.editingMcqIndex = null;
+    } else {
+      this.showMCQListModal = true;
+    }
+  }
+
+  closeMCQModal() {
+    this.showMCQModal = false;
+    this.editingMcqIndex = null;
+    this.resetMcqModal();
+  }
+
+  openMCQListModal() {
+    this.showMCQListModal = true;
+  }
+
+  closeMCQListModal() {
+    this.showMCQListModal = false;
+  }
+
+  addNewMCQFromList() {
+    this.editingMcqIndex = null;
+    this.resetMcqModal();
+    this.showMCQListModal = false;
+    this.showMCQModal = true;
+  }
+
+  editMCQ(index: number) {
+    const exercise = this.lessonExercises[index];
+    if (!exercise) return;
+
+    // Find the correct answer
+    const correctAnswerIndex = exercise.answers.findIndex(ans => ans.isCorrect === true);
+    const correctAnswerLetter = correctAnswerIndex >= 0 ? ['A', 'B', 'C', 'D'][correctAnswerIndex] : 'A';
+
+    // Populate the form with existing data
+    this.mcqForm.patchValue({
+      questionText: exercise.questionText || '',
+      answerA: exercise.answers[0]?.answerText || '',
+      answerB: exercise.answers[1]?.answerText || '',
+      answerC: exercise.answers[2]?.answerText || '',
+      answerD: exercise.answers[3]?.answerText || '',
+      correctAnswer: correctAnswerLetter,
+      explanation: exercise.explanation || '',
+    });
+
+    // Handle image preview
+    if (exercise.image) {
+      this.currentMcqImageFile = exercise.image;
+      // Create preview if it's an image
+      if (exercise.image.type && exercise.image.type !== 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.mcqImagePreview = reader.result as string;
+        };
+        reader.readAsDataURL(exercise.image);
+      } else {
+        this.mcqImagePreview = null;
+      }
+    } else {
+      this.currentMcqImageFile = null;
+      this.mcqImagePreview = null;
+    }
+
+    this.editingMcqIndex = index;
+    this.showMCQListModal = false;
+    this.showMCQModal = true;
+  }
+
+  deleteMCQ(index: number) {
+    if (confirm('Are you sure you want to delete this MCQ?')) {
+      this.lessonExercises.splice(index, 1);
+    }
+  }
+
+  onMCQImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file) {
+      this.currentMcqImageFile = file; // UPDATE THIS LINE: Store the actual file object
+
+      // For preview purposes (assuming mcqImagePreview exists)
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.mcqImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.currentMcqImageFile = null; // Reset if file selection is cancelled
+      this.mcqImagePreview = null;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('❌ Invalid file type! Only PNG, JPEG, and PDF allowed.');
+      event.target.value = '';
+      return;
+    }
+
+    this.mcqImage = file;
+
+    // Only preview images, not PDFs
+    if (file.type !== 'application/pdf') {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.mcqImagePreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.mcqImagePreview = null;
+    }
+  }
+
+  saveMCQ() {
+    if (this.mcqForm.invalid) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return;
+    }
+
+    const formValue = this.mcqForm.value;
+    // 1. Map the four answers into the DtoExerciseAnswer list
+    const answers: DtoExerciseAnswer[] = [
+      {
+        answerText: formValue.answerA,
+        isCorrect: formValue.correctAnswer === 'A', // True if the selected radio button is 'A'
+      },
+      {
+        answerText: formValue.answerB,
+        isCorrect: formValue.correctAnswer === 'B',
+      },
+      {
+        answerText: formValue.answerC,
+        isCorrect: formValue.correctAnswer === 'C',
+      },
+      {
+        answerText: formValue.answerD,
+        isCorrect: formValue.correctAnswer === 'D',
+      },
+    ];
+
+    // 2. Create the DtoLessonExercise object
+    const exercise: DtoLessonExercise = {
+      questionText: formValue.questionText,
+      explanation: formValue.explanation,
+      image: this.currentMcqImageFile, // Use the stored File object
+      answers: answers,
+    };
+
+    // 3. Either update existing or add new
+    if (this.editingMcqIndex !== null && this.editingMcqIndex >= 0) {
+      // Update existing MCQ
+      this.lessonExercises[this.editingMcqIndex] = exercise;
+    } else {
+      // Add new MCQ
+      this.lessonExercises.push(exercise);
+    }
+
+    const wasEditing = this.editingMcqIndex !== null;
+    this.resetMcqModal();
+    this.closeMCQModal();
+    
+    // If we were editing from the list modal, reopen it after saving
+    if (wasEditing) {
+      this.showMCQListModal = true;
+    }
+  }
+
+  resetMcqModal(): void {
+    // Reset the form group to clear all inputs
+    this.mcqForm.reset();
+
+    // Explicitly reset file-related properties
+    this.currentMcqImageFile = null;
+    this.mcqImagePreview = null;
+    this.mcqImage = null;
+    this.editingMcqIndex = null;
+
+    // Also reset the file input element in the DOM if possible,
+    // or handle file input clearing logic in the HTML/Template
+  }
+
+  submitMCQList() {
+    // Close the list modal when submit is clicked
+    this.closeMCQListModal();
   }
 
   // ------------------------------
@@ -461,6 +719,7 @@ export class Add implements OnInit {
   resetLessonForm() {
     this.lessonForm.reset();
     this.lessonVideo = null;
+    this.lessonExercises = []; // Clear MCQs when form is reset
   }
 
   resetBookForm() {

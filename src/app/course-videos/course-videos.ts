@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
 import { VideoPlayerComponent } from '../shared/video-player/video-player';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../services/enviroment';
 
 interface Course {
   courseId: number;
@@ -19,6 +21,25 @@ interface Lesson {
   isFree: boolean;
   videoUrl: string;
   duration?: number;
+  durationInMinutes?: number;
+  arrange?: number;
+  mcq?: LessonExercise[];
+  exercises?: LessonExercise[];
+}
+
+interface LessonExercise {
+  id?: number;
+  questionText: string;
+  explanation?: string;
+  imageLink?: string;
+  imageUrl?: string;
+  answers: ExerciseAnswer[];
+}
+
+interface ExerciseAnswer {
+  id?: number;
+  answerText: string;
+  isCorrect: boolean;
 }
 
 @Component({
@@ -42,12 +63,24 @@ export class CourseVideos implements OnInit {
   lessons: Lesson[] = [];
   currentLesson: Lesson | null = null;
   currentVideoUrl: string = '';
+  videoKey: number = 0; // Key to force video player re-render
+
+  @ViewChild(VideoPlayerComponent) videoPlayer!: VideoPlayerComponent;
+
+  showMCQQuiz = false;
+  currentExercises: LessonExercise[] = [];
+  currentQuestionIndex = 0;
+  selectedAnswers: { [questionIndex: number]: number } = {};
+  quizSubmitted = false;
+  quizScore = { correct: 0, total: 0 };
 
   constructor(
     private auth: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private materialService: MaterialService
+    private materialService: MaterialService,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -102,16 +135,36 @@ export class CourseVideos implements OnInit {
   loadLessons() {
     this.materialService.getCourseLessons(this.courseId).subscribe({
       next: (res: any[]) => {
-        this.lessons = res.map((lesson, index) => ({
-          id: lesson.id,
-          title: lesson.title,
-          subtitle: lesson.subtitle || `Lesson -${index + 1}`,
-          isFree: lesson.isFree || false,
-          videoUrl: lesson.path,
-          duration: lesson.duration,
-        }));
+        this.lessons = res.map((lesson, index) => {
+          // Map MCQs from the lesson object
+          const mcqs: LessonExercise[] = (lesson.mcq || []).map((mcq: any) => ({
+            id: mcq.id,
+            questionText: mcq.questionText,
+            explanation: mcq.explanation,
+            imageLink: mcq.imageLink,
+            imageUrl: mcq.imageLink, // Use imageLink as imageUrl
+            answers: (mcq.answers || []).map((ans: any) => ({
+              id: ans.id,
+              answerText: ans.answerText,
+              isCorrect: ans.isCorrect
+            }))
+          }));
 
-        // Auto-play first accessible lesson
+          return {
+            id: lesson.id,
+            title: lesson.title,
+            subtitle: lesson.subtitle || `Lesson ${index + 1} · ${lesson.durationInMinutes || Math.floor((lesson.duration || 0) / 60)} min`,
+            isFree: lesson.isFree || false,
+            videoUrl: lesson.path || lesson.videoUrl,
+            duration: lesson.duration,
+            durationInMinutes: lesson.durationInMinutes,
+            arrange: lesson.arrange,
+            mcq: mcqs,
+            exercises: mcqs // Also set exercises for backward compatibility
+          };
+        });
+
+        // Auto-play first accessible lesson (first lesson by default)
         const firstAccessible = this.lessons.find((l) => this.canAccessLesson(l));
 
         if (firstAccessible) {
@@ -144,11 +197,99 @@ export class CourseVideos implements OnInit {
       return;
     }
 
-    this.currentLesson = lesson;
-    this.currentVideoUrl = lesson.videoUrl;
+    // Don't reload if it's the same lesson
+    if (this.currentLesson?.id === lesson.id) {
+      return;
+    }
 
-    // Wait for video element to be ready
-    // Plyr handles load; no manual video element handling required
+    this.currentLesson = lesson;
+    
+    // Update video URL and force re-render with new key
+    this.currentVideoUrl = lesson.videoUrl;
+    this.videoKey = Date.now(); // Force component re-render
+    
+    // Reset quiz state
+    this.showMCQQuiz = false;
+    this.currentQuestionIndex = 0;
+    this.selectedAnswers = {};
+    this.quizSubmitted = false;
+    
+    // Load MCQs directly from lesson object
+    this.currentExercises = lesson.mcq || lesson.exercises || [];
+    
+    // Trigger change detection
+    this.cdr.detectChanges();
+  }
+
+  startMCQQuiz() {
+    if (this.currentExercises.length === 0) {
+      alert('No questions available for this lesson.');
+      return;
+    }
+    this.showMCQQuiz = true;
+    this.currentQuestionIndex = 0;
+    this.selectedAnswers = {};
+    this.quizSubmitted = false;
+    // Scroll to quiz section
+    setTimeout(() => {
+      const quizElement = document.getElementById('mcq-quiz-section');
+      if (quizElement) {
+        quizElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  selectAnswer(questionIndex: number, answerIndex: number) {
+    if (this.quizSubmitted) return;
+    this.selectedAnswers[questionIndex] = answerIndex;
+  }
+
+  nextQuestion() {
+    if (this.currentQuestionIndex < this.currentExercises.length - 1) {
+      this.currentQuestionIndex++;
+      const questionElement = document.getElementById(`question-${this.currentQuestionIndex}`);
+      if (questionElement) {
+        questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  previousQuestion() {
+    if (this.currentQuestionIndex > 0) {
+      this.currentQuestionIndex--;
+      const questionElement = document.getElementById(`question-${this.currentQuestionIndex}`);
+      if (questionElement) {
+        questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  submitQuiz() {
+    if (this.quizSubmitted) return;
+    
+    let correct = 0;
+    this.currentExercises.forEach((exercise, questionIndex) => {
+      const selectedAnswerIndex = this.selectedAnswers[questionIndex];
+      if (selectedAnswerIndex !== undefined) {
+        const selectedAnswer = exercise.answers[selectedAnswerIndex];
+        if (selectedAnswer && selectedAnswer.isCorrect) {
+          correct++;
+        }
+      }
+    });
+
+    this.quizScore = {
+      correct: correct,
+      total: this.currentExercises.length
+    };
+    this.quizSubmitted = true;
+  }
+
+  closeQuiz() {
+    this.showMCQQuiz = false;
+    this.currentQuestionIndex = 0;
+    this.selectedAnswers = {};
+    this.quizSubmitted = false;
   }
 
   enrollInCourse() {

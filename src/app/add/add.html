@@ -258,6 +258,13 @@
               </div>
             </div>
 
+            <div class="mcq-section">
+              <button type="button" class="btn-add-mcq" (click)="addMCQ()">
+                <i class="bi bi-plus-circle"></i>
+                Add MCQ
+              </button>
+            </div>
+
             <div class="form-actions">
               <button type="button" class="btn btn-cancel" (click)="resetLessonForm()">
                 Cancel
@@ -527,4 +534,172 @@
       </div>
     </div>
   </main>
+
+  <!-- MCQ Modal -->
+  <div class="mcq-modal-overlay" *ngIf="showMCQModal" (click)="closeMCQModal()">
+    <div class="mcq-modal-content" (click)="$event.stopPropagation()">
+      <div class="mcq-modal-header">
+        <h2 class="mcq-modal-title">The Details MCQ</h2>
+      </div>
+
+      <form [formGroup]="mcqForm" class="mcq-form-grid">
+        <div class="mcq-question-section">
+          <label>* Question Text</label>
+          <input
+            type="text"
+            class="mcq-question-input"
+            formControlName="questionText"
+            placeholder="Enter The Question Here ...."
+          />
+        </div>
+
+        <div class="mcq-answers-upload-wrapper">
+          <div class="mcq-answers-section">
+            <div class="mcq-answers-header">
+              <span class="mcq-answers-title">* Answers Text , Select Correct Answer</span>
+            </div>
+
+            <div class="mcq-answer-options">
+              <div class="mcq-answer-item">
+                <div class="mcq-answer-letter">A</div>
+                <input
+                  type="text"
+                  class="mcq-answer-input"
+                  formControlName="answerA"
+                  placeholder="Enter The Answers Here ...."
+                />
+                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="A" />
+              </div>
+
+              <div class="mcq-answer-item">
+                <div class="mcq-answer-letter">B</div>
+                <input
+                  type="text"
+                  class="mcq-answer-input"
+                  formControlName="answerB"
+                  placeholder="Enter The Answers Here ...."
+                />
+                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="B" />
+              </div>
+
+              <div class="mcq-answer-item">
+                <div class="mcq-answer-letter">C</div>
+                <input
+                  type="text"
+                  class="mcq-answer-input"
+                  formControlName="answerC"
+                  placeholder="Enter The Answers Here ...."
+                />
+                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="C" />
+              </div>
+
+              <div class="mcq-answer-item">
+                <div class="mcq-answer-letter">D</div>
+                <input
+                  type="text"
+                  class="mcq-answer-input"
+                  formControlName="answerD"
+                  placeholder="Enter The Answers Here ...."
+                />
+                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="D" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mcq-upload-container">
+            <span class="mcq-upload-label">* Upload Image</span>
+            <div class="mcq-upload-box">
+              <i class="bi bi-image"></i>
+              <p>Upload Files</p>
+              <p class="mcq-upload-info">PNG, JPEG, and PDF files are allowed</p>
+              <input
+                type="file"
+                class="file-input"
+                (change)="onMCQImageSelected($event)"
+                accept="image/jpeg, image/png, application/pdf"
+              />
+            </div>
+            <div *ngIf="mcqImagePreview" class="mcq-image-preview">
+              <img [src]="mcqImagePreview" alt="MCQ Image Preview" />
+            </div>
+          </div>
+        </div>
+
+        <div class="mcq-explanation-section">
+          <label>* Enter Explanation</label>
+          <textarea
+            class="mcq-explanation-textarea"
+            formControlName="explanation"
+            placeholder="Enter The Explanation Here ...."
+          ></textarea>
+        </div>
+      </form>
+
+      <!-- Modal Actions -->
+      <div class="mcq-modal-actions">
+        <button type="button" class="btn-mcq-cancel" (click)="closeMCQModal()">Cancel</button>
+        <button type="button" class="btn-mcq-save" (click)="saveMCQ()" [disabled]="mcqForm.invalid">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MCQ List Modal -->
+  <div class="mcq-list-modal-overlay" *ngIf="showMCQListModal" (click)="closeMCQListModal()">
+    <div class="mcq-list-modal-content" (click)="$event.stopPropagation()">
+      <div class="mcq-list-modal-header">
+        <h2 class="mcq-list-modal-title">The Details MCQ</h2>
+      </div>
+
+      <div class="mcq-list-container">
+        <div *ngIf="lessonExercises.length === 0" class="mcq-empty-state">
+          <p>No MCQs added yet. Click "Add MCQ" to get started.</p>
+        </div>
+
+        <div *ngFor="let exercise of lessonExercises; let i = index" class="mcq-list-item">
+          <div class="mcq-list-item-content">
+            <div class="mcq-list-item-number">Q {{ i + 1 }} /</div>
+            <div class="mcq-list-item-question">
+              {{ exercise.questionText }}
+            </div>
+          </div>
+          <div class="mcq-list-item-actions">
+            <button
+              type="button"
+              class="mcq-list-action-btn mcq-list-action-delete"
+              (click)="deleteMCQ(i)"
+              title="Delete MCQ"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+            <button
+              type="button"
+              class="mcq-list-action-btn mcq-list-action-edit"
+              (click)="editMCQ(i)"
+              title="Edit MCQ"
+            >
+              <i class="bi bi-pencil"></i>
+            </button>
+            <!-- <button
+              type="button"
+              class="mcq-list-action-btn mcq-list-action-reorder"
+              title="Reorder MCQ"
+              disabled
+            >
+              <i class="bi bi-list"></i>
+            </button> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="mcq-list-modal-actions">
+        <button type="button" class="btn-mcq-add-from-list" (click)="addNewMCQFromList()">
+          <i class="bi bi-plus-circle"></i>
+          Add MCQ
+        </button>
+        <button type="button" class="btn-mcq-list-submit" (click)="submitMCQList()">Submit</button>
+      </div>
+    </div>
+  </div>
 </div>
