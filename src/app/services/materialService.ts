@@ -38,4 +38,9 @@ export class MaterialService {
 
     return this.http.post(`${this.apiUrl}/PurchaseCourse`, { courseId }, { headers });
   }
+
+  // Get lesson exercises (MCQs)
+  getLessonExercises(lessonId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/GetLessonExercises?lessonId=${lessonId}`);
+  }
 }

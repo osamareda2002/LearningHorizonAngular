@@ -23,38 +23,164 @@
 
       <!-- Video Player -->
       <div class="video-player-wrapper">
-        <app-video-player
+        <video
+          *ngIf="currentVideoUrl && currentLesson"
           [src]="currentVideoUrl"
-          [controls]="true"
-          [autoplay]="false"
-          [muted]="false"
-        ></app-video-player>
+          controls
+          class="video-player"
+          preload="metadata"
+          controlsList="nodownload"
+          (ended)="onVideoEnded()"
+        >
+          Your browser does not support the video tag.
+        </video>
+        <div *ngIf="!currentVideoUrl || !currentLesson" class="video-placeholder">
+          <i class="bi bi-play-circle"></i>
+          <p>Select a lesson to watch</p>
+        </div>
       </div>
 
-      <!-- Current Lesson Title & Enroll Button -->
-      <div class="lesson-actions">
-        <div class="current-lesson-info">
-          <i class="bi bi-play-circle-fill"></i>
-          <h2>{{ currentLesson?.title || 'Select a lesson' }}</h2>
+      <!-- Start MCQ Quiz Button -->
+      <button
+        *ngIf="currentLesson && currentExercises.length > 0 && !showMCQQuiz"
+        class="btn-start-mcq"
+        (click)="startMCQQuiz()"
+      >
+        <i class="bi bi-file-earmark-text"></i>
+        Start MCQ Quiz
+      </button>
+
+      <!-- MCQ Quiz Section -->
+      <div
+        *ngIf="showMCQQuiz && currentExercises.length > 0"
+        id="mcq-quiz-section"
+        class="mcq-quiz-section"
+      >
+        <div class="mcq-quiz-header">
+          <h2 class="mcq-quiz-title">
+            <i class="bi bi-question-circle"></i>
+            Question {{ currentQuestionIndex + 1 }} of {{ currentExercises.length }}
+          </h2>
+          <button class="btn-close-quiz" (click)="closeQuiz()" title="Close Quiz">
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
 
-        <button
-          *ngIf="!isEnrolled"
-          class="btn-enroll"
-          (click)="enrollInCourse()"
-          [disabled]="loadingEnroll"
-        >
-          <ng-container *ngIf="!loadingEnroll">
-            <i class="bi bi-bookmark-check"></i>
-            Enroll Now
-          </ng-container>
+        <div class="mcq-question-container">
+          <div
+            *ngFor="let exercise of currentExercises; let questionIndex = index"
+            class="mcq-question-card"
+            [id]="'question-' + questionIndex"
+            [class.active]="currentQuestionIndex === questionIndex"
+          >
+            <!-- Question Text -->
+            <div class="mcq-question-header">
+              <div class="mcq-question-icon">
+                <i class="bi bi-question-circle-fill"></i>
+              </div>
+              <h3 class="mcq-question-text">{{ exercise.questionText }}</h3>
+            </div>
 
-          <!-- Loader Spinner -->
-          <ng-container *ngIf="loadingEnroll">
-            <span class="loader"></span>
-            Processing...
-          </ng-container>
-        </button>
+            <!-- Question Image (if available) -->
+            <div *ngIf="exercise.imageUrl || exercise.imageLink" class="mcq-question-image">
+              <img
+                [src]="exercise.imageUrl || exercise.imageLink"
+                [alt]="'Question ' + (questionIndex + 1) + ' image'"
+              />
+            </div>
+
+            <!-- Answer Options -->
+            <div class="mcq-answers">
+              <label
+                *ngFor="let answer of exercise.answers; let answerIndex = index"
+                class="mcq-answer-option"
+                [class.selected]="selectedAnswers[questionIndex] === answerIndex"
+                [class.correct]="quizSubmitted && answer.isCorrect"
+                [class.wrong]="
+                  quizSubmitted &&
+                  selectedAnswers[questionIndex] === answerIndex &&
+                  !answer.isCorrect
+                "
+              >
+                <input
+                  type="radio"
+                  [name]="'question-' + questionIndex"
+                  [value]="answerIndex"
+                  [checked]="selectedAnswers[questionIndex] === answerIndex"
+                  (change)="selectAnswer(questionIndex, answerIndex)"
+                  [disabled]="quizSubmitted"
+                />
+                <span class="mcq-answer-letter">{{ getCharCode(answerIndex) }}</span>
+                <span class="mcq-answer-text">{{ answer.answerText }}</span>
+                <i
+                  *ngIf="quizSubmitted && answer.isCorrect"
+                  class="bi bi-check-circle-fill correct-icon"
+                ></i>
+                <i
+                  *ngIf="
+                    quizSubmitted &&
+                    selectedAnswers[questionIndex] === answerIndex &&
+                    !answer.isCorrect
+                  "
+                  class="bi bi-x-circle-fill wrong-icon"
+                ></i>
+              </label>
+            </div>
+
+            <!-- Explanation (shown after submission) -->
+            <div *ngIf="quizSubmitted && exercise.explanation" class="mcq-explanation">
+              <strong>Explanation:</strong> {{ exercise.explanation }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Navigation and Submit -->
+        <div class="mcq-quiz-actions">
+          <div class="mcq-quiz-nav">
+            <button
+              class="btn-quiz-nav"
+              (click)="previousQuestion()"
+              [disabled]="currentQuestionIndex === 0"
+            >
+              <i class="bi bi-chevron-left"></i>
+              Previous
+            </button>
+            <span class="quiz-progress">
+              Question {{ currentQuestionIndex + 1 }} / {{ currentExercises.length }}
+            </span>
+            <button
+              class="btn-quiz-nav"
+              (click)="nextQuestion()"
+              [disabled]="currentQuestionIndex === currentExercises.length - 1"
+            >
+              Next
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <button
+            *ngIf="!quizSubmitted"
+            class="btn-submit-quiz"
+            (click)="submitQuiz()"
+            [disabled]="getObjectKeys(selectedAnswers).length < currentExercises.length"
+          >
+            Submit Quiz
+          </button>
+
+          <!-- Quiz Results -->
+          <div *ngIf="quizSubmitted" class="quiz-results">
+            <div class="quiz-score">
+              <h3>Quiz Results</h3>
+              <div class="score-circle">
+                <span class="score-value">{{ quizScore.correct }}</span>
+                <span class="score-total">/ {{ quizScore.total }}</span>
+              </div>
+              <p class="score-percentage">
+                {{ ((quizScore.correct / quizScore.total) * 100).toFixed(0) }}% Correct
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -81,10 +207,13 @@
 
             <div class="lesson-info">
               <h4>{{ lesson.title }}</h4>
-              <p>{{ lesson.subtitle }}</p>
+              <p>
+                {{ lesson.subtitle || getLessonSubtitle(lesson, i) }}
+              </p>
             </div>
 
             <span *ngIf="lesson.isFree" class="free-badge">Free</span>
+            <i *ngIf="!canAccessLesson(lesson)" class="bi bi-lock-fill lesson-lock-icon"></i>
           </div>
         </div>
       </div>

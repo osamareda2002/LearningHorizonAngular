@@ -1,0 +1,159 @@
+<div class="course-lessons-container" [class.sidebar-open]="isSidebarOpen">
+  <!-- Sidebar -->
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Back Button and Title -->
+    <div class="course-header">
+      <button class="btn-back" (click)="backToCourses()">
+        <i class="bi bi-chevron-left"></i>
+        Back To Courses
+      </button>
+      <h1 class="course-title" *ngIf="!isLoading">{{ courseTitle }}</h1>
+      <h1 class="course-title" *ngIf="isLoading">Loading...</h1>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading course content...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="loadError && !isLoading" class="error-container">
+      <i class="bi bi-exclamation-circle"></i>
+      <p>{{ loadError }}</p>
+      <button class="btn-retry" (click)="backToCourses()">Back to Courses</button>
+    </div>
+
+    <div class="course-content" *ngIf="!isLoading && !loadError">
+      <!-- Video and Quiz Section -->
+      <div class="video-section">
+        <!-- Video Player -->
+        <div class="video-player" *ngIf="!showQuiz">
+          <video controls>
+            <source [src]="currentVideoUrl" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="quiz-container" *ngIf="showQuiz && !quizCompleted">
+          <div class="quiz-header">
+            <i class="bi bi-diamond-fill quiz-icon"></i>
+            <h2>Question:</h2>
+          </div>
+
+          <div class="quiz-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+            </div>
+            <span class="progress-text"
+              >{{ currentQuestionIndex + 1 }} / {{ currentLesson?.mcq?.length }}</span
+            >
+          </div>
+
+          <div class="question-content" *ngIf="currentQuestion">
+            <h3 class="question-text">{{ currentQuestion.questionText }}</h3>
+
+            <div class="question-image" *ngIf="hasQuizImage(currentQuestion)">
+              <img [src]="currentQuestion.imageLink" [alt]="currentQuestion.questionText" />
+            </div>
+
+            <div class="options-grid">
+              <button
+                *ngFor="let answer of currentQuestion.answers"
+                class="option-button"
+                [class.selected]="selectedAnswer === answer.id"
+                (click)="selectAnswer(answer.id)"
+              >
+                <span class="option-radio"></span>
+                <span class="option-text">{{ answer.answerText }}</span>
+              </button>
+            </div>
+
+            <button
+              class="btn-submit"
+              [disabled]="selectedAnswer === null"
+              (click)="submitAnswer()"
+            >
+              {{ currentQuestionIndex < getMcqQuestions().length - 1 ? 'Next Question' : 'Submit' }}
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="quiz-dots">
+            <span
+              *ngFor="let q of getMcqQuestions(); let i = index"
+              class="dot"
+              [class.active]="i === currentQuestionIndex"
+              [class.completed]="i < currentQuestionIndex"
+            ></span>
+          </div>
+        </div>
+
+        <!-- Quiz Results -->
+        <div class="quiz-results" *ngIf="quizCompleted">
+          <div class="results-header">
+            <i class="bi bi-check-circle-fill success-icon"></i>
+            <h2>Quiz Completed!</h2>
+          </div>
+          <p class="results-score">Your Score: {{ score }} / {{ getMcqQuestions().length }}</p>
+          <button class="btn-retake" (click)="retakeQuiz()">
+            <i class="bi bi-arrow-clockwise"></i>
+            Retake Quiz
+          </button>
+        </div>
+
+        <!-- Start Quiz Button -->
+        <div class="start-quiz-section" *ngIf="!showQuiz">
+          <button class="btn-start-quiz" (click)="startQuiz()">
+            Start MCQ Quiz
+            <i class="bi bi-clipboard-check"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lessons Sidebar -->
+      <div class="lessons-sidebar">
+        <h3 class="lessons-title">Lessons</h3>
+
+        <div *ngIf="lessons.length === 0 && !isLoadingLessons" class="no-lessons">
+          <i class="bi bi-inbox"></i>
+          <p>No lessons available</p>
+        </div>
+
+        <div *ngIf="isLoadingLessons" class="loading-lessons">
+          <div class="spinner-small"></div>
+          <p>Loading lessons...</p>
+        </div>
+
+        <div class="lessons-list" *ngIf="!isLoadingLessons">
+          <div
+            *ngFor="let lesson of lessons; let i = index"
+            class="lesson-item"
+            [class.active]="currentLessonId === lesson.id"
+            [class.locked]="!lesson.isFree && !isLoggedIn"
+            (click)="playLesson(lesson)"
+          >
+            <div class="lesson-icon">
+              <i [class]="getLessonIcon(i)"></i>
+            </div>
+            <div class="lesson-details">
+              <h4 class="lesson-title">{{ lesson.title }}</h4>
+              <p class="lesson-meta">
+                Lesson {{ lesson.arrange }} · {{ lesson.durationInMinutes }} min
+              </p>
+            </div>
+            <div class="lesson-status">
+              <span class="badge-free" *ngIf="lesson.isFree">Free</span>
+              <i class="bi bi-check-circle-fill completed-icon" *ngIf="lesson.isCompleted"></i>
+              <i class="bi bi-lock-fill lock-icon" *ngIf="!lesson.isFree && !isLoggedIn"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
