@@ -127,8 +127,11 @@
               </label>
             </div>
 
-            <!-- Explanation (shown after submission) -->
-            <div *ngIf="quizSubmitted && exercise.explanation" class="mcq-explanation">
+            <!-- Explanation (shown after answer is selected) -->
+            <div
+              *ngIf="selectedAnswers[questionIndex] !== undefined && exercise.explanation"
+              class="mcq-explanation"
+            >
               <strong>Explanation:</strong> {{ exercise.explanation }}
             </div>
           </div>

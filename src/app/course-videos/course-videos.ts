@@ -240,7 +240,6 @@ export class CourseVideos implements OnInit {
   }
 
   selectAnswer(questionIndex: number, answerIndex: number) {
-    if (this.quizSubmitted) return;
     this.selectedAnswers[questionIndex] = answerIndex;
   }
 
