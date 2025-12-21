@@ -1,9 +1,8 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
-import { VideoPlayerComponent } from '../shared/video-player/video-player';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../services/enviroment';
 
@@ -45,12 +44,11 @@ interface ExerciseAnswer {
 @Component({
   selector: 'app-course-videos',
   standalone: true,
-  imports: [CommonModule, VideoPlayerComponent],
+  imports: [CommonModule],
   templateUrl: './course-videos.html',
   styleUrl: './course-videos.css',
 })
 export class CourseVideos implements OnInit {
-
   loading = true;
   errorMessage = '';
   isLoggedIn = false;
@@ -63,9 +61,7 @@ export class CourseVideos implements OnInit {
   lessons: Lesson[] = [];
   currentLesson: Lesson | null = null;
   currentVideoUrl: string = '';
-  videoKey: number = 0; // Key to force video player re-render
-
-  @ViewChild(VideoPlayerComponent) videoPlayer!: VideoPlayerComponent;
+  videoKey: number = 0;
 
   showMCQQuiz = false;
   currentExercises: LessonExercise[] = [];
@@ -146,21 +142,25 @@ export class CourseVideos implements OnInit {
             answers: (mcq.answers || []).map((ans: any) => ({
               id: ans.id,
               answerText: ans.answerText,
-              isCorrect: ans.isCorrect
-            }))
+              isCorrect: ans.isCorrect,
+            })),
           }));
 
           return {
             id: lesson.id,
             title: lesson.title,
-            subtitle: lesson.subtitle || `Lesson ${index + 1} · ${lesson.durationInMinutes || Math.floor((lesson.duration || 0) / 60)} min`,
+            subtitle:
+              lesson.subtitle ||
+              `Lesson ${index + 1} · ${
+                lesson.durationInMinutes || Math.floor((lesson.duration || 0) / 60)
+              } min`,
             isFree: lesson.isFree || false,
             videoUrl: lesson.path || lesson.videoUrl,
             duration: lesson.duration,
             durationInMinutes: lesson.durationInMinutes,
             arrange: lesson.arrange,
             mcq: mcqs,
-            exercises: mcqs // Also set exercises for backward compatibility
+            exercises: mcqs, // Also set exercises for backward compatibility
           };
         });
 
@@ -203,20 +203,20 @@ export class CourseVideos implements OnInit {
     }
 
     this.currentLesson = lesson;
-    
-    // Update video URL and force re-render with new key
-    this.currentVideoUrl = lesson.videoUrl;
-    this.videoKey = Date.now(); // Force component re-render
-    
-    // Reset quiz state
+
+    // Reset quiz state first
     this.showMCQQuiz = false;
     this.currentQuestionIndex = 0;
     this.selectedAnswers = {};
     this.quizSubmitted = false;
-    
+
     // Load MCQs directly from lesson object
     this.currentExercises = lesson.mcq || lesson.exercises || [];
-    
+
+    // Update video URL
+    this.currentVideoUrl = lesson.videoUrl;
+    this.videoKey = Date.now();
+
     // Trigger change detection
     this.cdr.detectChanges();
   }
@@ -236,7 +236,7 @@ export class CourseVideos implements OnInit {
       if (quizElement) {
         quizElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100);
+    }, 300);
   }
 
   selectAnswer(questionIndex: number, answerIndex: number) {
@@ -266,7 +266,7 @@ export class CourseVideos implements OnInit {
 
   submitQuiz() {
     if (this.quizSubmitted) return;
-    
+
     let correct = 0;
     this.currentExercises.forEach((exercise, questionIndex) => {
       const selectedAnswerIndex = this.selectedAnswers[questionIndex];
@@ -280,7 +280,7 @@ export class CourseVideos implements OnInit {
 
     this.quizScore = {
       correct: correct,
-      total: this.currentExercises.length
+      total: this.currentExercises.length,
     };
     this.quizSubmitted = true;
   }
@@ -292,6 +292,27 @@ export class CourseVideos implements OnInit {
     this.quizSubmitted = false;
   }
 
+  // Helper methods for template
+  getCharCode(index: number): string {
+    return String.fromCharCode(65 + index); // A, B, C, D...
+  }
+
+  getObjectKeys(obj: any): string[] {
+    return Object.keys(obj);
+  }
+
+  floor(value: number): number {
+    return Math.floor(value);
+  }
+
+  getLessonSubtitle(lesson: Lesson, index: number): string {
+    if (lesson.subtitle) {
+      return lesson.subtitle;
+    }
+    const duration = lesson.durationInMinutes || this.floor((lesson.duration || 0) / 60);
+    return `Lesson ${index + 1} · ${duration} min`;
+  }
+
   enrollInCourse() {
     if (!this.isLoggedIn) {
       this.router.navigate(['/login'], {
@@ -300,12 +321,12 @@ export class CourseVideos implements OnInit {
       return;
     }
 
-    this.loadingEnroll = true; // ⏳ Start loader
+    this.loadingEnroll = true;
 
     if (this.course && this.course.coursePrice > 0) {
       this.materialService.goToPayment(this.courseId).subscribe({
         next: (response: any) => {
-          this.loadingEnroll = false; // ✅ Stop loader
+          this.loadingEnroll = false;
           if (response.status === 200 && response.message) {
             localStorage.removeItem('enrolledCourses');
             window.location.href = response.message;
@@ -316,11 +337,11 @@ export class CourseVideos implements OnInit {
         error: (err) => {
           console.error('Payment error:', err);
           alert('Payment error occurred.');
-          this.loadingEnroll = false; // ❌ Stop loader even on error
+          this.loadingEnroll = false;
         },
       });
     } else {
-      // ✅ Free course — enroll immediately
+      // Free course – enroll immediately
       const enrolled = localStorage.getItem('enrolledCourses');
       let enrolledCourses: number[] = enrolled ? JSON.parse(enrolled) : [];
 
@@ -332,7 +353,7 @@ export class CourseVideos implements OnInit {
         console.log('Enrolled in free course:', this.courseId);
       }
 
-      this.loadingEnroll = false; // ✅ Stop loader
+      this.loadingEnroll = false;
     }
   }
 

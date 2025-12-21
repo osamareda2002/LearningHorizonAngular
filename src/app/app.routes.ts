@@ -20,6 +20,7 @@ import { ZoomMeetingComponent } from './zoom-meeting/zoom-meeting';
 import { QuizzesComponent } from './quizzes/quizzes';
 import { AddQuizComponent } from './quizzes/add-quiz/add-quiz';
 import { TakeQuizComponent } from './quizzes/take-quiz/take-quiz';
+import { CourseLessonsComponent } from './course-lessons/course-lessons';
 
 export const routes: Routes = [
   { path: '', component: SplashComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'additional-info', component: AdditionalInfo },
   { path: 'home', component: Home },
   { path: 'material', component: Material },
+  { path: 'course-lessons/:id', component: CourseLessonsComponent },
   { path: 'course-videos/:id', component: CourseVideos },
   { path: 'add', component: Add, canActivate: [AuthGuard] },
   { path: 'edit-delete', component: EditDelete, canActivate: [AuthGuard] },

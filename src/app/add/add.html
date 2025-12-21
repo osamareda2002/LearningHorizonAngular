@@ -661,7 +661,7 @@
           <div class="mcq-list-item-content">
             <div class="mcq-list-item-number">Q {{ i + 1 }} /</div>
             <div class="mcq-list-item-question">
-              {{ exercise.questionText }}
+              {{ exercise.questionText || 'Which nerve provides sensation to the .......' }}
             </div>
           </div>
           <div class="mcq-list-item-actions">
@@ -681,14 +681,14 @@
             >
               <i class="bi bi-pencil"></i>
             </button>
-            <!-- <button
+            <button
               type="button"
               class="mcq-list-action-btn mcq-list-action-reorder"
               title="Reorder MCQ"
               disabled
             >
               <i class="bi bi-list"></i>
-            </button> -->
+            </button>
           </div>
         </div>
       </div>

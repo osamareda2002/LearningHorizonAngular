@@ -466,8 +466,9 @@ export class Add implements OnInit {
     if (!exercise) return;
 
     // Find the correct answer
-    const correctAnswerIndex = exercise.answers.findIndex(ans => ans.isCorrect === true);
-    const correctAnswerLetter = correctAnswerIndex >= 0 ? ['A', 'B', 'C', 'D'][correctAnswerIndex] : 'A';
+    const correctAnswerIndex = exercise.answers.findIndex((ans) => ans.isCorrect === true);
+    const correctAnswerLetter =
+      correctAnswerIndex >= 0 ? ['A', 'B', 'C', 'D'][correctAnswerIndex] : 'A';
 
     // Populate the form with existing data
     this.mcqForm.patchValue({
@@ -595,7 +596,7 @@ export class Add implements OnInit {
     const wasEditing = this.editingMcqIndex !== null;
     this.resetMcqModal();
     this.closeMCQModal();
-    
+
     // If we were editing from the list modal, reopen it after saving
     if (wasEditing) {
       this.showMCQListModal = true;

@@ -23,14 +23,21 @@
 
       <!-- Video Player -->
       <div class="video-player-wrapper">
-        <app-video-player
+        <video
           *ngIf="currentVideoUrl && currentLesson"
-          #videoPlayer
           [src]="currentVideoUrl"
-          [controls]="true"
-          [autoplay]="false"
-          [muted]="false"
-        ></app-video-player>
+          controls
+          class="video-player"
+          preload="metadata"
+          controlsList="nodownload"
+          (ended)="onVideoEnded()"
+        >
+          Your browser does not support the video tag.
+        </video>
+        <div *ngIf="!currentVideoUrl || !currentLesson" class="video-placeholder">
+          <i class="bi bi-play-circle"></i>
+          <p>Select a lesson to watch</p>
+        </div>
       </div>
 
       <!-- Start MCQ Quiz Button -->
@@ -103,7 +110,7 @@
                   (change)="selectAnswer(questionIndex, answerIndex)"
                   [disabled]="quizSubmitted"
                 />
-                <span class="mcq-answer-letter">{{ String.fromCharCode(65 + answerIndex) }}</span>
+                <span class="mcq-answer-letter">{{ getCharCode(answerIndex) }}</span>
                 <span class="mcq-answer-text">{{ answer.answerText }}</span>
                 <i
                   *ngIf="quizSubmitted && answer.isCorrect"
@@ -155,7 +162,7 @@
             *ngIf="!quizSubmitted"
             class="btn-submit-quiz"
             (click)="submitQuiz()"
-            [disabled]="Object.keys(selectedAnswers).length < currentExercises.length"
+            [disabled]="getObjectKeys(selectedAnswers).length < currentExercises.length"
           >
             Submit Quiz
           </button>
@@ -201,14 +208,7 @@
             <div class="lesson-info">
               <h4>{{ lesson.title }}</h4>
               <p>
-                {{
-                  lesson.subtitle ||
-                    'Lesson ' +
-                      (i + 1) +
-                      ' · ' +
-                      (lesson.durationInMinutes || Math.floor((lesson.duration || 0) / 60)) +
-                      ' min'
-                }}
+                {{ lesson.subtitle || getLessonSubtitle(lesson, i) }}
               </p>
             </div>
 

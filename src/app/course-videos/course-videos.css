@@ -3,8 +3,11 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px;
   position: relative;
-  overflow-y: auto;
+  overflow-y: scroll !important;
   overflow-x: hidden;
+  height: 100vh;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Loading Overlay */
@@ -55,6 +58,8 @@
   max-width: 1600px;
   margin: 0 auto;
   align-items: start;
+  min-height: fit-content;
+  padding-bottom: 40px;
 }
 
 /* Left Section */
@@ -63,12 +68,35 @@
   border-radius: 20px;
   padding: 40px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  overflow-y: visible;
+  overflow-y: auto; /* FIXED: Enable scrolling */
   overflow-x: hidden;
   min-height: fit-content;
+  max-width: 100%;
+  max-height: calc(100vh - 120px); /* FIXED: Add max height */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Back Button - Professional Style */
+/* Scrollbar for left section */
+.left-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left-section::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.left-section::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.left-section::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Back Button */
 .btn-back {
   display: inline-flex;
   align-items: center;
@@ -92,10 +120,6 @@
   background: rgba(102, 126, 234, 0.05);
   transform: translateX(-5px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-}
-
-.btn-back:active {
-  transform: translateX(-3px);
 }
 
 .btn-back i {
@@ -135,6 +159,32 @@
   margin-bottom: 30px;
   position: relative;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  gap: 15px;
+}
+
+.video-placeholder i {
+  font-size: 64px;
+  opacity: 0.5;
+}
+
+.video-placeholder p {
+  font-size: 18px;
+  margin: 0;
 }
 
 .video-player {
@@ -142,6 +192,8 @@
   height: auto;
   aspect-ratio: 16 / 9;
   display: block;
+  background: #000;
+  border-radius: 12px;
 }
 
 /* Lesson Actions */
@@ -199,7 +251,7 @@
 /* Start MCQ Quiz Button */
 .btn-start-mcq {
   width: 100%;
-  background: #4A90E2;
+  background: #4a90e2;
   color: white;
   border: none;
   padding: 16px 24px;
@@ -217,7 +269,7 @@
 }
 
 .btn-start-mcq:hover {
-  background: #357ABD;
+  background: #357abd;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
 }
@@ -235,6 +287,8 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
+  max-height: none;
+  overflow: visible;
 }
 
 .mcq-quiz-header {
@@ -257,7 +311,7 @@
 }
 
 .mcq-quiz-title i {
-  color: #4A90E2;
+  color: #4a90e2;
   font-size: 28px;
 }
 
@@ -274,6 +328,7 @@
   transition: all 0.3s;
   color: #666;
   font-size: 18px;
+  flex-shrink: 0;
 }
 
 .btn-close-quiz:hover {
@@ -294,6 +349,17 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .mcq-question-header {
   display: flex;
   align-items: flex-start;
@@ -304,7 +370,7 @@
 .mcq-question-icon {
   width: 40px;
   height: 40px;
-  background: #4A90E2;
+  background: #4a90e2;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -342,8 +408,6 @@
   border-radius: 8px;
 }
 
-/* Ensure quiz section is visible and scrollable - removing duplicate */
-
 .mcq-answers {
   display: flex;
   flex-direction: column;
@@ -365,12 +429,12 @@
 }
 
 .mcq-answer-option:hover:not(.selected):not(:has(input:disabled)) {
-  border-color: #4A90E2;
+  border-color: #4a90e2;
   background: rgba(74, 144, 226, 0.05);
 }
 
 .mcq-answer-option.selected {
-  border-color: #4A90E2;
+  border-color: #4a90e2;
   background: rgba(74, 144, 226, 0.1);
 }
 
@@ -384,22 +448,22 @@
   background: rgba(255, 68, 68, 0.1);
 }
 
-.mcq-answer-option input[type="radio"] {
+.mcq-answer-option input[type='radio'] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #4A90E2;
+  accent-color: #4a90e2;
   flex-shrink: 0;
 }
 
-.mcq-answer-option input[type="radio"]:disabled {
+.mcq-answer-option input[type='radio']:disabled {
   cursor: not-allowed;
 }
 
 .mcq-answer-letter {
   width: 36px;
   height: 36px;
-  background: #4A90E2;
+  background: #4a90e2;
   color: white;
   border-radius: 8px;
   display: flex;
@@ -423,6 +487,8 @@
   font-size: 16px;
   color: #333;
   line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .correct-icon {
@@ -441,7 +507,7 @@
   margin-top: 20px;
   padding: 20px;
   background: #f9f9f9;
-  border-left: 4px solid #4A90E2;
+  border-left: 4px solid #4a90e2;
   border-radius: 8px;
   font-size: 15px;
   color: #555;
@@ -457,6 +523,7 @@
 .mcq-quiz-actions {
   padding-top: 30px;
   border-top: 2px solid #e0e0e0;
+  margin-top: 30px;
 }
 
 .mcq-quiz-nav {
@@ -480,11 +547,12 @@
   align-items: center;
   gap: 8px;
   transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .btn-quiz-nav:hover:not(:disabled) {
-  background: #4A90E2;
-  border-color: #4A90E2;
+  background: #4a90e2;
+  border-color: #4a90e2;
   color: white;
 }
 
@@ -513,6 +581,7 @@
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  margin-top: 20px;
 }
 
 .btn-submit-quiz:hover:not(:disabled) {
@@ -525,12 +594,17 @@
   cursor: not-allowed;
 }
 
+/* FIXED: Quiz Results Styling */
 .quiz-results {
   text-align: center;
   padding: 30px;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
   border-radius: 12px;
   margin-top: 20px;
+}
+
+.quiz-score {
+  padding: 0;
 }
 
 .quiz-score h3 {
@@ -613,23 +687,22 @@
   padding-right: 10px;
 }
 
-/* Custom Scrollbar */
 .lessons-list::-webkit-scrollbar {
   width: 8px;
 }
 
 .lessons-list::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
 }
 
 .lessons-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
 }
 
 .lessons-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* Lesson Item */
@@ -655,7 +728,6 @@
   background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
   color: white;
   box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
-  border-color: transparent;
 }
 
 .lesson-item.active .lesson-info h4,
@@ -666,11 +738,6 @@
 .lesson-item.locked {
   opacity: 0.7;
   cursor: pointer;
-}
-
-.lesson-item.locked:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .lesson-number {
@@ -690,10 +757,6 @@
 
 .lesson-number i {
   font-size: 22px;
-  color: white;
-}
-
-.lesson-item.active .lesson-number i {
   color: white;
 }
 
@@ -719,10 +782,6 @@
 
 .lesson-item.active .lesson-info h4 {
   color: white;
-}
-
-.lesson-item.locked .lesson-info h4 {
-  color: #666;
 }
 
 .lesson-info p {
@@ -754,7 +813,6 @@
 .lesson-lock-icon {
   color: #999;
   font-size: 18px;
-  margin-left: 8px;
   flex-shrink: 0;
 }
 
@@ -762,7 +820,7 @@
   color: #764ba2;
 }
 
-/* Locked Lesson Modal */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -774,11 +832,11 @@
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeInModal 0.3s ease-out;
   backdrop-filter: blur(5px);
 }
 
-@keyframes fadeIn {
+@keyframes fadeInModal {
   from {
     opacity: 0;
   }
@@ -796,7 +854,6 @@
   text-align: center;
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
-  position: relative;
 }
 
 @keyframes slideUp {
@@ -968,58 +1025,146 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
 }
-
-/* Responsive */
+/* ============================= */
+/* RESPONSIVE - Tablet/Desktop (1200px) */
+/* ============================= */
 @media (max-width: 1200px) {
   .content-wrapper {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 25px;
+    max-width: 100%;
   }
 
   .right-section {
-    max-height: none;
-    order: -1;
+    max-height: 450px;
+    order: 2;
     position: relative;
     top: 0;
   }
+
+  .left-section {
+    order: 1;
+  }
 }
 
-@media (max-width: 768px) {
+/* ============================= */
+/* RESPONSIVE - Large Tablet (992px) */
+/* ============================= */
+@media (max-width: 992px) {
   .course-videos-container {
-    padding: 15px;
-    overflow-y: visible;
-    overflow-x: hidden;
+    padding: 25px 20px;
   }
 
   .content-wrapper {
-    gap: 15px;
+    gap: 20px;
   }
 
   .left-section {
-    padding: 20px 15px;
+    padding: 30px 25px;
+  }
+
+  .right-section {
+    padding: 25px 20px;
+    max-height: 400px;
   }
 
   .course-title {
-    font-size: 22px;
+    font-size: 28px;
+  }
+}
+
+/* ============================= */
+/* RESPONSIVE - Tablet (768px) */
+/* ============================= */
+@media (max-width: 768px) {
+  .course-videos-container {
+    padding: 20px 15px;
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
   }
 
-  .btn-back {
-    padding: 10px 18px;
-    font-size: 14px;
+  .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-bottom: 30px;
   }
 
-  .btn-back span {
-    display: none;
+  .left-section {
+    padding: 25px 20px;
+    border-radius: 15px;
+    order: 1;
+    max-height: none; /* Remove height restriction on mobile */
+    overflow-y: auto;
   }
 
-  .video-player-wrapper {
+  .right-section {
+    padding: 20px 18px;
+    border-radius: 15px;
+    order: 2;
+    position: relative;
+    top: 0;
+    max-height: 400px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .course-header {
     margin-bottom: 20px;
   }
 
+  .course-title {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .title-underline {
+    width: 50px;
+    height: 3px;
+  }
+
+  .btn-back {
+    padding: 10px 20px;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  /* Video Player */
+  .video-player-wrapper {
+    min-height: 250px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+  }
+
+  .video-placeholder {
+    min-height: 250px;
+  }
+
+  .video-placeholder i {
+    font-size: 52px;
+  }
+
+  .video-placeholder p {
+    font-size: 16px;
+  }
+
+  .video-player {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Lesson Actions */
   .lesson-actions {
     flex-direction: column;
-    align-items: stretch;
     gap: 15px;
+  }
+
+  .current-lesson-info {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .current-lesson-info i {
+    font-size: 24px;
   }
 
   .current-lesson-info h2 {
@@ -1028,124 +1173,354 @@
 
   .btn-enroll {
     width: 100%;
-    justify-content: center;
-    padding: 12px 20px;
+    padding: 12px 24px;
     font-size: 15px;
+    justify-content: center;
   }
 
-  .btn-enroll:disabled {
-    opacity: 0.8;
-    cursor: not-allowed;
+  /* Start MCQ Button */
+  .btn-start-mcq {
+    padding: 14px 22px;
+    font-size: 15px;
+    margin-top: 15px;
   }
 
-  .loader {
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid white;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    vertical-align: middle;
+  /* MCQ Quiz Section */
+  .mcq-quiz-section {
+    padding: 25px 20px;
+    margin-top: 20px;
+    border-radius: 15px;
   }
 
-  @keyframes spin {
-    100% {
-      transform: rotate(360deg);
-    }
+  .mcq-quiz-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
   }
 
-  .right-section {
-    padding: 20px 15px;
+  .mcq-quiz-title {
+    font-size: 20px;
+    flex: 1;
+  }
+
+  .mcq-quiz-title i {
+    font-size: 24px;
+  }
+
+  .btn-close-quiz {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .mcq-question-container {
+    margin-bottom: 25px;
+  }
+
+  .mcq-question-header {
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 20px;
   }
 
+  .mcq-question-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mcq-question-icon i {
+    font-size: 19px;
+  }
+
+  .mcq-question-text {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .mcq-question-image {
+    margin-bottom: 20px;
+  }
+
+  .mcq-question-image img {
+    max-height: 300px;
+    border-radius: 10px;
+  }
+
+  .mcq-answers {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .mcq-answer-option {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .mcq-answer-letter {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .mcq-answer-text {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .correct-icon,
+  .wrong-icon {
+    font-size: 22px;
+  }
+
+  .mcq-explanation {
+    margin-top: 18px;
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  .mcq-quiz-actions {
+    padding-top: 25px;
+  }
+
+  .mcq-quiz-nav {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .btn-quiz-nav {
+    padding: 11px 20px;
+    font-size: 14px;
+    flex: 0 0 auto;
+  }
+
+  .quiz-progress {
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .btn-submit-quiz {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+
+  .quiz-results {
+    padding: 25px 20px;
+    margin-top: 20px;
+  }
+
+  .quiz-score {
+    padding: 0;
+  }
+
+  .score-circle {
+    margin-bottom: 12px;
+  }
+
+  .score-value {
+    font-size: 40px;
+  }
+
+  .score-total {
+    font-size: 28px;
+  }
+
+  .quiz-score h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .score-percentage {
+    font-size: 18px;
+  }
+
+  /* Lessons Sidebar */
+  .lessons-header {
+    margin-bottom: 18px;
+  }
+
+  .lessons-header i {
+    font-size: 24px;
+  }
+
   .lessons-header h3 {
-    font-size: 20px;
+    font-size: 22px;
+  }
+
+  .lessons-list {
+    gap: 12px;
+    padding-right: 8px;
   }
 
   .lesson-item {
-    padding: 15px;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .lesson-number {
+    width: 42px;
+    height: 42px;
+  }
+
+  .lesson-number i {
+    font-size: 20px;
   }
 
   .lesson-info h4 {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .lesson-info p {
     font-size: 12px;
   }
 
-  .btn-start-mcq {
-    padding: 14px 20px;
-    font-size: 15px;
+  .free-badge {
+    font-size: 10px;
+    padding: 4px 10px;
   }
 
-  .mcq-quiz-section {
-    padding: 20px 15px;
-    margin-top: 20px;
-  }
-
-  .mcq-quiz-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .mcq-quiz-title {
-    font-size: 20px;
-    width: 100%;
-  }
-
-  .btn-close-quiz {
-    align-self: flex-end;
-  }
-
-  .mcq-question-text {
-    font-size: 18px;
-  }
-
-  .mcq-answer-option {
-    padding: 15px;
-    gap: 12px;
-  }
-
-  .mcq-answer-text {
-    font-size: 15px;
-  }
-
-  .mcq-quiz-nav {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .btn-quiz-nav {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .quiz-progress {
-    order: -1;
-  }
-
+  /* Modal */
   .modal-content {
-    padding: 30px 20px;
+    padding: 35px 25px;
+    max-width: 85%;
+  }
+
+  .modal-icon {
+    width: 75px;
+    height: 75px;
+  }
+
+  .modal-icon i {
+    font-size: 38px;
+  }
+
+  .modal-content h3 {
+    font-size: 24px;
+  }
+
+  .modal-content p {
+    font-size: 15px;
+    margin-bottom: 28px;
   }
 
   .modal-actions {
     flex-direction: column;
+    gap: 12px;
   }
 
   .btn-modal-cancel,
   .btn-modal-enroll {
     width: 100%;
-    justify-content: center;
+    padding: 13px 28px;
   }
 
+  /* Success Toast */
   .success-toast {
     bottom: 20px;
-    right: 20px;
-    left: 20px;
+    right: 15px;
+    left: 15px;
+    padding: 16px 22px;
+  }
+
+  .left-section::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .left-section {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+}
+
+/* ============================= */
+/* RESPONSIVE - Mobile (600px) */
+/* ============================= */
+@media (max-width: 600px) {
+  .course-videos-container {
+    padding: 15px 12px;
+  }
+
+  .content-wrapper {
+    gap: 18px;
+  }
+
+  .left-section {
+    padding: 20px 15px;
+  }
+
+  .right-section {
+    padding: 18px 15px;
+    max-height: 350px;
+  }
+
+  .course-title {
+    font-size: 20px;
+  }
+
+  .btn-back {
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+
+  .btn-back span {
+    font-size: 13px;
+  }
+
+  /* Video */
+  .video-player-wrapper {
+    min-height: 220px;
+    margin-bottom: 18px;
+  }
+
+  .video-placeholder {
+    min-height: 220px;
+  }
+
+  .video-placeholder i {
+    font-size: 46px;
+  }
+
+  .video-placeholder p {
+    font-size: 15px;
+  }
+
+  .current-lesson-info i {
+    font-size: 22px;
+  }
+
+  .current-lesson-info h2 {
+    font-size: 16px;
+  }
+
+  .btn-enroll {
+    padding: 11px 20px;
+    font-size: 14px;
+  }
+
+  .btn-start-mcq {
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+
+  /* MCQ Quiz */
+
+  .quiz-results {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
+
+  .quiz-score h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .score-circle {
+    margin-bottom: 10px;
   }
 
   .score-value {
@@ -1155,28 +1530,34 @@
   .score-total {
     font-size: 24px;
   }
-}
 
-@media (max-width: 480px) {
-  .course-videos-container {
-    padding: 10px;
+  .score-percentage {
+    font-size: 16px;
   }
 
-  .left-section {
-    padding: 15px 10px;
+  /* FIX: Ensure submit button is visible */
+  .mcq-quiz-actions {
+    padding-top: 20px;
+    margin-top: 20px;
   }
 
-  .course-title {
-    font-size: 20px;
-  }
-
-  .btn-back {
-    padding: 8px 12px;
-    font-size: 12px;
+  .btn-submit-quiz {
+    width: 100%;
+    padding: 13px 20px;
+    font-size: 14px;
+    margin-top: 15px;
   }
 
   .mcq-quiz-section {
-    padding: 15px 10px;
+    padding: 20px 15px;
+  }
+
+  .mcq-quiz-title {
+    font-size: 18px;
+  }
+
+  .mcq-quiz-title i {
+    font-size: 22px;
   }
 
   .mcq-question-text {
@@ -1184,7 +1565,7 @@
   }
 
   .mcq-answer-option {
-    padding: 12px;
+    padding: 12px 14px;
     gap: 10px;
   }
 
@@ -1196,5 +1577,591 @@
 
   .mcq-answer-text {
     font-size: 14px;
+  }
+
+  .mcq-explanation {
+    padding: 14px;
+    font-size: 13px;
+  }
+
+  .btn-quiz-nav {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .quiz-progress {
+    font-size: 13px;
+  }
+
+  .btn-submit-quiz {
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+
+  /* Lessons */
+  .lessons-header h3 {
+    font-size: 20px;
+  }
+
+  .lesson-item {
+    padding: 12px;
+  }
+
+  .lesson-number {
+    width: 38px;
+    height: 38px;
+  }
+
+  .lesson-number i {
+    font-size: 18px;
+  }
+
+  .lesson-info h4 {
+    font-size: 14px;
+  }
+
+  .lesson-info p {
+    font-size: 11px;
+  }
+}
+
+/* ============================= */
+/* RESPONSIVE - Small Mobile (480px) */
+/* ============================= */
+@media (max-width: 480px) {
+  .course-videos-container {
+    padding: 12px 10px;
+  }
+
+  .content-wrapper {
+    gap: 15px;
+  }
+
+  .left-section {
+    padding: 18px 12px;
+    border-radius: 12px;
+  }
+
+  .right-section {
+    padding: 15px 12px;
+    max-height: 320px;
+    border-radius: 12px;
+  }
+
+  .course-header {
+    margin-bottom: 15px;
+  }
+
+  .course-title {
+    font-size: 18px;
+  }
+
+  .title-underline {
+    width: 40px;
+    height: 3px;
+  }
+
+  .btn-back {
+    padding: 8px 14px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .btn-back i {
+    font-size: 16px;
+  }
+
+  /* Video */
+  .video-player-wrapper {
+    min-height: 190px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+  }
+
+  .video-placeholder {
+    min-height: 190px;
+  }
+
+  .video-placeholder i {
+    font-size: 40px;
+  }
+
+  .video-placeholder p {
+    font-size: 14px;
+  }
+
+  .lesson-actions {
+    gap: 12px;
+  }
+
+  .current-lesson-info {
+    gap: 10px;
+  }
+
+  .current-lesson-info i {
+    font-size: 20px;
+  }
+
+  .current-lesson-info h2 {
+    font-size: 15px;
+  }
+
+  .btn-enroll {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
+  .btn-start-mcq {
+    padding: 12px 18px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  /* MCQ Quiz */
+  .mcq-quiz-section {
+    padding: 18px 12px;
+    margin-top: 15px;
+    border-radius: 12px;
+  }
+
+  .mcq-quiz-header {
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+  }
+
+  .mcq-quiz-title {
+    font-size: 16px;
+  }
+
+  .mcq-quiz-title i {
+    font-size: 20px;
+  }
+
+  .btn-close-quiz {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+  }
+
+  .mcq-question-header {
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .mcq-question-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .mcq-question-icon i {
+    font-size: 17px;
+  }
+
+  .mcq-question-text {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .mcq-question-image {
+    margin-bottom: 18px;
+  }
+
+  .mcq-question-image img {
+    max-height: 220px;
+    border-radius: 8px;
+  }
+
+  .mcq-answers {
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .mcq-answer-option {
+    padding: 11px 12px;
+    gap: 9px;
+    border-radius: 10px;
+  }
+
+  .mcq-answer-letter {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    border-radius: 7px;
+  }
+
+  .mcq-answer-text {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .correct-icon,
+  .wrong-icon {
+    font-size: 20px;
+  }
+
+  .mcq-explanation {
+    margin-top: 15px;
+    padding: 12px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .mcq-quiz-actions {
+    padding-top: 20px;
+  }
+
+  .mcq-quiz-nav {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .btn-quiz-nav {
+    padding: 9px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .quiz-progress {
+    font-size: 12px;
+  }
+
+  .btn-submit-quiz {
+    padding: 12px 18px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .quiz-results {
+    padding: 20px 15px;
+    border-radius: 10px;
+  }
+
+  .quiz-results {
+    padding: 18px 12px;
+    border-radius: 10px;
+    margin-top: 15px;
+  }
+
+  .quiz-score h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .score-circle {
+    margin-bottom: 8px;
+  }
+
+  .score-value {
+    font-size: 32px;
+  }
+
+  .score-total {
+    font-size: 22px;
+  }
+
+  .score-percentage {
+    font-size: 15px;
+  }
+
+  /* FIX: Ensure all quiz content is scrollable */
+  .mcq-quiz-section {
+    padding: 18px 12px;
+    margin-top: 15px;
+    border-radius: 12px;
+    overflow: visible;
+  }
+
+  .mcq-question-container {
+    margin-bottom: 20px;
+  }
+
+  .btn-submit-quiz {
+    padding: 12px 18px;
+    font-size: 13px;
+    border-radius: 10px;
+    margin-top: 12px;
+  }
+
+  /* Lessons */
+  .lessons-header {
+    margin-bottom: 15px;
+  }
+
+  .lessons-header i {
+    font-size: 22px;
+  }
+
+  .lessons-header h3 {
+    font-size: 18px;
+  }
+
+  .lessons-list {
+    gap: 10px;
+    padding-right: 5px;
+  }
+
+  .lesson-item {
+    padding: 11px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .lesson-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .lesson-number i {
+    font-size: 17px;
+  }
+
+  .lesson-info h4 {
+    font-size: 13px;
+  }
+
+  .lesson-info p {
+    font-size: 11px;
+  }
+
+  .free-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+
+  .lesson-lock-icon {
+    font-size: 15px;
+  }
+
+  /* Modal */
+  .modal-content {
+    padding: 28px 20px;
+    border-radius: 18px;
+  }
+
+  .modal-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 22px;
+  }
+
+  .modal-icon i {
+    font-size: 35px;
+  }
+
+  .modal-content h3 {
+    font-size: 21px;
+    margin-bottom: 12px;
+  }
+
+  .modal-content p {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .btn-modal-cancel,
+  .btn-modal-enroll {
+    padding: 12px 24px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  /* Toast */
+  .success-toast {
+    padding: 14px 18px;
+    border-radius: 12px;
+  }
+
+  .success-toast i {
+    font-size: 22px;
+  }
+
+  .success-toast span {
+    font-size: 13px;
+  }
+}
+
+/* ============================= */
+/* RESPONSIVE - Extra Small (360px) */
+/* ============================= */
+@media (max-width: 360px) {
+  .course-videos-container {
+    padding: 10px 8px;
+  }
+
+  .left-section {
+    padding: 15px 10px;
+  }
+
+  .right-section {
+    padding: 12px 10px;
+    max-height: 300px;
+  }
+
+  .course-title {
+    font-size: 16px;
+  }
+
+  .btn-back {
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+
+  .video-player-wrapper {
+    min-height: 170px;
+  }
+
+  .video-placeholder {
+    min-height: 170px;
+  }
+
+  .video-placeholder i {
+    font-size: 36px;
+  }
+
+  .video-placeholder p {
+    font-size: 13px;
+  }
+
+  .current-lesson-info h2 {
+    font-size: 14px;
+  }
+
+  .quiz-results {
+    padding: 15px 10px;
+  }
+
+  .quiz-score h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .score-value {
+    font-size: 28px;
+  }
+
+  .score-total {
+    font-size: 20px;
+  }
+
+  .score-percentage {
+    font-size: 14px;
+  }
+
+  .btn-submit-quiz {
+    padding: 11px 16px;
+    font-size: 12px;
+  }
+
+  .mcq-quiz-section {
+    padding: 15px 10px;
+  }
+
+  .mcq-quiz-title {
+    font-size: 15px;
+  }
+
+  .mcq-question-text {
+    font-size: 14px;
+  }
+
+  .mcq-answer-option {
+    padding: 10px;
+  }
+
+  .mcq-answer-letter {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .mcq-answer-text {
+    font-size: 12px;
+  }
+
+  .lesson-item {
+    padding: 10px;
+  }
+
+  .lesson-number {
+    width: 34px;
+    height: 34px;
+  }
+
+  .lesson-number i {
+    font-size: 16px;
+  }
+
+  .lesson-info h4 {
+    font-size: 12px;
+  }
+}
+
+/* ============================= */
+/* Touch Device Optimizations */
+/* ============================= */
+@media (hover: none) and (pointer: coarse) {
+  .lesson-item,
+  .mcq-answer-option,
+  .btn-quiz-nav,
+  .btn-submit-quiz,
+  .btn-start-mcq,
+  .btn-back,
+  .btn-enroll,
+  .btn-modal-cancel,
+  .btn-modal-enroll {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .lesson-item:active,
+  .mcq-answer-option:active {
+    transform: scale(0.98);
+  }
+
+  .btn-quiz-nav:active,
+  .btn-submit-quiz:active,
+  .btn-start-mcq:active {
+    transform: translateY(0);
+  }
+}
+
+/* ============================= */
+/* Scrollbar Styling */
+/* ============================= */
+.right-section::-webkit-scrollbar,
+.lessons-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right-section::-webkit-scrollbar-track,
+.lessons-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.right-section::-webkit-scrollbar-thumb,
+.lessons-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.right-section::-webkit-scrollbar-thumb:hover,
+.lessons-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .right-section::-webkit-scrollbar,
+  .lessons-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .right-section,
+  .lessons-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
 }
