@@ -95,12 +95,8 @@
                 *ngFor="let answer of exercise.answers; let answerIndex = index"
                 class="mcq-answer-option"
                 [class.selected]="selectedAnswers[questionIndex] === answerIndex"
-                [class.correct]="quizSubmitted && answer.isCorrect"
-                [class.wrong]="
-                  quizSubmitted &&
-                  selectedAnswers[questionIndex] === answerIndex &&
-                  !answer.isCorrect
-                "
+                [class.correct]="selectedAnswers[questionIndex] !== undefined && answer.isCorrect"
+                [class.wrong]="selectedAnswers[questionIndex] === answerIndex && !answer.isCorrect"
               >
                 <input
                   type="radio"
