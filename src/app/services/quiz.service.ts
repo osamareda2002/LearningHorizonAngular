@@ -119,4 +119,3 @@ export class QuizService {
     return this.http.get(`${this.apiUrl}/RemoveQuestion?questionId=${questionId}`);
   }
 }
-

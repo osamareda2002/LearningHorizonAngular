@@ -6,5 +6,5 @@ export const environment = {
   auth: 'https://learninghorizion.runasp.net/api/Auth',
   // horizon: 'https://localhost:7020/api/Horizon',
   // auth: 'https://localhost:7020/api/Auth',
-  zoomSdkKey: 'Bfu3B1AkQ5G__smx9lmTzA',
+  zoomSdkKey: 'ko1hsl4GQV2GAfyl8oguQ',
 };

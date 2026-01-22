@@ -22,14 +22,15 @@ export class QuizzesComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
-
+  showDeleteConfirm = false;
+  DeletedExam: DtoGetExam = {};
   upcomingExams: DtoGetExam[] = [];
   allExams: DtoGetExam[] = [];
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private quizService: QuizService
+    private quizService: QuizService,
   ) {}
 
   ngOnInit() {
@@ -108,10 +109,22 @@ export class QuizzesComponent implements OnInit {
     this.router.navigate(['/quizzes/take', exam.id]);
   }
 
-  deleteQuiz(exam: DtoGetExam) {
-    if (!exam.id) return;
-    if (!confirm('Are you sure you want to delete this quiz?')) return;
+  deleteQuiz2(exam: DtoGetExam) {
+    this.showDeleteConfirm = true;
+    this.DeletedExam = exam;
+  }
+  closeModals() {
+    this.showDeleteConfirm = false;
+  }
 
+  cancelDelete() {
+    this.showDeleteConfirm = false;
+  }
+
+  confirmDelete() {
+    let exam = this.DeletedExam;
+
+    if (!exam.id) return;
     this.quizService.deleteExam(exam.id).subscribe({
       next: (res: any) => {
         if (res?.status === 200) {
@@ -126,10 +139,12 @@ export class QuizzesComponent implements OnInit {
             this.errorMessage = '';
           }, 3000);
         }
+        this.showDeleteConfirm = false;
       },
       error: (err) => {
         console.error('Failed to delete quiz:', err);
         this.errorMessage = 'Failed to delete quiz';
+        this.showDeleteConfirm = false;
         setTimeout(() => {
           this.errorMessage = '';
         }, 3000);
@@ -137,7 +152,9 @@ export class QuizzesComponent implements OnInit {
     });
   }
 
-  getExamStatus(exam: DtoGetExam): 'not-started' | 'running-not-started' | 'running-started' | 'finished' {
+  getExamStatus(
+    exam: DtoGetExam,
+  ): 'not-started' | 'running-not-started' | 'running-started' | 'finished' {
     if (!exam.startTime) return 'not-started';
     const startTime = moment(exam.startTime);
     const now = moment();
@@ -145,7 +162,7 @@ export class QuizzesComponent implements OnInit {
     const endTime = startTime.clone().add(duration, 'minutes');
 
     // Check if exam has finished
-    if (exam.userFinished || (now > endTime)) {
+    if (exam.userFinished || now > endTime) {
       return 'finished';
     }
 
@@ -234,4 +251,3 @@ export class QuizzesComponent implements OnInit {
     return this.isAdmin ? this.allExams : this.upcomingExams;
   }
 }
-
