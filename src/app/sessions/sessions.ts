@@ -35,7 +35,7 @@ interface MeetingInfo {
 export class SessionsComponent implements OnInit, OnDestroy {
   private apiUrl = `${environment.horizon}`;
   private refreshInterval: any = null;
-  private readonly REFRESH_INTERVAL_MS = 5000; // Refresh every 5 seconds
+  private readonly REFRESH_INTERVAL_MS = 5000;
 
   isLoggedIn = false;
   isAdmin = false;
@@ -51,12 +51,15 @@ export class SessionsComponent implements OnInit, OnDestroy {
   meetings: MeetingInfo[] = [];
   meetingForm!: FormGroup;
   showAddMeetingModal = false;
+  showDeleteConfirmModal = false;
+  meetingToDelete: MeetingInfo | null = null;
+  deleting = false;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -74,7 +77,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
     this.initializeForm();
     this.loadMeetings();
 
-    // Start auto-refresh for meeting status (only if not admin, as admin doesn't need to wait)
     if (!this.isAdmin) {
       this.startAutoRefresh();
     }
@@ -111,13 +113,11 @@ export class SessionsComponent implements OnInit, OnDestroy {
         const payload = Array.isArray(res?.data) ? res.data : res;
         this.meetings = (payload || []).map((meeting: any) => {
           const enriched = this.enrichMeeting(meeting);
-          // Update meeting finished status from localStorage
           this.updateMeetingFinishedStatus(enriched);
           return enriched;
         });
         this.loadingMeetings = false;
 
-        // Restart auto-refresh if needed (checks if any meetings are waiting for host)
         if (!this.isAdmin) {
           this.startAutoRefresh();
         }
@@ -130,14 +130,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Update meeting finished status from backend API
-   * The backend API now provides isFinished property directly
-   */
   private updateMeetingFinishedStatus(meeting: MeetingInfo): void {
-    // Meeting finished status is now provided by the backend API
-    // via the isFinished property in GetAllMeetingsInfo response
-    // No need to check localStorage anymore
     if (meeting?.isFinished === true) {
       meeting.status = 'finished';
     }
@@ -178,7 +171,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
           this.closeModal();
           this.loadMeetings();
 
-          // Only auto-join if admin and meeting start time has been reached
           if (this.isAdmin && this.hasMeetingStarted(meetingData)) {
             this.navigateToMeeting(meetingData);
           } else if (this.isAdmin) {
@@ -200,6 +192,46 @@ export class SessionsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // DELETE MEETING FUNCTIONALITY
+  openDeleteConfirmModal(meeting: MeetingInfo) {
+    this.meetingToDelete = meeting;
+    this.showDeleteConfirmModal = true;
+  }
+
+  closeDeleteConfirmModal() {
+    this.showDeleteConfirmModal = false;
+    this.meetingToDelete = null;
+  }
+
+  confirmDeleteMeeting() {
+    if (!this.meetingToDelete?.id) {
+      this.showErrorMessage('Invalid meeting ID');
+      this.closeDeleteConfirmModal();
+      return;
+    }
+
+    this.deleting = true;
+
+    this.http.get(`${this.apiUrl}/DeleteMeeting?id=${this.meetingToDelete.id}`).subscribe({
+      next: (res: any) => {
+        this.deleting = false;
+        this.successMessage = 'Meeting deleted successfully!';
+        this.closeDeleteConfirmModal();
+        this.loadMeetings();
+
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000);
+      },
+      error: (err) => {
+        console.error('Failed to delete meeting:', err);
+        this.deleting = false;
+        this.showErrorMessage('Failed to delete meeting. Please try again.');
+        this.closeDeleteConfirmModal();
+      },
+    });
+  }
+
   joinMeeting(meeting: any) {
     const normalizedMeeting = this.enrichMeeting(meeting);
 
@@ -208,27 +240,22 @@ export class SessionsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Check if meeting has started
     if (!this.hasMeetingStarted(normalizedMeeting)) {
       const timeUntilStart = this.getTimeUntilStart(normalizedMeeting);
       this.showErrorMessage(`Meeting has not started yet. It will start in ${timeUntilStart}.`);
       return;
     }
 
-    // Check if meeting is finished (host has left)
     if (this.isMeetingFinished(normalizedMeeting)) {
       this.showErrorMessage('This meeting has ended. The host has left the meeting.');
       return;
     }
 
-    // If user is not admin/host, check if host has joined
     if (!this.isAdmin && !this.isHostJoined(normalizedMeeting)) {
       this.showErrorMessage(
-        'Waiting for host to join the meeting. The page will refresh automatically...'
+        'Waiting for host to join the meeting. The page will refresh automatically...',
       );
-      // Refresh meetings to get updated status
       this.loadMeetings();
-      // Start auto-refresh if not already started
       this.startAutoRefresh();
       return;
     }
@@ -289,9 +316,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/zoom-meeting', routeId]);
   }
 
-  /**
-   * Check if meeting has started (current time >= start time)
-   */
   private hasMeetingStarted(meeting: MeetingInfo): boolean {
     if (!meeting?.startTime) {
       return false;
@@ -300,13 +324,9 @@ export class SessionsComponent implements OnInit, OnDestroy {
     const startTime = new Date(meeting.startTime);
     const now = new Date();
 
-    // Allow 1 minute buffer for timezone/server time differences
     return now.getTime() >= startTime.getTime() - 60000;
   }
 
-  /**
-   * Get time until meeting starts in human-readable format
-   */
   private getTimeUntilStart(meeting: MeetingInfo): string {
     if (!meeting?.startTime) {
       return 'unknown time';
@@ -331,18 +351,11 @@ export class SessionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Check if meeting is finished (host has left)
-   * Uses backend isFinished property from GetAllMeetingsInfo API
-   * Only the host leaving triggers the backend to set isFinished = true
-   */
   private isMeetingFinished(meeting: MeetingInfo): boolean {
-    // Check if meeting has explicit finished status from backend
     if (meeting?.isFinished === true) {
       return true;
     }
 
-    // Also check status field for backward compatibility
     if (meeting?.status === 'finished' || meeting?.status === 'ended') {
       return true;
     }
@@ -350,15 +363,11 @@ export class SessionsComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  /**
-   * Get meeting status for display
-   */
   getMeetingStatus(meeting: MeetingInfo): 'scheduled' | 'live' | 'waiting' | 'finished' {
     if (this.isMeetingFinished(meeting)) {
       return 'finished';
     }
     if (this.hasMeetingStarted(meeting)) {
-      // If meeting has started but host hasn't joined (and user is not admin)
       if (!this.isAdmin && !this.isHostJoined(meeting)) {
         return 'waiting';
       }
@@ -367,37 +376,26 @@ export class SessionsComponent implements OnInit, OnDestroy {
     return 'scheduled';
   }
 
-  /**
-   * Check if user can join meeting
-   */
   canJoinMeeting(meeting: MeetingInfo): boolean {
-    // Must check all conditions
     if (!this.hasMeetingStarted(meeting)) {
-      return false; // Meeting hasn't started yet
+      return false;
     }
 
     if (this.isMeetingFinished(meeting)) {
-      return false; // Meeting is finished
+      return false;
     }
 
-    // If user is not admin/host, host must have joined first
     if (!this.isAdmin && !this.isHostJoined(meeting)) {
-      return false; // Waiting for host to join
+      return false;
     }
 
     return true;
   }
 
-  /**
-   * Check if host has joined the meeting
-   */
   private isHostJoined(meeting: MeetingInfo): boolean {
     return meeting?.adminJoined === true;
   }
 
-  /**
-   * Get meeting status message
-   */
   getMeetingStatusMessage(meeting: MeetingInfo): string {
     const status = this.getMeetingStatus(meeting);
     if (status === 'finished') {
@@ -407,7 +405,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
       return `Starts in ${this.getTimeUntilStart(meeting)}`;
     }
     if (status === 'live') {
-      // If meeting has started but host hasn't joined (and user is not admin)
       if (!this.isAdmin && !this.isHostJoined(meeting)) {
         return 'Waiting for Host';
       }
@@ -416,19 +413,14 @@ export class SessionsComponent implements OnInit, OnDestroy {
     return 'Live';
   }
 
-  /**
-   * Start auto-refresh for meeting status
-   */
   private startAutoRefresh() {
-    // Clear existing interval if any
     this.stopAutoRefresh();
 
-    // Only refresh if there are meetings that are waiting for host
     const hasWaitingMeetings = this.meetings.some(
       (meeting) =>
         this.hasMeetingStarted(meeting) &&
         !this.isHostJoined(meeting) &&
-        !this.isMeetingFinished(meeting)
+        !this.isMeetingFinished(meeting),
     );
 
     if (hasWaitingMeetings) {
@@ -438,9 +430,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Stop auto-refresh
-   */
   private stopAutoRefresh() {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);

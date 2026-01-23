@@ -224,6 +224,12 @@
   align-items: center;
 }
 
+.meeting-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .meeting-icon {
   width: 50px;
   height: 50px;
@@ -271,6 +277,27 @@
 
 .meeting-badge.badge-finished {
   background: rgba(158, 158, 158, 0.9);
+}
+
+/* Delete Button */
+.delete-meeting-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  font-size: 16px;
+}
+
+.delete-meeting-btn:hover {
+  background: rgba(255, 68, 68, 0.9);
+  transform: scale(1.1);
 }
 
 @keyframes spin-waiting {
@@ -382,6 +409,22 @@
 .btn-disabled:hover {
   transform: none;
   box-shadow: none;
+}
+
+.btn-delete {
+  background: #ff4444;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
+}
+
+.btn-delete:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 68, 68, 0.6);
+}
+
+.btn-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .meeting-card.finished {
@@ -496,6 +539,37 @@
   padding: 25px;
 }
 
+/* Delete Confirmation Modal */
+.delete-confirm-content {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.delete-confirm-content i {
+  font-size: 64px;
+  color: #ff9800;
+  margin-bottom: 20px;
+}
+
+.delete-confirm-content p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.meeting-topic-highlight {
+  font-weight: 700;
+  color: #333;
+  font-size: 18px !important;
+  margin: 15px 0 !important;
+}
+
+.warning-text {
+  color: #ff4444 !important;
+  font-weight: 600;
+  font-size: 14px !important;
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -599,6 +673,12 @@
     font-size: 20px;
   }
 
+  .delete-meeting-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
   .meeting-title {
     font-size: 18px;
   }
@@ -626,6 +706,10 @@
   .modal-actions {
     padding: 15px 20px;
     flex-direction: column;
+  }
+
+  .delete-confirm-content i {
+    font-size: 48px;
   }
 }
 
@@ -655,6 +739,12 @@
   .meeting-badge {
     font-size: 11px;
     padding: 4px 10px;
+  }
+
+  .delete-meeting-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
   }
 
   .meeting-body {
@@ -707,5 +797,13 @@
 
   .modal-actions {
     padding: 12px 15px;
+  }
+
+  .delete-confirm-content i {
+    font-size: 40px;
+  }
+
+  .meeting-topic-highlight {
+    font-size: 16px !important;
   }
 }
