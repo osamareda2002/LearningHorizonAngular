@@ -57,10 +57,15 @@
           <i class="bi bi-film"></i>
           Add Lesson
         </button>
-        <!-- <button class="tab-btn" [class.active]="activeTab === 'book'" (click)="switchTab('book')">
-          <i class="bi bi-book"></i>
-          Add Book
-        </button> -->
+
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'doctor'"
+          (click)="switchTab('doctor')"
+        >
+          <i class="bi bi-person-plus"></i>
+          Add Person
+        </button>
         <button
           class="tab-btn"
           [class.active]="activeTab === 'slider'"
@@ -253,7 +258,7 @@
 
                 <div *ngIf="uploadProgress > 0" class="upload-progress">
                   <div class="progress-bar" [style.width.%]="uploadProgress"></div>
-                  <span class="progress-label">{{ uploadProgress | number : '1.0-0' }}%</span>
+                  <span class="progress-label">{{ uploadProgress | number: '1.0-0' }}%</span>
                 </div>
               </div>
             </div>
@@ -275,6 +280,137 @@
                 [disabled]="lessonForm.invalid || submitting"
               >
                 {{ submitting ? 'Uploading...' : 'Submit' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Doctor Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'doctor'">
+          <h3 class="tab-title">Add New Doctor</h3>
+          <form [formGroup]="doctorForm" (ngSubmit)="submitDoctor()" class="form-container">
+            <div class="form-grid">
+              <!-- Doctor Name -->
+              <div class="form-group">
+                <label>Doctor's Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="name"
+                  placeholder="Doctor Name"
+                  [class.error]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
+                />
+              </div>
+
+              <!-- Specialty -->
+              <div class="form-group">
+                <label>Medical Specialty <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="specialty"
+                  placeholder="e.g. Neurology Specialist"
+                  [class.error]="
+                    doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched
+                  "
+                />
+              </div>
+
+              <!-- About -->
+              <div class="form-group full-width">
+                <label>About <span class="required">*</span></label>
+                <textarea
+                  class="form-control"
+                  formControlName="about"
+                  placeholder="About the doctor..."
+                  rows="4"
+                  [class.error]="
+                    doctorForm.get('about')?.invalid && doctorForm.get('about')?.touched
+                  "
+                ></textarea>
+              </div>
+
+              <!-- Expertise -->
+              <div class="form-group full-width">
+                <label>Expertise <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="expertise"
+                  placeholder="e.g. Sports Injury, Rehabilitation (Comma separated)"
+                  [class.error]="
+                    doctorForm.get('expertise')?.invalid && doctorForm.get('expertise')?.touched
+                  "
+                />
+              </div>
+
+              <!-- Social Media Links -->
+              <div class="form-group">
+                <label>Facebook</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="facebook"
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+
+              <div class="form-group">
+                <label>WhatsApp</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="whatsapp"
+                  placeholder="https://wa.me/..."
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Instagram</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="instagram"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+
+              <!-- Upload Photo -->
+              <div class="form-group">
+                <label>Upload Photo <span class="required">*</span></label>
+                <div class="upload-box">
+                  <i class="bi bi-image"></i>
+                  <p>Upload Photo</p>
+                  <p class="upload-info">PNG, JPEG files are allowed</p>
+                  <input
+                    type="file"
+                    class="file-input"
+                    (change)="onDoctorImageSelected($event)"
+                    accept="image/jpeg, image/png"
+                  />
+                </div>
+                <!-- Preview -->
+                <div *ngIf="doctorImagePreview" class="thumbnail-preview">
+                  <img
+                    [src]="doctorImagePreview"
+                    alt="Doctor Preview"
+                    class="item-thumbnail doctor-thumbnail"
+                  />
+                  <p class="file-name">{{ doctorImage?.name }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="resetDoctorForm()">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="doctorForm.invalid || submitting"
+              >
+                {{ submitting ? 'Adding...' : 'Add' }}
               </button>
             </div>
           </form>
@@ -512,7 +648,7 @@
                 <!-- ✅ Upload Progress -->
                 <div *ngIf="uploadProgress > 0" class="upload-progress">
                   <div class="progress-bar" [style.width.%]="uploadProgress"></div>
-                  <span class="progress-label">{{ uploadProgress | number : '1.0-0' }}%</span>
+                  <span class="progress-label">{{ uploadProgress | number: '1.0-0' }}%</span>
                 </div>
               </div>
             </div>

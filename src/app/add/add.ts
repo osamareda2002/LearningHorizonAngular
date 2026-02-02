@@ -7,6 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
 import { timeout } from 'rxjs';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
+import { TeamService } from '../services/team.service';
 
 interface DtoExerciseAnswer {
   answerText?: string;
@@ -35,7 +36,7 @@ interface DtoLessonExerciseJson {
 export class Add implements OnInit {
   private apiUrl = `${environment.horizon}`;
 
-  activeTab: 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' = 'course';
+  activeTab: 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor' = 'course';
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
@@ -51,6 +52,7 @@ export class Add implements OnInit {
   bookForm!: FormGroup;
   sliderForm!: FormGroup;
   suggestionForm!: FormGroup;
+  doctorForm!: FormGroup;
 
   courses: any[] = []; // Loaded from backend
 
@@ -70,6 +72,8 @@ export class Add implements OnInit {
 
   courseThumbnailPreview: string | null = null;
   bookCoverPreview: string | null = null;
+  doctorImage: File | null = null;
+  doctorImagePreview: string | null = null;
 
   //mcq
 
@@ -86,7 +90,8 @@ export class Add implements OnInit {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private teamService: TeamService
   ) {}
 
   ngOnInit() {
@@ -145,6 +150,16 @@ export class Add implements OnInit {
       title: ['', Validators.required],
       instructorName: ['', Validators.required],
     });
+
+    this.doctorForm = this.fb.group({
+      name: ['', Validators.required],
+      specialty: ['', Validators.required],
+      about: ['', Validators.required],
+      expertise: ['', Validators.required],
+      facebook: [''],
+      whatsapp: [''],
+      instagram: [''],
+    });
   }
 
   initializeMCQForm() {
@@ -162,7 +177,7 @@ export class Add implements OnInit {
   // ------------------------------
   // ✅ Tabs
   // ------------------------------
-  switchTab(tab: 'course' | 'lesson' | 'book' | 'slider' | 'suggestion') {
+  switchTab(tab: 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor') {
     this.activeTab = tab;
     this.errorMessage = '';
     this.successMessage = '';
@@ -280,6 +295,25 @@ export class Add implements OnInit {
     reader.onload = () => {
       this.sliderImage = file;
       this.sliderImagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onDoctorImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('❌ Invalid file type! Only PNG and JPG allowed.');
+      event.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.doctorImage = file;
+      this.doctorImagePreview = reader.result as string;
     };
     reader.readAsDataURL(file);
   }
@@ -727,6 +761,45 @@ export class Add implements OnInit {
     this.bookForm.reset();
     this.bookCover = null;
     this.bookPdf = null;
+  }
+
+  resetDoctorForm() {
+    this.doctorForm.reset();
+    this.doctorImage = null;
+    this.doctorImagePreview = null;
+  }
+
+  submitDoctor() {
+    if (this.doctorForm.invalid || !this.doctorImage) {
+      this.errorMessage = 'Please fill in all required fields and upload an image.';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', this.doctorForm.value.name);
+    formData.append('specialty', this.doctorForm.value.specialty);
+    formData.append('description', this.doctorForm.value.about);
+    formData.append('expertise', this.doctorForm.value.expertise);
+    formData.append('facebookUrl', this.doctorForm.value.facebook);
+    formData.append('whatsappUrl', this.doctorForm.value.whatsapp);
+    formData.append('instgramUrl', this.doctorForm.value.instagram);
+    formData.append('image', this.doctorImage);
+
+    this.submitting = true;
+
+    this.teamService.addInstructor(formData).subscribe({
+      next: (res) => {
+        this.successMessage = '✅ Doctor added successfully!';
+        this.errorMessage = '';
+        this.submitting = false;
+        this.resetDoctorForm();
+      },
+      error: (err) => {
+        this.submitting = false;
+        this.errorMessage = '❌ Failed to add doctor.';
+        console.error('Doctor upload error:', err);
+      }
+    });
   }
 
   goBackToHome() {

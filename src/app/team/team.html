@@ -1,0 +1,136 @@
+<div class="team-container" [class.sidebar-open]="isSidebarOpen">
+  <!-- Sidebar -->
+  <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- User Navbar -->
+    <div class="user-navbar">
+      <div class="navbar-left">
+        <button class="menu-toggle-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <h2 class="page-title">Team Doctor</h2>
+      </div>
+      <div class="user-menu">
+        <span class="user-name">{{ userName }}</span>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a *ngIf="!isLoggedIn" (click)="handleAuth()">Login</a>
+            <a *ngIf="isLoggedIn" (click)="handleAuth()">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Grid -->
+    <div class="team-section">
+      <div *ngIf="teamMembers.length === 0" class="no-members">
+        <i class="bi bi-people"></i>
+        <p>No team members found</p>
+      </div>
+
+      <div class="team-grid">
+        <div 
+          *ngFor="let member of teamMembers" 
+          class="team-card" 
+          (click)="openMemberDetail(member)"
+        >
+          <div class="card-image">
+            <img 
+              *ngIf="member.imageUrl" 
+              [src]="member.imageUrl" 
+              [alt]="member.name" 
+            />
+            <div *ngIf="!member.imageUrl" class="avatar-placeholder">
+              <span>{{ getInitials(member.name) }}</span>
+            </div>
+            <div class="card-overlay">
+              <h3 class="member-name">{{ member.name }}</h3>
+              <p class="member-specialty">{{ member.specialty }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detail Modal -->
+  <div 
+    class="modal-overlay" 
+    *ngIf="isModalOpen && selectedMember" 
+    (click)="onOverlayClick($event)"
+  >
+    <div class="modal-content">
+      <button class="modal-close" (click)="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="modal-body">
+        <div class="modal-image">
+          <img 
+            *ngIf="selectedMember.imageUrl" 
+            [src]="selectedMember.imageUrl" 
+            [alt]="selectedMember.name" 
+          />
+          <div *ngIf="!selectedMember.imageUrl" class="avatar-placeholder large">
+            <span>{{ getInitials(selectedMember.name) }}</span>
+          </div>
+        </div>
+
+        <div class="modal-details">
+          <h2 class="detail-name">{{ selectedMember.name }}</h2>
+          <p class="detail-specialty">{{ selectedMember.specialty }}</p>
+
+          <div class="detail-section">
+            <h4>About</h4>
+            <p>{{ selectedMember.about }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>Expertise</h4>
+            <ul class="expertise-list">
+              <li *ngFor="let item of selectedMember.expertise">{{ item }}</li>
+            </ul>
+          </div>
+
+          <div class="detail-section">
+            <h4>Contact</h4>
+            <div class="contact-icons">
+              <a 
+                *ngIf="selectedMember.contact.instagram" 
+                [href]="selectedMember.contact.instagram" 
+                target="_blank"
+                class="contact-icon instagram"
+              >
+                <i class="bi bi-instagram"></i>
+              </a>
+              <a 
+                *ngIf="selectedMember.contact.whatsapp" 
+                [href]="selectedMember.contact.whatsapp" 
+                target="_blank"
+                class="contact-icon whatsapp"
+              >
+                <i class="bi bi-whatsapp"></i>
+              </a>
+              <a 
+                *ngIf="selectedMember.contact.facebook" 
+                [href]="selectedMember.contact.facebook" 
+                target="_blank"
+                class="contact-icon facebook"
+              >
+                <i class="bi bi-facebook"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

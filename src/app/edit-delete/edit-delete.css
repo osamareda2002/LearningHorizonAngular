@@ -388,6 +388,11 @@
   background: #f5f5f5;
 }
 
+.doctor-thumbnail {
+  object-position: top center;
+  height: 250px; /* Better height for portraits */
+}
+
 .item-content {
   padding: 20px;
   flex: 1;

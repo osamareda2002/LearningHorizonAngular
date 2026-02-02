@@ -21,6 +21,7 @@ import { QuizzesComponent } from './quizzes/quizzes';
 import { AddQuizComponent } from './quizzes/add-quiz/add-quiz';
 import { TakeQuizComponent } from './quizzes/take-quiz/take-quiz';
 import { CourseLessonsComponent } from './course-lessons/course-lessons';
+import { TeamComponent } from './team/team';
 
 export const routes: Routes = [
   { path: '', component: SplashComponent },
@@ -41,6 +42,7 @@ export const routes: Routes = [
   { path: 'quizzes/add', component: AddQuizComponent, canActivate: [AuthGuard] },
   { path: 'quizzes/take/:id', component: TakeQuizComponent, canActivate: [AuthGuard] },
   { path: 'books', component: Books },
+  { path: 'team', component: TeamComponent },
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'reset-password', component: ResetPassword },
 ];

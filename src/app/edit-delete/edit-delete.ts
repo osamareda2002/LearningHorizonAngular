@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
+import { TeamService } from '../services/team.service';
 
 @Component({
   selector: 'app-edit-delete',
@@ -17,7 +18,7 @@ import { SidebarComponent } from '../shared/sidebar/sidebar';
 export class EditDelete implements OnInit {
   private apiUrl = `${environment.horizon}`;
 
-  activeTab: 'course' | 'lesson' | 'slider' | 'suggestion' = 'course';
+  activeTab: 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' = 'course';
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
@@ -32,6 +33,7 @@ export class EditDelete implements OnInit {
   lessons: any[] = [];
   sliders: any[] = [];
   suggestions: any[] = [];
+  doctors: any[] = [];
 
   // Filter
   selectedCourseId: string = '';
@@ -41,18 +43,21 @@ export class EditDelete implements OnInit {
   loadingLessons = false;
   loadingSliders = false;
   loadingSuggestions = false;
+  loadingDoctors = false;
 
   // Forms
   editCourseForm!: FormGroup;
   editLessonForm!: FormGroup;
   editSliderForm!: FormGroup;
   editSuggestionForm!: FormGroup;
+  editDoctorForm!: FormGroup;
 
   // Modal states
   showEditCourseModal = false;
   showEditLessonModal = false;
   showEditSliderModal = false;
   showEditSuggestionModal = false;
+  showEditDoctorModal = false;
   showDeleteConfirm = false;
 
   // Current item data
@@ -60,20 +65,24 @@ export class EditDelete implements OnInit {
   currentEditLesson: any = null;
   currentEditSlider: any = null;
   currentEditSuggestion: any = null;
+  currentEditDoctor: any = null;
   currentDeleteItem: any = null;
-  deleteType: 'course' | 'lesson' | 'slider' | 'suggestion' | null = null;
+  deleteType: 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | null = null;
 
   // File uploads
   editCourseImage: File | null = null;
   editCourseImagePreview: string | null = null;
   editSliderImage: File | null = null;
   editSliderImagePreview: string | null = null;
+  editDoctorImage: File | null = null;
+  editDoctorImagePreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private teamService: TeamService
   ) {}
 
   ngOnInit() {
@@ -117,9 +126,19 @@ export class EditDelete implements OnInit {
     this.editSuggestionForm = this.fb.group({
       title: ['', Validators.required],
     });
+
+    this.editDoctorForm = this.fb.group({
+      name: ['', Validators.required],
+      specialty: ['', Validators.required],
+      about: ['', Validators.required],
+      expertise: ['', Validators.required],
+      facebook: [''],
+      whatsapp: [''],
+      instagram: [''],
+    });
   }
 
-  switchTab(tab: 'course' | 'lesson' | 'slider' | 'suggestion') {
+  switchTab(tab: 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor') {
     this.activeTab = tab;
     this.errorMessage = '';
     this.successMessage = '';
@@ -144,6 +163,7 @@ export class EditDelete implements OnInit {
     // Don't load all lessons on init - wait for course selection
     this.loadSliders();
     this.loadSuggestions();
+    this.loadDoctors();
   }
 
   loadCourses() {
@@ -215,6 +235,93 @@ export class EditDelete implements OnInit {
         console.error('Failed to load sliders:', err);
         this.loadingSliders = false;
       },
+    });
+  }
+
+  loadDoctors() {
+    this.loadingDoctors = true;
+    this.teamService.getAllTeamMembers().subscribe({
+      next: (res: any) => {
+        this.doctors = res || [];
+        this.loadingDoctors = false;
+      },
+      error: (err) => {
+        console.error('Failed to load doctors:', err);
+        this.loadingDoctors = false;
+      },
+    });
+  }
+
+  // ✅ Edit Doctor
+  openEditDoctorModal(doctor: any) {
+    this.currentEditDoctor = doctor;
+    this.editDoctorForm.patchValue({
+      name: doctor.name,
+      specialty: doctor.specialty,
+      about: doctor.about,
+      expertise: doctor.expertise.join(', '), // Convert array to comma-separated string
+      facebook: doctor.contact?.facebook || '',
+      whatsapp: doctor.contact?.whatsapp || '',
+      instagram: doctor.contact?.instagram || '',
+    });
+    this.editDoctorImagePreview = doctor.imageUrl;
+    this.editDoctorImage = null;
+    this.showEditDoctorModal = true;
+  }
+
+  onDoctorImageChange(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type! Only PNG and JPG files are allowed.');
+      event.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.editDoctorImage = file;
+      this.editDoctorImagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  submitEditDoctor() {
+    if (this.editDoctorForm.invalid || !this.currentEditDoctor) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return;
+    }
+
+    this.submitting = true;
+
+    const formData = new FormData();
+    formData.append('id', this.currentEditDoctor.id);
+    formData.append('name', this.editDoctorForm.value.name);
+    formData.append('specialty', this.editDoctorForm.value.specialty);
+    formData.append('description', this.editDoctorForm.value.about);
+    formData.append('expertise', this.editDoctorForm.value.expertise);
+    formData.append('facebookUrl', this.editDoctorForm.value.facebook);
+    formData.append('whatsappUrl', this.editDoctorForm.value.whatsapp);
+    formData.append('instgramUrl', this.editDoctorForm.value.instagram);
+
+    if (this.editDoctorImage) {
+      formData.append('image', this.editDoctorImage);
+    }
+
+    this.teamService.updateInstructor(formData).subscribe({
+      next: (res) => {
+        this.successMessage = 'Doctor updated successfully!';
+        this.submitting = false;
+        this.closeModals();
+        this.loadDoctors();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update doctor.';
+        this.submitting = false;
+        console.error(err);
+      }
     });
   }
 
@@ -463,6 +570,12 @@ export class EditDelete implements OnInit {
     this.showDeleteConfirm = true;
   }
 
+  deleteDoctor(doctorId: string) {
+    this.currentDeleteItem = doctorId;
+    this.deleteType = 'doctor';
+    this.showDeleteConfirm = true;
+  }
+
   confirmDelete() {
     if (!this.currentDeleteItem || !this.deleteType) return;
 
@@ -482,6 +595,9 @@ export class EditDelete implements OnInit {
         break;
       case 'suggestion':
         endpoint = `${this.apiUrl}/DeleteSuggest?id=${this.currentDeleteItem}`;
+        break;
+      case 'doctor':
+        endpoint = `${this.apiUrl}/DeleteInstructor?id=${this.currentDeleteItem}`;
         break;
     }
 
@@ -505,6 +621,8 @@ export class EditDelete implements OnInit {
             this.loadSliders();
           } else if (this.deleteType === 'suggestion') {
             this.loadSuggestions();
+          } else if (this.deleteType === 'doctor') {
+            this.loadDoctors();
           }
           this.deleteType = null;
         } else {
@@ -533,17 +651,21 @@ export class EditDelete implements OnInit {
     this.showEditLessonModal = false;
     this.showEditSliderModal = false;
     this.showEditSuggestionModal = false;
+    this.showEditDoctorModal = false;
     this.showDeleteConfirm = false;
 
     this.currentEditCourse = null;
     this.currentEditLesson = null;
     this.currentEditSlider = null;
     this.currentEditSuggestion = null;
+    this.currentEditDoctor = null;
     this.currentDeleteItem = null;
 
     this.editCourseImage = null;
     this.editCourseImagePreview = null;
     this.editSliderImage = null;
     this.editSliderImagePreview = null;
+    this.editDoctorImage = null;
+    this.editDoctorImagePreview = null;
   }
 }

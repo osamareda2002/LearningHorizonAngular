@@ -57,13 +57,14 @@
           <i class="bi bi-film"></i>
           Lessons
         </button>
+
         <button
           class="tab-btn"
-          [class.active]="activeTab === 'slider'"
-          (click)="switchTab('slider')"
+          [class.active]="activeTab === 'doctor'"
+          (click)="switchTab('doctor')"
         >
-          <i class="bi bi-images"></i>
-          Sliders
+          <i class="bi bi-people"></i>
+          Doctors
         </button>
         <button
           class="tab-btn"
@@ -302,214 +303,207 @@
             </table>
           </div>
         </div>
+
+        <!-- Doctors Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'doctor'">
+          <h3 class="tab-title">Manage Doctors</h3>
+
+          <div *ngIf="loadingDoctors" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading doctors...</p>
+          </div>
+
+          <div *ngIf="!loadingDoctors && doctors.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No doctors found</p>
+          </div>
+
+          <div *ngIf="!loadingDoctors && doctors.length > 0" class="items-grid">
+            <div *ngFor="let doctor of doctors" class="item-card">
+              <img
+                [src]="doctor.imageUrl || 'assets/default-avatar.png'"
+                [alt]="doctor.name"
+                class="item-thumbnail doctor-thumbnail"
+              />
+              <div class="item-content">
+                <h4 class="item-title">{{ doctor.name }}</h4>
+                <p class="item-meta">{{ doctor.specialty }}</p>
+              </div>
+              <div class="item-actions">
+                <button
+                  class="btn-icon btn-edit"
+                  (click)="openEditDoctorModal(doctor)"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="deleteDoctor(doctor.id)"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
+</div>
 
-  <!-- Edit Course Modal -->
-  <div class="modal" [class.show]="showEditCourseModal" *ngIf="showEditCourseModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit Course</h3>
-        <button class="modal-close" (click)="closeModals()">
-          <i class="bi bi-x"></i>
+<!-- Edit Course Modal -->
+<div class="modal" [class.show]="showEditCourseModal" *ngIf="showEditCourseModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Course</h3>
+      <button class="modal-close" (click)="closeModals()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <form [formGroup]="editCourseForm" (ngSubmit)="submitEditCourse()" class="modal-body">
+      <div class="form-group">
+        <label>Course Title <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="title"
+          [class.error]="
+            editCourseForm.get('title')?.invalid && editCourseForm.get('title')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>Price <span class="required">*</span></label>
+        <input
+          type="number"
+          class="form-control"
+          formControlName="price"
+          [class.error]="
+            editCourseForm.get('price')?.invalid && editCourseForm.get('price')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>Instructor Name <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="instructorName"
+          [class.error]="
+            editCourseForm.get('instructorName')?.invalid &&
+            editCourseForm.get('instructorName')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>Course Thumbnail</label>
+        <div class="upload-box">
+          <i class="bi bi-image"></i>
+          <p>Upload New Thumbnail (Optional)</p>
+          <input
+            type="file"
+            class="file-input"
+            (change)="onCourseImageChange($event)"
+            accept="image/jpeg, image/png"
+          />
+        </div>
+        <div *ngIf="editCourseImagePreview" class="thumbnail-preview">
+          <img [src]="editCourseImagePreview" alt="Preview" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="editCourseForm.invalid || submitting"
+        >
+          {{ submitting ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
-      <form [formGroup]="editCourseForm" (ngSubmit)="submitEditCourse()" class="modal-body">
-        <div class="form-group">
-          <label>Course Title <span class="required">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="title"
-            [class.error]="
-              editCourseForm.get('title')?.invalid && editCourseForm.get('title')?.touched
-            "
-          />
-        </div>
-        <div class="form-group">
-          <label>Price <span class="required">*</span></label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="price"
-            [class.error]="
-              editCourseForm.get('price')?.invalid && editCourseForm.get('price')?.touched
-            "
-          />
-        </div>
-        <div class="form-group">
-          <label>Instructor Name <span class="required">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="instructorName"
-            [class.error]="
-              editCourseForm.get('instructorName')?.invalid &&
-              editCourseForm.get('instructorName')?.touched
-            "
-          />
-        </div>
-        <div class="form-group">
-          <label>Course Thumbnail</label>
-          <div class="upload-box">
-            <i class="bi bi-image"></i>
-            <p>Upload New Thumbnail (Optional)</p>
-            <input
-              type="file"
-              class="file-input"
-              (change)="onCourseImageChange($event)"
-              accept="image/jpeg, image/png"
-            />
-          </div>
-          <div *ngIf="editCourseImagePreview" class="thumbnail-preview">
-            <img [src]="editCourseImagePreview" alt="Preview" />
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="editCourseForm.invalid || submitting"
-          >
-            {{ submitting ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </div>
-      </form>
-    </div>
+    </form>
   </div>
+</div>
 
-  <!-- Edit Lesson Modal -->
-  <div class="modal" [class.show]="showEditLessonModal" *ngIf="showEditLessonModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit Lesson</h3>
-        <button class="modal-close" (click)="closeModals()">
-          <i class="bi bi-x"></i>
+<!-- Edit Lesson Modal -->
+<div class="modal" [class.show]="showEditLessonModal" *ngIf="showEditLessonModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Lesson</h3>
+      <button class="modal-close" (click)="closeModals()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <form [formGroup]="editLessonForm" (ngSubmit)="submitEditLesson()" class="modal-body">
+      <div class="form-group">
+        <label>Lesson Title <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="title"
+          [class.error]="
+            editLessonForm.get('title')?.invalid && editLessonForm.get('title')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>Lesson Order <span class="required">*</span></label>
+        <input
+          type="number"
+          class="form-control"
+          formControlName="order"
+          [class.error]="
+            editLessonForm.get('order')?.invalid && editLessonForm.get('order')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>Is Free? <span class="required">*</span></label>
+        <select class="form-control" formControlName="isFree">
+          <option [value]="true">Free</option>
+          <option [value]="false">Premium</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="editLessonForm.invalid || submitting"
+        >
+          {{ submitting ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
-      <form [formGroup]="editLessonForm" (ngSubmit)="submitEditLesson()" class="modal-body">
-        <div class="form-group">
-          <label>Lesson Title <span class="required">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="title"
-            [class.error]="
-              editLessonForm.get('title')?.invalid && editLessonForm.get('title')?.touched
-            "
-          />
-        </div>
-        <div class="form-group">
-          <label>Lesson Order <span class="required">*</span></label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="order"
-            [class.error]="
-              editLessonForm.get('order')?.invalid && editLessonForm.get('order')?.touched
-            "
-          />
-        </div>
-        <div class="form-group">
-          <label>Is Free? <span class="required">*</span></label>
-          <select class="form-control" formControlName="isFree">
-            <option [value]="true">Free</option>
-            <option [value]="false">Premium</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="editLessonForm.invalid || submitting"
-          >
-            {{ submitting ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </div>
-      </form>
-    </div>
+    </form>
   </div>
+</div>
 
-  <!-- Edit Slider Modal -->
-  <!-- <div class="modal" [class.show]="showEditSliderModal" *ngIf="showEditSliderModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit Slider</h3>
-        <button class="modal-close" (click)="closeModals()">
-          <i class="bi bi-x"></i>
-        </button>
-      </div>
-      <form [formGroup]="editSliderForm" (ngSubmit)="submitEditSlider()" class="modal-body">
-        <div class="form-group">
-          <label>Slider Title <span class="required">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="title"
-            [class.error]="
-              editSliderForm.get('title')?.invalid && editSliderForm.get('title')?.touched
-            "
-          />
-        </div>
-        <div class="form-group">
-          <label>Redirect URL</label>
-          <input type="text" class="form-control" formControlName="redirectUrl" />
-        </div>
-        <div class="form-group">
-          <label>Slider Image</label>
-          <div class="upload-box">
-            <i class="bi bi-image"></i>
-            <p>Upload New Image (Optional)</p>
-            <input
-              type="file"
-              class="file-input"
-              (change)="onSliderImageChange($event)"
-              accept="image/jpeg, image/png"
-            />
-          </div>
-          <div *ngIf="editSliderImagePreview" class="thumbnail-preview">
-            <img [src]="editSliderImagePreview" alt="Preview" />
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="editSliderForm.invalid || submitting"
-          >
-            {{ submitting ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </div>
-      </form>
+<!-- Edit Slider Modal -->
+
+<!-- Edit Suggestion Modal -->
+<div class="modal" [class.show]="showEditSuggestionModal" *ngIf="showEditSuggestionModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Suggestion</h3>
+      <button class="modal-close" (click)="closeModals()">
+        <i class="bi bi-x"></i>
+      </button>
     </div>
-  </div> -->
-
-  <!-- Edit Suggestion Modal -->
-  <div class="modal" [class.show]="showEditSuggestionModal" *ngIf="showEditSuggestionModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit Suggestion</h3>
-        <button class="modal-close" (click)="closeModals()">
-          <i class="bi bi-x"></i>
-        </button>
+    <form [formGroup]="editSuggestionForm" (ngSubmit)="submitEditSuggestion()" class="modal-body">
+      <div class="form-group">
+        <label>Title <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="title"
+          [class.error]="
+            editSuggestionForm.get('title')?.invalid && editSuggestionForm.get('title')?.touched
+          "
+        />
       </div>
-      <form [formGroup]="editSuggestionForm" (ngSubmit)="submitEditSuggestion()" class="modal-body">
-        <div class="form-group">
-          <label>Title <span class="required">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="title"
-            [class.error]="
-              editSuggestionForm.get('title')?.invalid && editSuggestionForm.get('title')?.touched
-            "
-          />
-        </div>
-        <!-- <div class="form-group">
+      <!-- <div class="form-group">
           <label>Instructor Name <span class="required">*</span></label>
           <input
             type="text"
@@ -521,43 +515,141 @@
             "
           />
         </div> -->
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="editSuggestionForm.invalid || submitting"
-          >
-            {{ submitting ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div class="modal modal-danger" [class.show]="showDeleteConfirm" *ngIf="showDeleteConfirm">
-    <div class="modal-content modal-small">
-      <div class="modal-header">
-        <h3>Confirm Delete</h3>
-        <button class="modal-close" (click)="cancelDelete()">
-          <i class="bi bi-x"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this item? This action cannot be undone.</p>
-      </div>
       <div class="modal-actions">
-        <button type="button" class="btn btn-cancel" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
         <button
-          type="button"
-          class="btn btn-danger"
-          (click)="confirmDelete()"
-          [disabled]="submitting"
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="editSuggestionForm.invalid || submitting"
         >
-          {{ submitting ? 'Deleting...' : 'Delete' }}
+          {{ submitting ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Doctor Modal -->
+<div class="modal" [class.show]="showEditDoctorModal" *ngIf="showEditDoctorModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Doctor</h3>
+      <button class="modal-close" (click)="closeModals()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <form [formGroup]="editDoctorForm" (ngSubmit)="submitEditDoctor()" class="modal-body">
+      <div class="form-group">
+        <label>Name <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="name"
+          [class.error]="editDoctorForm.get('name')?.invalid && editDoctorForm.get('name')?.touched"
+        />
+      </div>
+      <div class="form-group">
+        <label>Specialty <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="specialty"
+          [class.error]="
+            editDoctorForm.get('specialty')?.invalid && editDoctorForm.get('specialty')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>About <span class="required">*</span></label>
+        <textarea
+          class="form-control"
+          formControlName="about"
+          rows="3"
+          [class.error]="
+            editDoctorForm.get('about')?.invalid && editDoctorForm.get('about')?.touched
+          "
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label>Expertise <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="expertise"
+          placeholder="Comma separated"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Facebook</label>
+        <input type="text" class="form-control" formControlName="facebook" />
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input type="text" class="form-control" formControlName="whatsapp" />
+      </div>
+      <div class="form-group">
+        <label>Instagram</label>
+        <input type="text" class="form-control" formControlName="instagram" />
+      </div>
+
+      <div class="form-group">
+        <label>Doctor Photo</label>
+        <div class="upload-box">
+          <i class="bi bi-image"></i>
+          <p>Upload New Photo (Optional)</p>
+          <input
+            type="file"
+            class="file-input"
+            (change)="onDoctorImageChange($event)"
+            accept="image/jpeg, image/png"
+          />
+        </div>
+        <div *ngIf="editDoctorImagePreview" class="thumbnail-preview">
+          <img
+            [src]="editDoctorImagePreview"
+            alt="Preview"
+            class="item-thumbnail doctor-thumbnail"
+          />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="editDoctorForm.invalid || submitting"
+        >
+          {{ submitting ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal modal-danger" [class.show]="showDeleteConfirm" *ngIf="showDeleteConfirm">
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h3>Confirm Delete</h3>
+      <button class="modal-close" (click)="cancelDelete()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-cancel" (click)="cancelDelete()">Cancel</button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="confirmDelete()"
+        [disabled]="submitting"
+      >
+        {{ submitting ? 'Deleting...' : 'Delete' }}
+      </button>
     </div>
   </div>
 </div>
@@ -570,6 +662,7 @@
     showEditLessonModal ||
     showEditSliderModal ||
     showEditSuggestionModal ||
+    showEditDoctorModal ||
     showDeleteConfirm
   "
   (click)="closeModals()"
