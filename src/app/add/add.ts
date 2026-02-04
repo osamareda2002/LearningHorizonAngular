@@ -11,6 +11,8 @@ import { timeout } from 'rxjs';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 import { TeamService } from '../services/team.service';
 
+const CHUNK_SIZE = 5 * 1024 * 1024; // 5 MB
+
 interface DtoExerciseAnswer {
   answerText?: string;
   isCorrect: boolean;
@@ -403,76 +405,97 @@ export class Add implements OnInit {
   // ------------------------------
   // ✅ Submit Lesson
   // ------------------------------
-  submitLesson() {
+
+  async uploadVideoInChunks(file: File): Promise<string> {
+    const fileId = crypto.randomUUID();
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const formData = new FormData();
+      formData.append('chunk', chunk);
+      formData.append('fileId', fileId);
+      formData.append('chunkIndex', chunkIndex.toString());
+      formData.append('totalChunks', totalChunks.toString());
+      formData.append('fileName', file.name);
+
+      await this.http.post(`${this.apiUrl}/UploadLessonChunk`, formData).toPromise();
+
+      this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
+    }
+
+    return fileId;
+  }
+
+  async completeVideoUpload(fileId: string): Promise<string> {
+    const response: any = await this.http
+      .post(`${this.apiUrl}/CompleteLessonUpload`, {
+        courseId: this.lessonForm.value.courseId,
+        fileId,
+        fileName: this.lessonVideo!.name,
+      })
+      .toPromise();
+
+    return response.path; // final video path
+  }
+
+  async submitLesson() {
     if (this.lessonForm.invalid || !this.lessonVideo) {
       this.errorMessage = 'Please fill in all required fields and upload a video.';
       return;
     }
 
-    const formData = new FormData();
-    formData.append('title', this.lessonForm.value.title);
-    formData.append('isFree', this.lessonForm.value.isFree);
-    formData.append('courseId', this.lessonForm.value.courseId);
-    formData.append('lessonOrder', this.lessonForm.value.order);
-    formData.append('lessonFile', this.lessonVideo);
-    formData.append('durationInSeconds', this.lessonDurationInSeconds.toString());
+    try {
+      this.submitting = true;
+      this.uploadProgress = 0;
 
-    this.lessonExercises.forEach((exercise, exerciseIndex) => {
-      // 1. Define the base key for the current exercise
-      const exerciseBaseKey = `lessonExercises[${exerciseIndex}]`;
+      // 1️⃣ Upload video chunks
+      const fileId = await this.uploadVideoInChunks(this.lessonVideo);
 
-      // 2. Append non-file properties (question, explanation)
-      formData.append(`${exerciseBaseKey}.questionText`, exercise.questionText || '');
-      formData.append(`${exerciseBaseKey}.explanation`, exercise.explanation || '');
+      // 2️⃣ Merge chunks on backend
+      const videoPath = await this.completeVideoUpload(fileId);
 
-      // 3. Append the answer list properties
-      exercise.answers.forEach((answer, answerIndex) => {
-        const answerBaseKey = `${exerciseBaseKey}.answers[${answerIndex}]`;
+      // 3️⃣ Send lesson data (NO VIDEO)
+      const formData = new FormData();
+      formData.append('title', this.lessonForm.value.title);
+      formData.append('isFree', this.lessonForm.value.isFree);
+      formData.append('courseId', this.lessonForm.value.courseId);
+      formData.append('lessonOrder', this.lessonForm.value.order);
+      formData.append('durationInSeconds', this.lessonDurationInSeconds.toString());
+      formData.append('videoPath', videoPath);
 
-        formData.append(`${answerBaseKey}.answerText`, answer.answerText || '');
-        // Ensure boolean is converted to a string for form data binding
-        formData.append(`${answerBaseKey}.isCorrect`, answer.isCorrect.toString());
+      this.lessonExercises.forEach((exercise, i) => {
+        const base = `lessonExercises[${i}]`;
+        formData.append(`${base}.questionText`, exercise.questionText || '');
+        formData.append(`${base}.explanation`, exercise.explanation || '');
+
+        exercise.answers.forEach((answer, j) => {
+          formData.append(`${base}.answers[${j}].answerText`, answer.answerText || '');
+          formData.append(`${base}.answers[${j}].isCorrect`, answer.isCorrect.toString());
+        });
+
+        if (exercise.image) {
+          formData.append(`${base}.image`, exercise.image);
+        }
       });
 
-      // 4. Append the exercise image file
-      if (exercise.image) {
-        // The file key remains the same, which will successfully bind the IFormFile property
-        const fileKey = `${exerciseBaseKey}.image`;
-        formData.append(fileKey, exercise.image, exercise.image.name);
-      }
-    });
-    this.submitting = true;
-    this.uploadProgress = 0;
+      await this.http.post(`${this.apiUrl}/AddLesson`, formData).toPromise();
 
-    this.http
-      .post(`${this.apiUrl}/AddLesson`, formData, {
-        reportProgress: true,
-        observe: 'events',
-      })
-      .pipe(timeout(7200000)) // 2 hours timeout
-      .subscribe({
-        next: (event: any) => {
-          if (event.type === 1 && event.total) {
-            this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-          } else if (event.type === 4) {
-            this.successMessage = '✅ Lesson uploaded successfully!';
-            this.errorMessage = '';
-            this.submitting = false;
-            this.lessonForm.reset();
-            this.lessonVideo = null;
-            this.lessonVideoPreview = null;
-            this.lessonDurationInSeconds = 0;
-            this.uploadProgress = 0;
-            this.lessonExercises = []; // Clear MCQs after successful submission
-          }
-        },
-        error: (err) => {
-          this.submitting = false;
-          this.uploadProgress = 0;
-          this.errorMessage = `❌ Failed to upload lesson. Error: ${err.status} - ${err.statusText}`;
-          console.error('Lesson Upload Error details:', err);
-        },
-      });
+      this.successMessage = '✅ Lesson uploaded successfully!';
+      this.errorMessage = '';
+      this.lessonForm.reset();
+      this.lessonVideo = null;
+      this.lessonExercises = [];
+      this.uploadProgress = 0;
+    } catch (err: any) {
+      console.error(err);
+      this.errorMessage = '❌ Upload failed';
+    } finally {
+      this.submitting = false;
+    }
   }
 
   addMCQ() {
