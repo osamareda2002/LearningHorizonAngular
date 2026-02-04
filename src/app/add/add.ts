@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -59,21 +61,23 @@ export class Add implements OnInit {
   // Files
   courseThumbnail: File | null = null;
   lessonVideo: File | null = null;
-  lessonVideoPreview: string | null = null;
+  lessonVideoPreview: SafeUrl | null = null;
+
   lessonDurationInSeconds: number = 0;
   lessonDurationInMinutes: number = 0;
   bookCover: File | null = null;
   bookPdf: File | null = null;
   sliderImage: File | null = null;
-  sliderImagePreview: string | null = null;
+  sliderImagePreview: SafeUrl | null = null;
+
   suggestionVideo: File | null = null;
-  suggestionVideoPreview: string | null = null;
+  suggestionVideoPreview: SafeUrl | null = null;
   uploadProgress = 0;
 
-  courseThumbnailPreview: string | null = null;
-  bookCoverPreview: string | null = null;
+  courseThumbnailPreview: SafeUrl | null = null;
+  bookCoverPreview: SafeUrl | null = null;
   doctorImage: File | null = null;
-  doctorImagePreview: string | null = null;
+  doctorImagePreview: SafeUrl | null = null;
 
   //mcq
 
@@ -81,8 +85,9 @@ export class Add implements OnInit {
   showMCQListModal = false;
   mcqForm!: FormGroup;
   mcqImage: File | null = null;
-  mcqImagePreview: string | null = null;
+  mcqImagePreview: SafeUrl | null = null;
   lessonExercises: DtoLessonExercise[] = [];
+
   currentMcqImageFile: File | null = null;
   editingMcqIndex: number | null = null;
 
@@ -91,7 +96,8 @@ export class Add implements OnInit {
     private auth: AuthService,
     private router: Router,
     private http: HttpClient,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit() {
@@ -231,17 +237,21 @@ export class Add implements OnInit {
     }
 
     // ✅ If valid, save and preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (type === 'course') {
-        this.courseThumbnail = file;
-        this.courseThumbnailPreview = reader.result as string;
-      } else {
-        this.bookCover = file;
-        this.bookCoverPreview = reader.result as string;
+    if (type === 'course') {
+      if (this.courseThumbnailPreview) {
+        URL.revokeObjectURL(this.courseThumbnailPreview as string);
       }
-    };
-    reader.readAsDataURL(file);
+      this.courseThumbnail = file;
+      this.courseThumbnailPreview = this.sanitizer.bypassSecurityTrustUrl(
+        URL.createObjectURL(file),
+      );
+    } else {
+      if (this.bookCoverPreview) {
+        URL.revokeObjectURL(this.bookCoverPreview as string);
+      }
+      this.bookCover = file;
+      this.bookCoverPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+    }
   }
 
   onVideoSelected(event: any, type: 'lesson' | 'suggestion') {
@@ -255,17 +265,21 @@ export class Add implements OnInit {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (type === 'lesson') {
-        this.lessonVideo = file;
-        this.lessonVideoPreview = reader.result as string;
-      } else if (type === 'suggestion') {
-        this.suggestionVideo = file;
-        this.suggestionVideoPreview = reader.result as string;
+    if (type === 'lesson') {
+      if (this.lessonVideoPreview) {
+        URL.revokeObjectURL(this.lessonVideoPreview as string);
       }
-    };
-    reader.readAsDataURL(file);
+      this.lessonVideo = file;
+      this.lessonVideoPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+    } else if (type === 'suggestion') {
+      if (this.suggestionVideoPreview) {
+        URL.revokeObjectURL(this.suggestionVideoPreview as string);
+      }
+      this.suggestionVideo = file;
+      this.suggestionVideoPreview = this.sanitizer.bypassSecurityTrustUrl(
+        URL.createObjectURL(file),
+      );
+    }
   }
 
   onVideoLoadedMetadata(event: any, type: 'lesson' | 'suggestion') {
@@ -291,12 +305,11 @@ export class Add implements OnInit {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.sliderImage = file;
-      this.sliderImagePreview = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+    if (this.sliderImagePreview) {
+      URL.revokeObjectURL(this.sliderImagePreview as string);
+    }
+    this.sliderImage = file;
+    this.sliderImagePreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
   }
 
   onDoctorImageSelected(event: any) {
@@ -310,12 +323,11 @@ export class Add implements OnInit {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.doctorImage = file;
-      this.doctorImagePreview = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+    if (this.doctorImagePreview) {
+      URL.revokeObjectURL(this.doctorImagePreview as string);
+    }
+    this.doctorImage = file;
+    this.doctorImagePreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
   }
 
   submitSlider() {
@@ -437,7 +449,6 @@ export class Add implements OnInit {
         reportProgress: true,
         observe: 'events',
       })
-      .pipe(timeout(0))
       .subscribe({
         next: (event: any) => {
           if (event.type === 1 && event.total) {
@@ -549,37 +560,29 @@ export class Add implements OnInit {
     if (!file) return;
 
     if (file) {
-      this.currentMcqImageFile = file; // UPDATE THIS LINE: Store the actual file object
+      if (this.mcqImagePreview) {
+        URL.revokeObjectURL(this.mcqImagePreview as string);
+      }
+      this.currentMcqImageFile = file;
+      this.mcqImage = file;
 
-      // For preview purposes (assuming mcqImagePreview exists)
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.mcqImagePreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      // Only preview images, not PDFs
+      const allowedImageTypes = ['image/jpeg', 'image/png'];
+      if (allowedImageTypes.includes(file.type)) {
+        this.mcqImagePreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+      } else if (file.type === 'application/pdf') {
+        this.mcqImagePreview = null;
+      } else {
+        alert('❌ Invalid file type! Only PNG, JPEG, and PDF allowed.');
+        event.target.value = '';
+        this.currentMcqImageFile = null;
+        this.mcqImage = null;
+        this.mcqImagePreview = null;
+      }
     } else {
-      this.currentMcqImageFile = null; // Reset if file selection is cancelled
+      this.currentMcqImageFile = null;
       this.mcqImagePreview = null;
-    }
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('❌ Invalid file type! Only PNG, JPEG, and PDF allowed.');
-      event.target.value = '';
-      return;
-    }
-
-    this.mcqImage = file;
-
-    // Only preview images, not PDFs
-    if (file.type !== 'application/pdf') {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.mcqImagePreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      this.mcqImagePreview = null;
+      this.mcqImage = null;
     }
   }
 
@@ -798,7 +801,7 @@ export class Add implements OnInit {
         this.submitting = false;
         this.errorMessage = '❌ Failed to add doctor.';
         console.error('Doctor upload error:', err);
-      }
+      },
     });
   }
 
