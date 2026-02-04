@@ -449,6 +449,7 @@ export class Add implements OnInit {
         reportProgress: true,
         observe: 'events',
       })
+      .pipe(timeout(7200000)) // 2 hours timeout
       .subscribe({
         next: (event: any) => {
           if (event.type === 1 && event.total) {
@@ -468,8 +469,8 @@ export class Add implements OnInit {
         error: (err) => {
           this.submitting = false;
           this.uploadProgress = 0;
-          this.errorMessage = '❌ Failed to upload lesson.';
-          console.error(err);
+          this.errorMessage = `❌ Failed to upload lesson. Error: ${err.status} - ${err.statusText}`;
+          console.error('Lesson Upload Error details:', err);
         },
       });
   }
@@ -716,6 +717,7 @@ export class Add implements OnInit {
         reportProgress: true,
         observe: 'events',
       })
+      .pipe(timeout(7200000)) // 2 hours timeout
       .subscribe({
         next: (event: any) => {
           if (event.type === 1 && event.total) {
@@ -733,8 +735,8 @@ export class Add implements OnInit {
           }
         },
         error: (err) => {
-          this.errorMessage = '❌ Failed to upload suggestion.';
-          console.error('Upload error:', err);
+          this.errorMessage = `❌ Failed to upload suggestion. Error: ${err.status} - ${err.statusText}`;
+          console.error('Suggestion Upload error details:', err);
           this.uploadProgress = 0;
           this.submitting = false;
         },
