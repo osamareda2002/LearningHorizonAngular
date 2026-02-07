@@ -1389,6 +1389,157 @@
   }
 }
 
+/* Category Form Specific Styles */
+.category-form-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.category-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.category-upload-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-zone {
+  border: 2px dashed #3f3d56;
+  border-radius: 20px;
+  background: #f8f9fc;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.upload-zone:hover {
+  background: #f0f2f9;
+  border-color: #503e9d;
+}
+
+.upload-placeholder {
+  text-align: center;
+  color: #3f3d56;
+}
+
+.upload-placeholder i {
+  font-size: 64px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.upload-text {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+}
+
+.upload-hint {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+.preview-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.preview-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 107, 107, 0.9);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  z-index: 10;
+}
+
+/* Updated Button Styles */
+.btn-publish {
+  background: linear-gradient(135deg, #6a82fb 0%, #7d52f4 100%);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(106, 130, 251, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-publish:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(106, 130, 251, 0.4);
+}
+
+.btn-publish:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Responsive Fixes */
+@media (max-width: 992px) {
+  .category-form-layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .category-upload-section {
+    order: -1; /* Move upload to top on smaller screens if desired, or keep as is */
+  }
+
+  .upload-zone {
+    height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tabs-content {
+    padding: 20px;
+  }
+  
+  .tab-title {
+    font-size: 22px;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+}
+
 /* Mobile (480px - 767px) */
 @media (max-width: 480px) {
   .main-content {

@@ -13,7 +13,17 @@
         <button class="menu-toggle-btn" (click)="toggleSidebar()">
           <i class="bi bi-list"></i>
         </button>
-        <h2 class="page-title">Material</h2>
+        <button
+          *ngIf="viewMode === 'courses'"
+          class="btn-back"
+          (click)="goBackToCategories()"
+          title="Back to Categories"
+        >
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2 class="page-title">
+          {{ viewMode === 'categories' ? 'Material' : selectedCategory?.title || 'Courses' }}
+        </h2>
       </div>
       <div class="user-menu">
         <span class="user-name">{{ userName }}</span>
@@ -29,97 +39,112 @@
       </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="search-section">
-      <div class="search-box">
-        <i class="bi bi-search"></i>
-        <input
-          type="text"
-          placeholder="Search courses..."
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearch()"
-        />
+    <!-- Category View -->
+    <div *ngIf="viewMode === 'categories'" class="categories-section">
+      <div *ngIf="loadingCategories" class="loading-state">
+        <i class="bi bi-hourglass-split"></i>
+        <p>Loading categories...</p>
       </div>
 
-      <div class="filter-tags">
-        <button
-          class="filter-tag"
-          [class.active]="selectedFilter === ''"
-          (click)="selectedFilter = ''; filterCourses()"
-        >
-          All Courses
-        </button>
-        <button
-          *ngFor="let category of categories"
-          class="filter-tag"
-          [class.active]="selectedFilter === category"
-          (click)="selectedFilter = category; filterCourses()"
-        >
-          {{ category }}
-        </button>
+      <div *ngIf="!loadingCategories && realCategories.length === 0" class="no-items">
+        <i class="bi bi-inbox"></i>
+        <p>No categories found</p>
+      </div>
+
+      <div *ngIf="!loadingCategories && realCategories.length > 0" class="categories-grid">
+        <div *ngFor="let cat of realCategories" class="category-card" (click)="selectCategory(cat)">
+          <div class="category-image">
+            <img [src]="cat.imageUrl" [alt]="cat.title" />
+          </div>
+          <div class="category-info">
+            <h3 class="category-name">{{ cat.title }}</h3>
+            <p class="category-desc" *ngIf="cat.about">{{ cat.about }}</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Courses Grid -->
-    <div class="courses-section">
-      <div *ngIf="filteredCourses.length === 0" class="no-courses">
-        <i class="bi bi-inbox"></i>
-        <p>No courses found</p>
+    <!-- Course View -->
+    <div *ngIf="viewMode === 'courses'" class="courses-container">
+      <!-- Search -->
+      <div class="search-section">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            placeholder="Search courses in {{ selectedCategory?.title }}..."
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearch()"
+          />
+        </div>
       </div>
 
-      <div class="courses-grid">
-        <div *ngFor="let course of filteredCourses" class="course-card">
-          <div class="course-image">
-            <img [src]="course.thumbnail" [alt]="course.courseTitle" />
-            <span class="price-badge" [class.free]="course.coursePrice === 0">
-              {{ course.coursePrice === 0 ? 'Free' : '$' + course.coursePrice }}
-            </span>
-          </div>
+      <!-- Courses Grid -->
+      <div class="courses-section">
+        <div *ngIf="loadingCourses" class="loading-state">
+          <i class="bi bi-hourglass-split"></i>
+          <p>Loading courses...</p>
+        </div>
 
-          <div class="course-info">
-            <h3 class="course-name">{{ course.courseTitle }}</h3>
-            <p class="instructor-name">
-              <i class="bi bi-person-circle"></i>
-              {{ course.courseCreator }}
-            </p>
+        <div *ngIf="!loadingCourses && filteredCourses.length === 0" class="no-items">
+          <i class="bi bi-inbox"></i>
+          <p>No courses found in this category</p>
+        </div>
 
-            <div class="course-meta">
-              <span *ngIf="course.duration > 60" class="duration">
-                <i class="bi bi-clock"></i>
-                {{ course.durationHourse }} hours
-              </span>
-              <span *ngIf="course.duration <= 60" class="duration">
-                <i class="bi bi-clock"></i>
-                {{ course.duration }} mins
-              </span>
-              <span class="lessons">
-                <i class="bi bi-play-btn"></i>
-                {{ course.lessonsCount }} lessons
+        <div *ngIf="!loadingCourses && filteredCourses.length > 0" class="courses-grid">
+          <div *ngFor="let course of filteredCourses" class="course-card">
+            <div class="course-image">
+              <img [src]="course.thumbnail" [alt]="course.courseTitle" />
+              <span class="price-badge" [class.free]="course.coursePrice === 0">
+                {{ course.coursePrice === 0 ? 'Free' : '$' + course.coursePrice }}
               </span>
             </div>
 
-            <div class="course-footer">
-              <button
-                *ngIf="!isLoggedIn"
-                class="btn-view"
-                (click)="handleUnauthorizedView(course.courseId)"
-              >
-                View
-              </button>
-              <button
-                *ngIf="isLoggedIn && !userEnrolled(course.courseId)"
-                class="btn-view"
-                (click)="enrollCourse(course.courseId)"
-              >
-                View
-              </button>
-              <button
-                *ngIf="isLoggedIn && userEnrolled(course.courseId)"
-                class="btn-continue"
-                (click)="continueCourse(course.courseId)"
-              >
-                Continue
-              </button>
+            <div class="course-info">
+              <h3 class="course-name">{{ course.courseTitle }}</h3>
+              <p class="instructor-name">
+                <i class="bi bi-person-circle"></i>
+                {{ course.courseCreator }}
+              </p>
+
+              <div class="course-meta">
+                <span *ngIf="course.duration > 60" class="duration">
+                  <i class="bi bi-clock"></i>
+                  {{ course.durationHourse }} hours
+                </span>
+                <span *ngIf="course.duration <= 60" class="duration">
+                  <i class="bi bi-clock"></i>
+                  {{ course.duration }} mins
+                </span>
+                <span class="lessons">
+                  <i class="bi bi-play-btn"></i>
+                  {{ course.lessonsCount }} lessons
+                </span>
+              </div>
+
+              <div class="course-footer">
+                <button
+                  *ngIf="!isLoggedIn"
+                  class="btn-view"
+                  (click)="handleUnauthorizedView(course.courseId)"
+                >
+                  View
+                </button>
+                <button
+                  *ngIf="isLoggedIn && !userEnrolled(course.courseId)"
+                  class="btn-view"
+                  (click)="enrollCourse(course.courseId)"
+                >
+                  View
+                </button>
+                <button
+                  *ngIf="isLoggedIn && userEnrolled(course.courseId)"
+                  class="btn-continue"
+                  (click)="continueCourse(course.courseId)"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           </div>
         </div>

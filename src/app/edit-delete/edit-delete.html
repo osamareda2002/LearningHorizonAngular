@@ -43,6 +43,14 @@
       <div class="tabs-header">
         <button
           class="tab-btn"
+          [class.active]="activeTab === 'category'"
+          (click)="switchTab('category')"
+        >
+          <i class="bi bi-tag"></i>
+          Categories
+        </button>
+        <button
+          class="tab-btn"
           [class.active]="activeTab === 'course'"
           (click)="switchTab('course')"
         >
@@ -78,6 +86,39 @@
 
       <!-- Tab Content -->
       <div class="tabs-content">
+        <!-- Categories Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'category'">
+          <h3 class="tab-title">Manage Categories</h3>
+
+          <div *ngIf="loadingCategories" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading categories...</p>
+          </div>
+
+          <div *ngIf="!loadingCategories && categories.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No categories found</p>
+          </div>
+
+          <div *ngIf="!loadingCategories && categories.length > 0" class="items-grid">
+            <div *ngFor="let cat of categories" class="item-card">
+              <img [src]="cat.imageUrl" [alt]="cat.title" class="item-thumbnail" />
+              <div class="item-content">
+                <h4 class="item-title">{{ cat.title }}</h4>
+                <p class="item-meta">{{ cat.about }}</p>
+              </div>
+              <div class="item-actions">
+                <button class="btn-icon btn-edit" (click)="openEditCategoryModal(cat)" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-icon btn-delete" (click)="deleteCategory(cat.id)" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Courses Tab -->
         <div class="tab-pane" *ngIf="activeTab === 'course'">
           <h3 class="tab-title">Manage Courses</h3>
@@ -353,6 +394,61 @@
   </main>
 </div>
 
+<!-- Edit Category Modal -->
+<div class="modal" [class.show]="showEditCategoryModal" *ngIf="showEditCategoryModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Category</h3>
+      <button class="modal-close" (click)="closeModals()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <form [formGroup]="editCategoryForm" (ngSubmit)="submitEditCategory()" class="modal-body">
+      <div class="form-group">
+        <label>Category Title <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="title"
+          [class.error]="
+            editCategoryForm.get('title')?.invalid && editCategoryForm.get('title')?.touched
+          "
+        />
+      </div>
+      <div class="form-group">
+        <label>About</label>
+        <textarea class="form-control" formControlName="about" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Category Image</label>
+        <div class="upload-box">
+          <i class="bi bi-image"></i>
+          <p>Upload New Image (Optional)</p>
+          <input
+            type="file"
+            class="file-input"
+            (change)="onCategoryImageChange($event)"
+            accept="image/jpeg, image/png"
+          />
+        </div>
+        <div *ngIf="editCategoryImagePreview" class="thumbnail-preview">
+          <img [src]="editCategoryImagePreview" alt="Preview" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" (click)="closeModals()">Cancel</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="editCategoryForm.invalid || submitting"
+        >
+          {{ submitting ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Edit Course Modal -->
 <div class="modal" [class.show]="showEditCourseModal" *ngIf="showEditCourseModal">
   <div class="modal-content">
@@ -373,6 +469,21 @@
             editCourseForm.get('title')?.invalid && editCourseForm.get('title')?.touched
           "
         />
+      </div>
+      <div class="form-group">
+        <label>Category <span class="required">*</span></label>
+        <select
+          class="form-control"
+          formControlName="categoryId"
+          [class.error]="
+            editCourseForm.get('categoryId')?.invalid && editCourseForm.get('categoryId')?.touched
+          "
+        >
+          <option value="">-- Select Category --</option>
+          <option *ngFor="let cat of categories" [value]="cat.id">
+            {{ cat.title }}
+          </option>
+        </select>
       </div>
       <div class="form-group">
         <label>Price <span class="required">*</span></label>
@@ -658,6 +769,7 @@
 <div
   class="modal-overlay"
   [class.show]="
+    showEditCategoryModal ||
     showEditCourseModal ||
     showEditLessonModal ||
     showEditSliderModal ||

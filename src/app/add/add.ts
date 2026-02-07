@@ -10,6 +10,7 @@ import { environment } from '../services/enviroment';
 import { timeout } from 'rxjs';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 import { TeamService } from '../services/team.service';
+import { CategoryService } from '../services/category.service';
 
 const CHUNK_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -40,7 +41,7 @@ interface DtoLessonExerciseJson {
 export class Add implements OnInit {
   private apiUrl = `${environment.horizon}`;
 
-  activeTab: 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor' = 'course';
+  activeTab: 'category' | 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor' = 'category';
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
@@ -51,6 +52,7 @@ export class Add implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+  categoryForm!: FormGroup;
   courseForm!: FormGroup;
   lessonForm!: FormGroup;
   bookForm!: FormGroup;
@@ -58,9 +60,13 @@ export class Add implements OnInit {
   suggestionForm!: FormGroup;
   doctorForm!: FormGroup;
 
+  categories: any[] = []; // Loaded from backend
   courses: any[] = []; // Loaded from backend
 
   // Files
+  categoryImage: File | null = null;
+  categoryImagePreview: SafeUrl | null = null;
+
   courseThumbnail: File | null = null;
   lessonVideo: File | null = null;
   lessonVideoPreview: SafeUrl | null = null;
@@ -99,6 +105,7 @@ export class Add implements OnInit {
     private router: Router,
     private http: HttpClient,
     private teamService: TeamService,
+    private categoryService: CategoryService,
     private sanitizer: DomSanitizer,
   ) {}
 
@@ -122,15 +129,22 @@ export class Add implements OnInit {
     this.initializeForms();
     this.initializeMCQForm();
     this.loadCourses();
+    this.loadCategories(); // Load categories for dropdown
   }
 
   // ------------------------------
   // ✅ Initialize Forms
   // ------------------------------
   initializeForms() {
+    this.categoryForm = this.fb.group({
+      title: ['', Validators.required],
+      about: [''],
+    });
+
     this.courseForm = this.fb.group({
       title: ['', Validators.required],
       price: [0, Validators.required],
+      categoryId: ['', Validators.required],
       instructorName: ['', Validators.required],
     });
 
@@ -185,7 +199,7 @@ export class Add implements OnInit {
   // ------------------------------
   // ✅ Tabs
   // ------------------------------
-  switchTab(tab: 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor') {
+  switchTab(tab: 'category' | 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor') {
     this.activeTab = tab;
     this.errorMessage = '';
     this.successMessage = '';
@@ -222,9 +236,64 @@ export class Add implements OnInit {
   }
 
   // ------------------------------
+  // ✅ Load Categories
+  // ------------------------------
+  loadCategories() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (res: any) => {
+        this.categories = res;
+      },
+      error: (err) => {
+        console.error('❌ Failed to load categories:', err);
+      },
+    });
+  }
+
+  // ------------------------------
+  // ✅ Submit Category
+  // ------------------------------
+  submitCategory() {
+    if (this.categoryForm.invalid || !this.categoryImage) {
+      this.errorMessage = 'Please fill in all required fields and upload an image.';
+      return;
+    }
+
+    this.submitting = true;
+
+    const data = {
+      title: this.categoryForm.value.title,
+      description: this.categoryForm.value.about, // mapping 'about' to description
+      image: this.categoryImage,
+    };
+
+    this.categoryService.addCategory(data).subscribe({
+      next: (res) => {
+        this.successMessage = '✅ Category added successfully!';
+        this.errorMessage = '';
+        this.submitting = false;
+        this.categoryForm.reset();
+        this.categoryImage = null;
+        this.categoryImagePreview = null;
+        this.loadCategories(); // Refresh list
+      },
+      error: (err) => {
+        this.submitting = false;
+        this.errorMessage = '❌ Failed to add category.';
+        console.error('Category upload error:', err);
+      },
+    });
+  }
+
+  resetCategoryForm() {
+    this.categoryForm.reset();
+    this.categoryImage = null;
+    this.categoryImagePreview = null;
+  }
+
+  // ------------------------------
   // ✅ File Handlers
   // ------------------------------
-  onThumbnailSelected(event: any, type: 'course' | 'book') {
+  onThumbnailSelected(event: any, type: 'course' | 'book' | 'category') {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -247,12 +316,18 @@ export class Add implements OnInit {
       this.courseThumbnailPreview = this.sanitizer.bypassSecurityTrustUrl(
         URL.createObjectURL(file),
       );
-    } else {
+    } else if (type === 'book') {
       if (this.bookCoverPreview) {
         URL.revokeObjectURL(this.bookCoverPreview as string);
       }
       this.bookCover = file;
       this.bookCoverPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+    } else if (type === 'category') {
+      if (this.categoryImagePreview) {
+        URL.revokeObjectURL(this.categoryImagePreview as string);
+      }
+      this.categoryImage = file;
+      this.categoryImagePreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
     }
   }
 
@@ -380,6 +455,7 @@ export class Add implements OnInit {
 
     const formData = new FormData();
     formData.append('courseTitle', this.courseForm.value.title);
+    formData.append('categoryId', this.courseForm.value.categoryId);
     formData.append('courseCreator', this.courseForm.value.instructorName);
     formData.append('coursePrice', this.courseForm.value.price);
     formData.append('courseImage', this.courseThumbnail);

@@ -7,6 +7,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../services/enviroment';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 import { TeamService } from '../services/team.service';
+import { CategoryService } from '../services/category.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-edit-delete',
@@ -18,7 +20,7 @@ import { TeamService } from '../services/team.service';
 export class EditDelete implements OnInit {
   private apiUrl = `${environment.horizon}`;
 
-  activeTab: 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' = 'course';
+  activeTab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' = 'category';
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
@@ -29,6 +31,7 @@ export class EditDelete implements OnInit {
   successMessage = '';
 
   // Lists
+  categories: any[] = [];
   courses: any[] = [];
   lessons: any[] = [];
   sliders: any[] = [];
@@ -39,6 +42,7 @@ export class EditDelete implements OnInit {
   selectedCourseId: string = '';
 
   // Loading states
+  loadingCategories = false;
   loadingCourses = false;
   loadingLessons = false;
   loadingSliders = false;
@@ -46,6 +50,7 @@ export class EditDelete implements OnInit {
   loadingDoctors = false;
 
   // Forms
+  editCategoryForm!: FormGroup;
   editCourseForm!: FormGroup;
   editLessonForm!: FormGroup;
   editSliderForm!: FormGroup;
@@ -53,6 +58,7 @@ export class EditDelete implements OnInit {
   editDoctorForm!: FormGroup;
 
   // Modal states
+  showEditCategoryModal = false;
   showEditCourseModal = false;
   showEditLessonModal = false;
   showEditSliderModal = false;
@@ -61,15 +67,18 @@ export class EditDelete implements OnInit {
   showDeleteConfirm = false;
 
   // Current item data
+  currentEditCategory: any = null;
   currentEditCourse: any = null;
   currentEditLesson: any = null;
   currentEditSlider: any = null;
   currentEditSuggestion: any = null;
   currentEditDoctor: any = null;
   currentDeleteItem: any = null;
-  deleteType: 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | null = null;
+  deleteType: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | null = null;
 
   // File uploads
+  editCategoryImage: File | null = null;
+  editCategoryImagePreview: SafeUrl | null = null;
   editCourseImage: File | null = null;
   editCourseImagePreview: string | null = null;
   editSliderImage: File | null = null;
@@ -82,7 +91,9 @@ export class EditDelete implements OnInit {
     private auth: AuthService,
     private router: Router,
     private http: HttpClient,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private categoryService: CategoryService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -106,10 +117,16 @@ export class EditDelete implements OnInit {
   }
 
   initializeForms() {
+    this.editCategoryForm = this.fb.group({
+      title: ['', Validators.required],
+      about: [''],
+    });
+
     this.editCourseForm = this.fb.group({
       title: ['', Validators.required],
       price: [0, Validators.required],
       instructorName: ['', Validators.required],
+      categoryId: ['', Validators.required],
     });
 
     this.editLessonForm = this.fb.group({
@@ -138,7 +155,7 @@ export class EditDelete implements OnInit {
     });
   }
 
-  switchTab(tab: 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor') {
+  switchTab(tab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor') {
     this.activeTab = tab;
     this.errorMessage = '';
     this.successMessage = '';
@@ -159,11 +176,93 @@ export class EditDelete implements OnInit {
 
   // ✅ Load all data
   loadAllData() {
+    this.loadCategories();
     this.loadCourses();
     // Don't load all lessons on init - wait for course selection
     this.loadSliders();
     this.loadSuggestions();
     this.loadDoctors();
+  }
+
+  loadCategories() {
+    this.loadingCategories = true;
+    this.categoryService.getAllCategories().subscribe({
+      next: (res: any) => {
+        this.categories = res || [];
+        this.loadingCategories = false;
+      },
+      error: (err) => {
+        console.error('Failed to load categories:', err);
+        this.loadingCategories = false;
+      },
+    });
+  }
+
+  openEditCategoryModal(category: any) {
+    this.currentEditCategory = category;
+    this.editCategoryForm.patchValue({
+      title: category.title,
+      about: category.about,
+    });
+    this.editCategoryImagePreview = category.imagePath; // Assuming imagePath is the url
+    this.editCategoryImage = null;
+    this.showEditCategoryModal = true;
+  }
+
+  onCategoryImageChange(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type! Only PNG and JPG files are allowed.');
+      event.target.value = '';
+      return;
+    }
+
+    this.editCategoryImage = file;
+    this.editCategoryImagePreview = this.sanitizer.bypassSecurityTrustUrl(
+      URL.createObjectURL(file),
+    );
+  }
+
+  submitEditCategory() {
+    if (this.editCategoryForm.invalid || !this.currentEditCategory) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return;
+    }
+
+    this.submitting = true;
+
+    const data: any = {
+      id: this.currentEditCategory.id,
+      title: this.editCategoryForm.value.title,
+      description: this.editCategoryForm.value.about,
+    };
+
+    if (this.editCategoryImage) {
+      data.image = this.editCategoryImage;
+    }
+
+    this.categoryService.editCategory(data).subscribe({
+      next: (res) => {
+        this.successMessage = 'Category updated successfully!';
+        this.submitting = false;
+        this.closeModals();
+        this.loadCategories();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update category.';
+        this.submitting = false;
+        console.error(err);
+      },
+    });
+  }
+
+  deleteCategory(categoryId: number) {
+    this.currentDeleteItem = categoryId;
+    this.deleteType = 'category';
+    this.showDeleteConfirm = true;
   }
 
   loadCourses() {
@@ -346,6 +445,7 @@ export class EditDelete implements OnInit {
       title: course.courseTitle,
       price: course.coursePrice,
       instructorName: course.courseCreator,
+      categoryId: course.categoryId,
     });
     this.editCourseImagePreview = course.courseImage;
     this.editCourseImage = null;
@@ -384,6 +484,7 @@ export class EditDelete implements OnInit {
     formData.append('courseTitle', this.editCourseForm.value.title);
     formData.append('courseCreator', this.editCourseForm.value.instructorName);
     formData.append('coursePrice', this.editCourseForm.value.price);
+    formData.append('categoryId', this.editCourseForm.value.categoryId);
 
     if (this.editCourseImage) {
       formData.append('courseImage', this.editCourseImage);
@@ -584,6 +685,15 @@ export class EditDelete implements OnInit {
     let endpoint = '';
 
     switch (this.deleteType) {
+      case 'category':
+        // CategoryService handling via http request directly in this switch or separate service call? 
+        // Existing code constructs endpoint string. Category matches pattern?
+        // Let's use service or construct endpoint. Service `deleteCategory` uses `DeleteCategory?id=...`.
+        // existing code uses `this.apiUrl`... let's stick to pattern if possible but cleaner to use service.
+        // However, `confirmDelete` logic here is monolithic.
+        // Let's use endpoint string for consistency with existing code style in this method.
+        endpoint = `${this.apiUrl}/DeleteCategory?id=${this.currentDeleteItem}`;
+        break;
       case 'course':
         endpoint = `${this.apiUrl}/DeleteCourse?id=${this.currentDeleteItem}`;
         break;
@@ -613,7 +723,9 @@ export class EditDelete implements OnInit {
           this.submitting = false;
           this.closeModals();
 
-          if (this.deleteType === 'course') {
+          if (this.deleteType === 'category') {
+            this.loadCategories();
+          } else if (this.deleteType === 'course') {
             this.loadCourses();
           } else if (this.deleteType === 'lesson') {
             this.loadLessons();
@@ -647,6 +759,7 @@ export class EditDelete implements OnInit {
 
   // ✅ Close all modals
   closeModals() {
+    this.showEditCategoryModal = false;
     this.showEditCourseModal = false;
     this.showEditLessonModal = false;
     this.showEditSliderModal = false;
@@ -654,6 +767,7 @@ export class EditDelete implements OnInit {
     this.showEditDoctorModal = false;
     this.showDeleteConfirm = false;
 
+    this.currentEditCategory = null;
     this.currentEditCourse = null;
     this.currentEditLesson = null;
     this.currentEditSlider = null;
@@ -661,6 +775,8 @@ export class EditDelete implements OnInit {
     this.currentEditDoctor = null;
     this.currentDeleteItem = null;
 
+    this.editCategoryImage = null;
+    this.editCategoryImagePreview = null;
     this.editCourseImage = null;
     this.editCourseImagePreview = null;
     this.editSliderImage = null;

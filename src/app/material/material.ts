@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
+import { CategoryService } from '../services/category.service';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 
 interface Course {
@@ -33,17 +34,23 @@ export class Material implements OnInit {
   userName = 'Guest';
   searchQuery = '';
   selectedFilter = '';
-  categories: string[] = [];
+
+  // Category-related state
+  viewMode: 'categories' | 'courses' = 'categories';
+  realCategories: any[] = [];
+  selectedCategory: any = null;
+  loadingCategories = false;
+  loadingCourses = false;
 
   allCourses: Course[] = [];
-
   filteredCourses: Course[] = [];
   enrolledCourses: number[] = []; // Track enrolled course IDs
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private materialService: MaterialService
+    private materialService: MaterialService,
+    private categoryService: CategoryService,
   ) {}
 
   ngOnInit() {
@@ -51,34 +58,9 @@ export class Material implements OnInit {
     this.userName = this.auth.getUserName();
     this.isAdmin = this.auth.isAdmin();
 
-    this.materialService.getAllMaterials().subscribe({
-      next: (res: any[]) => {
-        res.map((s) => {
-          let obj = {
-            courseId: s.courseId,
-            courseTitle: s.courseTitle,
-            courseCreator: s.courseCreator,
-            thumbnail: s.courseImagePath,
-            coursePrice: s.coursePrice,
-            duration: Math.round(parseFloat(s.courseDurationInSeconds) / 60.0),
-            durationHourse: Math.round(
-              Math.round(parseFloat(s.courseDurationInSeconds) / 60.0) / 60.0
-            ),
-            lessonsCount: s.lessonsCount,
-            category: '',
-          };
-          this.allCourses.push(obj);
-          this.categories.push(obj.courseTitle);
-        });
-      },
-    });
+    this.loadCategories();
 
-    this.filteredCourses = this.allCourses;
-    this.filteredCourses.map((fc) => {
-      console.log('fc', fc.thumbnail);
-    });
     // Load enrolled courses from localStorage
-
     const enrolled = localStorage.getItem('enrolledCourses');
     if (enrolled) {
       this.enrolledCourses = JSON.parse(enrolled);
@@ -87,15 +69,68 @@ export class Material implements OnInit {
         next: (response: any) => {
           if (response.status === 200 && response.data) {
             this.enrolledCourses = response.data.purchasedCourses.map((id: number) => id);
-
             localStorage.setItem('enrolledCourses', JSON.stringify(this.enrolledCourses));
           }
         },
         error: (err) => {
-          console.log(err);
+          console.error('Failed to load enrolled courses:', err);
         },
       });
     }
+  }
+
+  loadCategories() {
+    this.loadingCategories = true;
+    this.categoryService.getAllCategories().subscribe({
+      next: (res: any) => {
+        this.realCategories = res || [];
+        this.loadingCategories = false;
+      },
+      error: (err) => {
+        console.error('Failed to load categories:', err);
+        this.loadingCategories = false;
+      },
+    });
+  }
+
+  selectCategory(category: any) {
+    this.selectedCategory = category;
+    this.viewMode = 'courses';
+    this.loadingCourses = true;
+    this.allCourses = [];
+    this.filteredCourses = [];
+
+    this.categoryService.getCoursesByCategory(category.id).subscribe({
+      next: (res: any[]) => {
+        this.allCourses = (res || []).map((s) => ({
+          courseId: s.courseId,
+          courseTitle: s.courseTitle,
+          courseCreator: s.courseCreator,
+          thumbnail: s.courseImagePath,
+          coursePrice: s.coursePrice,
+          duration: Math.round(parseFloat(s.courseDurationInSeconds) / 60.0),
+          durationHourse: Math.round(
+            Math.round(parseFloat(s.courseDurationInSeconds) / 60.0) / 60.0,
+          ),
+          lessonsCount: s.lessonsCount,
+          category: category.title,
+        }));
+        this.filteredCourses = [...this.allCourses];
+        this.loadingCourses = false;
+      },
+      error: (err) => {
+        console.error('Failed to load courses by category:', err);
+        this.loadingCourses = false;
+      },
+    });
+  }
+
+  goBackToCategories() {
+    this.viewMode = 'categories';
+    this.selectedCategory = null;
+    this.allCourses = [];
+    this.filteredCourses = [];
+    this.searchQuery = '';
   }
 
   toggleDropdown() {
@@ -123,13 +158,16 @@ export class Material implements OnInit {
   }
 
   filterCourses() {
+    if (this.viewMode === 'categories') {
+      // Option: search categories if in category mode?
+      // For now, prompt asks for courses under category.
+      return;
+    }
     this.filteredCourses = this.allCourses.filter((course) => {
       const matchesSearch =
         course.courseTitle.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         course.courseCreator.toLowerCase().includes(this.searchQuery.toLowerCase());
-      const matchesCategory =
-        this.selectedFilter === '' || course.courseTitle === this.selectedFilter;
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     });
   }
 
@@ -142,8 +180,6 @@ export class Material implements OnInit {
       this.router.navigate(['/login'], { queryParams: { returnUrl: '/material' } });
       return;
     }
-
-    // Navigate to course videos page
     this.router.navigate(['/course-videos', courseId]);
   }
 
@@ -152,13 +188,10 @@ export class Material implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
-    // Navigate to course videos page
     this.router.navigate(['/course-videos', courseId]);
   }
 
   handleUnauthorizedView(courseId: number) {
-    // Allow viewing course page even without login (free lessons available)
     this.router.navigate(['/course-videos', courseId]);
   }
 
