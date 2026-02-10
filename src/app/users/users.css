@@ -219,6 +219,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -528,9 +529,7 @@
     border-radius: 0;
   }
 
-  .users-container.sidebar-open .main-content {
-    margin-left: 250px;
-  }
+
 
   .page-title-container {
     gap: 10px;
@@ -605,9 +604,7 @@
     padding: 15px;
   }
 
-  .users-container.sidebar-open .main-content {
-    margin-left: 220px;
-  }
+
 
   .page-title {
     font-size: 20px;
@@ -723,9 +720,7 @@
     padding: 12px;
   }
 
-  .users-container.sidebar-open .main-content {
-    margin-left: 200px;
-  }
+
 
   .page-title {
     font-size: 18px;
@@ -829,5 +824,40 @@
 
   .main-content {
     margin-left: 0;
+  }
+}
+
+/* ============================= */
+/* Sidebar overlay improvements */
+/* ============================= */
+
+/* Disable scrolling when sidebar is open */
+.users-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 992px) {
+  .users-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
   }
 }

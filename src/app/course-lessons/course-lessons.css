@@ -95,6 +95,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -1368,6 +1369,7 @@
 /* ============================= */
 
 @media (hover: none) and (pointer: coarse) {
+
   .option-button,
   .lesson-item,
   .btn-submit,
@@ -1431,4 +1433,39 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+}
+
+/* ============================= */
+/* Sidebar overlay improvements */
+/* ============================= */
+
+/* Disable scrolling when sidebar is open */
+.course-lessons-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 992px) {
+  .course-lessons-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+  }
 }

@@ -461,9 +461,7 @@
     border-radius: 0;
   }
 
-  .material-container.sidebar-open .main-content {
-    margin-left: 220px;
-  }
+
 
   .logo-container {
     padding: 15px;
@@ -558,9 +556,7 @@
     padding: 20px;
   }
 
-  .material-container.sidebar-open .main-content {
-    margin-left: 250px;
-  }
+
 
   .navbar-left {
     width: 100%;
@@ -720,9 +716,7 @@
   .main-content {
     margin-left: 0;
   }
-  .material-container.sidebar-open .main-content {
-    margin-left: 200px;
-  }
+
 
   .user-name {
     font-size: 13px;
@@ -913,7 +907,8 @@
 }
 
 /* Loading & Empty States */
-.loading-state, .no-items {
+.loading-state,
+.no-items {
   text-align: center;
   padding: 80px 20px;
   color: #999;
@@ -929,11 +924,17 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.loading-state p, .no-items p {
+.loading-state p,
+.no-items p {
   font-size: 18px;
   font-weight: 500;
 }
@@ -950,11 +951,11 @@
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 20px;
   }
-  
+
   .category-image {
     height: 150px;
   }
-  
+
   .category-name {
     font-size: 18px;
   }
@@ -964,17 +965,18 @@
   .categories-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .category-card {
     max-width: 100%;
   }
-  
+
   .btn-back {
     width: 36px;
     height: 36px;
     font-size: 18px;
   }
 }
+
 /* Small Mobile (320px - 479px) */
 @media (max-width: 320px) {
   .page-title {
@@ -1053,6 +1055,7 @@
     font-size: 13px;
   }
 }
+
 /* ============================= */
 /* Sidebar overlay improvements */
 /* ============================= */
@@ -1062,23 +1065,28 @@
   overflow: hidden;
 }
 
-/* Ensure sidebar overlays content on mobile */
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 992px) {
+  .material-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
 @media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    z-index: 1050;
-    height: 100%;
-    top: 0;
-    left: 0;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .material-container.sidebar-open .sidebar {
-    transform: translateX(0);
-  }
-
   .main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
 }

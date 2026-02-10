@@ -12,16 +12,14 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s;
+  z-index: 900;
+  backdrop-filter: blur(2px);
 }
 
-.quizzes-container.sidebar-open .sidebar-overlay {
-  display: block;
-  opacity: 1;
-  visibility: visible;
+@media (max-width: 992px) {
+  .quizzes-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
 }
 
 /* Main Content */
@@ -168,6 +166,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -286,10 +285,12 @@
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -471,6 +472,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -561,9 +563,7 @@
     overflow-y: auto;
   }
 
-  .quizzes-container.sidebar-open .main-content {
-    margin-left: 250px;
-  }
+
 
   .page-title {
     font-size: 24px;
@@ -692,5 +692,17 @@
 
   .modal-actions {
     padding: 12px 15px;
+  }
+}
+
+/* Disable scrolling when sidebar is open */
+.quizzes-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
   }
 }

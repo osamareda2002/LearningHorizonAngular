@@ -148,6 +148,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -304,16 +305,19 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -496,6 +500,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -646,9 +651,7 @@
     overflow-y: auto;
   }
 
-  .sessions-container.sidebar-open .main-content {
-    margin-left: 250px;
-  }
+
 
   .page-title {
     font-size: 24px;
@@ -805,5 +808,40 @@
 
   .meeting-topic-highlight {
     font-size: 16px !important;
+  }
+}
+
+/* ============================= */
+/* Sidebar overlay improvements */
+/* ============================= */
+
+/* Disable scrolling when sidebar is open */
+.sessions-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 992px) {
+  .sessions-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
   }
 }

@@ -216,6 +216,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -282,6 +283,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -390,7 +392,8 @@
 
 .doctor-thumbnail {
   object-position: top center;
-  height: 250px; /* Better height for portraits */
+  height: 250px;
+  /* Better height for portraits */
 }
 
 .item-content {
@@ -590,6 +593,7 @@ tbody tr:last-child td {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -868,9 +872,7 @@ tbody tr:last-child td {
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
   }
 
-  .manage-container.sidebar-open .main-content {
-    margin-left: 250px;
-  }
+
 
   .user-navbar {
     flex-wrap: wrap;
@@ -1040,9 +1042,7 @@ tbody tr:last-child td {
     width: 220px;
   }
 
-  .manage-container.sidebar-open .main-content {
-    margin-left: 220px;
-  }
+
 
   .page-title {
     font-size: 18px;
@@ -1274,9 +1274,7 @@ tbody tr:last-child td {
     width: 200px;
   }
 
-  .manage-container.sidebar-open .main-content {
-    margin-left: 200px;
-  }
+
 
   .user-navbar {
     gap: 6px;
@@ -1449,6 +1447,41 @@ tbody tr:last-child td {
   }
 }
 
+/* ============================= */
+/* Sidebar overlay improvements */
+/* ============================= */
+
+/* Disable scrolling when sidebar is open */
+.manage-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 992px) {
+  .manage-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
+
 /* Utility Classes */
 .hidden {
   display: none !important;
@@ -1460,6 +1493,7 @@ tbody tr:last-child td {
 
 /* Print Styles */
 @media print {
+
   .sidebar,
   .user-navbar,
   .tab-btn,

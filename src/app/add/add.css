@@ -223,6 +223,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -289,6 +290,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -610,6 +612,7 @@
     opacity: 0;
     transform: translateY(50px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -638,9 +641,11 @@
 
 .mcq-answers-upload-wrapper {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* 2 parts for answers, 1 part for upload */
+  grid-template-columns: 2fr 1fr;
+  /* 2 parts for answers, 1 part for upload */
   gap: 25px;
-  align-items: start; /* Align items to the top */
+  align-items: start;
+  /* Align items to the top */
 }
 
 /* Question Section */
@@ -705,22 +710,28 @@
   font-size: 16px;
   font-weight: 600;
   color: #333;
-  text-align: left; /* Align to left to match the form labels */
+  text-align: left;
+  /* Align to left to match the form labels */
   width: 100%;
 }
 
 .mcq-upload-box {
-  border: 2px dashed #e0e0e0; /* Use consistent light grey border */
+  border: 2px dashed #e0e0e0;
+  /* Use consistent light grey border */
   border-radius: 12px;
-  padding: 40px 20px; /* Match padding of the course thumbnail upload box */
+  padding: 40px 20px;
+  /* Match padding of the course thumbnail upload box */
   text-align: center;
   cursor: pointer;
   transition: all 0.3s;
-  background: white; /* White background as in screenshot */
-  width: 100%; /* Take full width of its grid column */
+  background: white;
+  /* White background as in screenshot */
+  width: 100%;
+  /* Take full width of its grid column */
   position: relative;
   box-sizing: border-box;
-  margin-top: 15px; /* Add space from the label */
+  margin-top: 15px;
+  /* Add space from the label */
 }
 
 .mcq-upload-box:hover {
@@ -729,14 +740,17 @@
 }
 
 .mcq-upload-box i {
-  font-size: 48px; /* Larger icon */
-  color: #503e9d; /* Primary icon color */
+  font-size: 48px;
+  /* Larger icon */
+  color: #503e9d;
+  /* Primary icon color */
   margin-bottom: 10px;
   display: block;
 }
 
 .mcq-upload-box p {
-  margin: 10px 0; /* Add margin to paragraph */
+  margin: 10px 0;
+  /* Add margin to paragraph */
   font-size: 14px;
   color: #333;
   font-weight: 500;
@@ -760,28 +774,36 @@
   align-items: center;
   gap: 12px;
   background: white;
-  padding: 8px 15px; /* Less vertical padding */
+  padding: 8px 15px;
+  /* Less vertical padding */
   border-radius: 12px;
-  border: 2px solid #e0e0e0; /* Remove hover border as per screenshot */
+  border: 2px solid #e0e0e0;
+  /* Remove hover border as per screenshot */
   transition: all 0.3s;
   box-sizing: border-box;
 }
 
 .mcq-answer-item:has(.mcq-radio:checked) {
-  border-color: #503e9d; /* Color of the selected answer's border */
+  border-color: #503e9d;
+  /* Color of the selected answer's border */
 }
 
 .mcq-answer-item:hover {
-  border-color: #e0e0e0; /* Remove hover effect for border */
-  box-shadow: none; /* Remove hover shadow */
+  border-color: #e0e0e0;
+  /* Remove hover effect for border */
+  box-shadow: none;
+  /* Remove hover shadow */
 }
 
 .mcq-answer-letter {
-  width: 36px; /* Smaller circle */
+  width: 36px;
+  /* Smaller circle */
   height: 36px;
-  background: #503e9d; /* Use the primary color */
+  background: #503e9d;
+  /* Use the primary color */
   color: white;
-  border-radius: 8px; /* Less rounded corners */
+  border-radius: 8px;
+  /* Less rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -793,8 +815,10 @@
 .mcq-answer-input {
   flex: 1;
   padding: 12px 14px;
-  border: 2px solid #e0e0e0; /* Thicker border */
-  border-radius: 10px; /* More rounded corners */
+  border: 2px solid #e0e0e0;
+  /* Thicker border */
+  border-radius: 10px;
+  /* More rounded corners */
   font-size: 14px;
   font-family: inherit;
   transition: all 0.3s;
@@ -804,7 +828,8 @@
 
 .mcq-answer-input:focus {
   outline: none;
-  border-color: #503e9d; /* Focus color from other elements */
+  border-color: #503e9d;
+  /* Focus color from other elements */
   box-shadow: 0 0 0 3px rgba(80, 62, 157, 0.1);
 }
 
@@ -822,7 +847,8 @@
   /* Use a consistent primary color for the radio button */
   accent-color: #503e9d;
   flex-shrink: 0;
-  border: 2px solid #503e9d; /* Add border for better visibility */
+  border: 2px solid #503e9d;
+  /* Add border for better visibility */
 }
 
 /* Explanation Section */
@@ -921,7 +947,8 @@
 }
 
 .mcq-image-preview img {
-  max-width: 100%; /* Ensure it fits within the column */
+  max-width: 100%;
+  /* Ensure it fits within the column */
   max-height: 200px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -1145,6 +1172,7 @@
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
+
 /* ========================================================================= */
 /* --- Media Queries --- */
 /* ========================================================================= */
@@ -1195,9 +1223,7 @@
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
   }
 
-  .add-container.sidebar-open .main-content {
-    margin-left: 250px;
-  }
+
 
   .user-navbar {
     flex-wrap: wrap;
@@ -1334,6 +1360,7 @@
     font-size: 14px;
     margin-top: 15px;
   }
+
   /* MCQ Modal - Tablet */
   .mcq-modal-content {
     padding: 30px 25px;
@@ -1364,7 +1391,8 @@
   }
 
   .mcq-answers-upload-wrapper {
-    grid-template-columns: 1fr; /* Single column layout */
+    grid-template-columns: 1fr;
+    /* Single column layout */
   }
 
   /* The answers section takes precedence on mobile */
@@ -1380,12 +1408,15 @@
   }
 
   .mcq-upload-box {
-    max-width: 300px; /* Give it a maximum width for better visual appeal */
-    margin: 0 auto 15px auto; /* Center it */
+    max-width: 300px;
+    /* Give it a maximum width for better visual appeal */
+    margin: 0 auto 15px auto;
+    /* Center it */
   }
 
   .mcq-upload-label {
-    text-align: center; /* Center the label on mobile */
+    text-align: center;
+    /* Center the label on mobile */
   }
 }
 
@@ -1511,9 +1542,10 @@
     grid-template-columns: 1fr;
     gap: 30px;
   }
-  
+
   .category-upload-section {
-    order: -1; /* Move upload to top on smaller screens if desired, or keep as is */
+    order: -1;
+    /* Move upload to top on smaller screens if desired, or keep as is */
   }
 
   .upload-zone {
@@ -1525,16 +1557,16 @@
   .tabs-content {
     padding: 20px;
   }
-  
+
   .tab-title {
     font-size: 22px;
   }
-  
+
   .btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .form-actions {
     flex-direction: column-reverse;
   }
@@ -1550,9 +1582,7 @@
     width: 220px;
   }
 
-  .add-container.sidebar-open .main-content {
-    margin-left: 220px;
-  }
+
 
   .page-title {
     font-size: 18px;
@@ -1686,6 +1716,7 @@
   .nav-item.active {
     border-left: 3px solid #ff6b6b;
   }
+
   .btn-add-mcq {
     padding: 10px 18px;
     font-size: 13px;
@@ -1707,9 +1738,7 @@
     width: 200px;
   }
 
-  .add-container.sidebar-open .main-content {
-    margin-left: 200px;
-  }
+
 
   .user-navbar {
     gap: 6px;
@@ -1869,5 +1898,40 @@
   .btn-mcq-list-submit {
     flex: 1;
     min-width: 150px;
+  }
+}
+
+/* ============================= */
+/* Sidebar overlay improvements */
+/* ============================= */
+
+/* Disable scrolling when sidebar is open */
+.add-container.sidebar-open {
+  overflow: hidden;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 992px) {
+  .add-container.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Ensure content doesn't shift on mobile when sidebar opens */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
   }
 }

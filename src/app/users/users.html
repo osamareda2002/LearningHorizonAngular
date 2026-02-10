@@ -1,5 +1,6 @@
 <div class="users-container" [class.sidebar-open]="isSidebarOpen">
   <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
 
   <main class="main-content">
     <!-- User Navbar -->

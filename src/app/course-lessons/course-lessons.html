@@ -1,6 +1,7 @@
 <div class="course-lessons-container" [class.sidebar-open]="isSidebarOpen">
   <!-- Sidebar -->
   <app-sidebar [isAdmin]="isAdmin" (close)="toggleSidebar()"></app-sidebar>
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
 
   <!-- Main Content -->
   <main class="main-content">
@@ -49,9 +50,7 @@
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="progressPercentage"></div>
             </div>
-            <span class="progress-text"
-              >{{ currentQuestionIndex + 1 }} / {{ currentLesson?.mcq?.length }}</span
-            >
+            <span class="progress-text">{{ currentQuestionIndex + 1 }} / {{ currentLesson?.mcq?.length }}</span>
           </div>
 
           <div class="question-content" *ngIf="currentQuestion">
@@ -62,34 +61,22 @@
             </div>
 
             <div class="options-grid">
-              <button
-                *ngFor="let answer of currentQuestion.answers"
-                class="option-button"
-                [class.selected]="selectedAnswer === answer.id"
-                (click)="selectAnswer(answer.id)"
-              >
+              <button *ngFor="let answer of currentQuestion.answers" class="option-button"
+                [class.selected]="selectedAnswer === answer.id" (click)="selectAnswer(answer.id)">
                 <span class="option-radio"></span>
                 <span class="option-text">{{ answer.answerText }}</span>
               </button>
             </div>
 
-            <button
-              class="btn-submit"
-              [disabled]="selectedAnswer === null"
-              (click)="submitAnswer()"
-            >
-              {{ currentQuestionIndex < getMcqQuestions().length - 1 ? 'Next Question' : 'Submit' }}
-              <i class="bi bi-chevron-right"></i>
+            <button class="btn-submit" [disabled]="selectedAnswer === null" (click)="submitAnswer()">
+              {{ currentQuestionIndex < getMcqQuestions().length - 1 ? 'Next Question' : 'Submit' }} <i
+                class="bi bi-chevron-right"></i>
             </button>
           </div>
 
           <div class="quiz-dots">
-            <span
-              *ngFor="let q of getMcqQuestions(); let i = index"
-              class="dot"
-              [class.active]="i === currentQuestionIndex"
-              [class.completed]="i < currentQuestionIndex"
-            ></span>
+            <span *ngFor="let q of getMcqQuestions(); let i = index" class="dot"
+              [class.active]="i === currentQuestionIndex" [class.completed]="i < currentQuestionIndex"></span>
           </div>
         </div>
 
@@ -130,13 +117,9 @@
         </div>
 
         <div class="lessons-list" *ngIf="!isLoadingLessons">
-          <div
-            *ngFor="let lesson of lessons; let i = index"
-            class="lesson-item"
-            [class.active]="currentLessonId === lesson.id"
-            [class.locked]="!lesson.isFree && !isLoggedIn"
-            (click)="playLesson(lesson)"
-          >
+          <div *ngFor="let lesson of lessons; let i = index" class="lesson-item"
+            [class.active]="currentLessonId === lesson.id" [class.locked]="!lesson.isFree && !isLoggedIn"
+            (click)="playLesson(lesson)">
             <div class="lesson-icon">
               <i [class]="getLessonIcon(i)"></i>
             </div>
