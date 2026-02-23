@@ -468,6 +468,21 @@
   font-weight: 600;
 }
 
+.bunny-upload-status {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #503e9d;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.bunny-upload-status i {
+  font-size: 16px;
+}
+
 .file-name {
   font-weight: 500;
   color: #333;

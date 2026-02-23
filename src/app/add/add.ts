@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import * as tus from 'tus-js-client';
 
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
@@ -11,8 +12,6 @@ import { timeout } from 'rxjs';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 import { TeamService } from '../services/team.service';
 import { CategoryService } from '../services/category.service';
-
-const CHUNK_SIZE = 5 * 1024 * 1024; // 5 MB
 
 interface DtoExerciseAnswer {
   answerText?: string;
@@ -81,6 +80,7 @@ export class Add implements OnInit {
   suggestionVideo: File | null = null;
   suggestionVideoPreview: SafeUrl | null = null;
   uploadProgress = 0;
+  bunnyUploadStatus = '';
 
   courseThumbnailPreview: SafeUrl | null = null;
   bookCoverPreview: SafeUrl | null = null;
@@ -107,7 +107,7 @@ export class Add implements OnInit {
     private teamService: TeamService,
     private categoryService: CategoryService,
     private sanitizer: DomSanitizer,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
@@ -479,43 +479,44 @@ export class Add implements OnInit {
   }
 
   // ------------------------------
-  // ✅ Submit Lesson
+  // ✅ Submit Lesson (Bunny CDN Upload)
   // ------------------------------
 
-  async uploadVideoInChunks(file: File): Promise<string> {
-    const fileId = crypto.randomUUID();
-    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+  private uploadToBunny(file: File, token: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const upload = new tus.Upload(file, {
+        endpoint: 'https://video.bunnycdn.com/tusupload',
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          AuthorizationSignature: token.authorizationSignature,
+          AuthorizationExpire: token.authorizationExpire.toString(),
+          VideoId: token.videoId,
+          LibraryId: token.libraryId.toString(),
+        },
+        metadata: {
+          filetype: file.type,
+          title: this.lessonForm.value.title,
+        },
+        onError: (error) => {
+          console.error('Bunny upload error:', error);
+          reject(error);
+        },
+        onProgress: (bytesUploaded, bytesTotal) => {
+          this.uploadProgress = Math.round((bytesUploaded / bytesTotal) * 100);
+        },
+        onSuccess: () => {
+          this.uploadProgress = 100;
+          resolve();
+        },
+      });
 
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * CHUNK_SIZE;
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
-
-      const formData = new FormData();
-      formData.append('chunk', chunk);
-      formData.append('fileId', fileId);
-      formData.append('chunkIndex', chunkIndex.toString());
-      formData.append('totalChunks', totalChunks.toString());
-      formData.append('fileName', file.name);
-
-      await this.http.post(`${this.apiUrl}/UploadLessonChunk`, formData).toPromise();
-
-      this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
-    }
-
-    return fileId;
-  }
-
-  async completeVideoUpload(fileId: string): Promise<string> {
-    const response: any = await this.http
-      .post(`${this.apiUrl}/CompleteLessonUpload`, {
-        courseId: this.lessonForm.value.courseId,
-        fileId,
-        fileName: this.lessonVideo!.name,
-      })
-      .toPromise();
-
-    return response.path; // final video path
+      upload.findPreviousUploads().then((previousUploads) => {
+        if (previousUploads.length) {
+          upload.resumeFromPreviousUpload(previousUploads[0]);
+        }
+        upload.start();
+      });
+    });
   }
 
   async submitLesson() {
@@ -527,48 +528,56 @@ export class Add implements OnInit {
     try {
       this.submitting = true;
       this.uploadProgress = 0;
+      this.bunnyUploadStatus = '';
 
-      // 1️⃣ Upload video chunks
-      const fileId = await this.uploadVideoInChunks(this.lessonVideo);
+      // 1️⃣ Get Bunny upload token from backend
+      this.bunnyUploadStatus = 'Getting upload token...';
+      const courseId = this.lessonForm.value.courseId;
+      const lessonTitle = this.lessonForm.value.title;
 
-      // 2️⃣ Merge chunks on backend
-      const videoPath = await this.completeVideoUpload(fileId);
+      const tokenResponse: any = await this.http
+        .get(`${this.apiUrl}/GetLessonAddToken?courseId=${courseId}&lessonTitle=${encodeURIComponent(lessonTitle)}`)
+        .toPromise();
 
-      // 3️⃣ Send lesson data (NO VIDEO)
-      const formData = new FormData();
-      formData.append('title', this.lessonForm.value.title);
-      formData.append('isFree', this.lessonForm.value.isFree);
-      formData.append('courseId', this.lessonForm.value.courseId);
-      formData.append('lessonOrder', this.lessonForm.value.order);
-      formData.append('durationInSeconds', this.lessonDurationInSeconds.toString());
-      formData.append('videoPath', videoPath);
+      const token = tokenResponse.data;
 
-      this.lessonExercises.forEach((exercise, i) => {
-        const base = `lessonExercises[${i}]`;
-        formData.append(`${base}.questionText`, exercise.questionText || '');
-        formData.append(`${base}.explanation`, exercise.explanation || '');
+      // 2️⃣ Upload video directly to Bunny CDN via TUS
+      this.bunnyUploadStatus = 'Uploading video to Bunny...';
+      await this.uploadToBunny(this.lessonVideo, token);
 
-        exercise.answers.forEach((answer, j) => {
-          formData.append(`${base}.answers[${j}].answerText`, answer.answerText || '');
-          formData.append(`${base}.answers[${j}].isCorrect`, answer.isCorrect.toString());
-        });
+      // 3️⃣ Save lesson data in backend
+      this.bunnyUploadStatus = 'Saving lesson data...';
 
-        if (exercise.image) {
-          formData.append(`${base}.image`, exercise.image);
-        }
-      });
+      const lessonExercisesJson = this.lessonExercises.map((exercise) => ({
+        questionText: exercise.questionText || '',
+        explanation: exercise.explanation || '',
+        answers: exercise.answers.map((answer) => ({
+          answerText: answer.answerText || '',
+          isCorrect: answer.isCorrect,
+        })),
+      }));
 
-      await this.http.post(`${this.apiUrl}/AddLesson`, formData).toPromise();
+      const body = {
+        title: lessonTitle,
+        isFree: this.lessonForm.value.isFree === 'true' || this.lessonForm.value.isFree === true,
+        courseId: Number(courseId),
+        durationInSeconds: this.lessonDurationInSeconds,
+        lessonOrder: Number(this.lessonForm.value.order),
+        guid: token.videoId,
+        libraryId: Number(token.libraryId),
+        lessonExercises: lessonExercisesJson,
+      };
+
+      await this.http.post(`${this.apiUrl}/AddLesson`, body).toPromise();
 
       this.successMessage = '✅ Lesson uploaded successfully!';
       this.errorMessage = '';
-      this.lessonForm.reset();
-      this.lessonVideo = null;
-      this.lessonExercises = [];
-      this.uploadProgress = 0;
+      this.bunnyUploadStatus = '';
+      this.resetLessonForm();
     } catch (err: any) {
       console.error(err);
-      this.errorMessage = '❌ Upload failed';
+      this.errorMessage = '❌ Upload failed. Please try again.';
+      this.bunnyUploadStatus = '';
     } finally {
       this.submitting = false;
     }
@@ -858,7 +867,12 @@ export class Add implements OnInit {
   resetLessonForm() {
     this.lessonForm.reset();
     this.lessonVideo = null;
-    this.lessonExercises = []; // Clear MCQs when form is reset
+    this.lessonVideoPreview = null;
+    this.lessonExercises = [];
+    this.uploadProgress = 0;
+    this.bunnyUploadStatus = '';
+    this.lessonDurationInSeconds = 0;
+    this.lessonDurationInMinutes = 0;
   }
 
   resetBookForm() {

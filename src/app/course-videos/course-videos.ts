@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
 import { HttpClient } from '@angular/common/http';
@@ -60,7 +61,7 @@ export class CourseVideos implements OnInit {
   course: Course | null = null;
   lessons: Lesson[] = [];
   currentLesson: Lesson | null = null;
-  currentVideoUrl: string = '';
+  currentVideoUrl: SafeResourceUrl | null = null;
   videoKey: number = 0;
 
   showMCQQuiz = false;
@@ -76,8 +77,9 @@ export class CourseVideos implements OnInit {
     private route: ActivatedRoute,
     private materialService: MaterialService,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
+  ) { }
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
@@ -151,8 +153,7 @@ export class CourseVideos implements OnInit {
             title: lesson.title,
             subtitle:
               lesson.subtitle ||
-              `Lesson ${index + 1} · ${
-                lesson.durationInMinutes || Math.floor((lesson.duration || 0) / 60)
+              `Lesson ${index + 1} · ${lesson.durationInMinutes || Math.floor((lesson.duration || 0) / 60)
               } min`,
             isFree: lesson.isFree || false,
             videoUrl: lesson.path || lesson.videoUrl,
@@ -213,8 +214,8 @@ export class CourseVideos implements OnInit {
     // Load MCQs directly from lesson object
     this.currentExercises = lesson.mcq || lesson.exercises || [];
 
-    // Update video URL
-    this.currentVideoUrl = lesson.videoUrl;
+    // Update video URL (sanitize for iframe)
+    this.currentVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(lesson.videoUrl);
     this.videoKey = Date.now();
 
     // Trigger change detection
@@ -378,15 +379,6 @@ export class CourseVideos implements OnInit {
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 300);
     }, 3000);
-  }
-
-  onTimeUpdate(event: Event) {
-    // Track video progress
-    const video = event.target as HTMLVideoElement;
-    const progress = (video.currentTime / video.duration) * 100;
-
-    // TODO: Save progress to backend
-    // console.log('Progress:', progress);
   }
 
   onVideoEnded() {

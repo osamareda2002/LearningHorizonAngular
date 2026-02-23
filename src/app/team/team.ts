@@ -23,6 +23,7 @@ export class TeamComponent implements OnInit {
   teamMembers: TeamMember[] = [];
   selectedMember: TeamMember | null = null;
   isModalOpen = false;
+  memberHasContact = false;
 
   constructor(
     private auth: AuthService,
@@ -71,6 +72,8 @@ export class TeamComponent implements OnInit {
 
   openMemberDetail(member: TeamMember) {
     this.selectedMember = member;
+    if(member.contact.instagram || member.contact.facebook || member.contact.whatsapp)
+      this.memberHasContact = true;
     this.isModalOpen = true;
     document.body.style.overflow = 'hidden';
   }

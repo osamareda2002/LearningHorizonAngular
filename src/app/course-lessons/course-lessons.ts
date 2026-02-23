@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../services/auth';
 import { MaterialService } from '../services/materialService';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
@@ -51,7 +52,6 @@ interface MCQAnswer {
   styleUrl: './course-lessons.css',
 })
 export class CourseLessonsComponent implements OnInit {
-  @ViewChild('videoPlayer', { static: false }) videoPlayerRef!: ElementRef<HTMLVideoElement>;
 
   isSidebarOpen = false;
   isLoggedIn = false;
@@ -61,7 +61,7 @@ export class CourseLessonsComponent implements OnInit {
   courseId: number = 0;
   course: Course | null = null;
   courseTitle: string = '';
-  currentVideoUrl: string = '';
+  currentVideoUrl: SafeResourceUrl | null = null;
   currentLessonId: number = 0;
 
   lessons: Lesson[] = [];
@@ -87,8 +87,9 @@ export class CourseLessonsComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private materialService: MaterialService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
+  ) { }
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
@@ -186,7 +187,7 @@ export class CourseLessonsComponent implements OnInit {
     }
 
     // Don't reload if it's the same lesson
-    if (this.currentLessonId === lesson.id && this.currentVideoUrl === lesson.path) {
+    if (this.currentLessonId === lesson.id) {
       return;
     }
 
@@ -197,27 +198,10 @@ export class CourseLessonsComponent implements OnInit {
     // Reset quiz state when switching lessons
     this.resetQuiz();
 
-    // Force video URL change by clearing first
-    this.currentVideoUrl = '';
+    // Set new video URL (sanitize for iframe)
+    this.currentVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(lesson.path);
     this.videoKey = Date.now();
-
-    // Use ChangeDetectorRef to force update
     this.cdr.detectChanges();
-
-    // Set new video URL after a short delay
-    setTimeout(() => {
-      this.currentVideoUrl = lesson.path;
-      this.videoKey = Date.now() + 1;
-      this.cdr.detectChanges();
-
-      // Force video element to reload
-      setTimeout(() => {
-        if (this.videoPlayerRef && this.videoPlayerRef.nativeElement) {
-          const videoElement = this.videoPlayerRef.nativeElement;
-          videoElement.load();
-        }
-      }, 100);
-    }, 100);
   }
 
   getLessonIcon(lessonIndex: number): string {

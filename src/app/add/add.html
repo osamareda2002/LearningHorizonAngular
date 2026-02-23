@@ -347,10 +347,13 @@
                   </p>
                 </div>
 
-                <div *ngIf="uploadProgress > 0" class="upload-progress">
+                <div *ngIf="uploadProgress > 0 || bunnyUploadStatus" class="upload-progress">
                   <div class="progress-bar" [style.width.%]="uploadProgress"></div>
                   <span class="progress-label">{{ uploadProgress | number: '1.0-0' }}%</span>
                 </div>
+                <p *ngIf="bunnyUploadStatus" class="bunny-upload-status">
+                  <i class="bi bi-cloud-upload"></i> {{ bunnyUploadStatus }}
+                </p>
               </div>
             </div>
 
