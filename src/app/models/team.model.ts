@@ -5,6 +5,8 @@ export interface TeamMember {
   imageUrl: string | null;
   about: string;
   expertise: string[];
+  isDeveloper: boolean;
+  tag?: string | null;
   contact: {
     instagram?: string;
     whatsapp?: string;

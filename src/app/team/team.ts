@@ -25,11 +25,13 @@ export class TeamComponent implements OnInit {
   isModalOpen = false;
   memberHasContact = false;
 
+  activeTab: 'doctor' | 'developer' = 'doctor';
+
   constructor(
     private auth: AuthService,
     private router: Router,
     private teamService: TeamService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
@@ -48,6 +50,17 @@ export class TeamComponent implements OnInit {
         console.error('Error fetching team members:', err);
       }
     });
+  }
+
+  get filteredMembers(): TeamMember[] {
+    if (this.activeTab === 'developer') {
+      return this.teamMembers.filter(m => m.isDeveloper);
+    }
+    return this.teamMembers.filter(m => !m.isDeveloper);
+  }
+
+  switchTeamTab(tab: 'doctor' | 'developer') {
+    this.activeTab = tab;
   }
 
   toggleDropdown() {
@@ -72,7 +85,7 @@ export class TeamComponent implements OnInit {
 
   openMemberDetail(member: TeamMember) {
     this.selectedMember = member;
-    if(member.contact.instagram || member.contact.facebook || member.contact.whatsapp)
+    if (member.contact.instagram || member.contact.facebook || member.contact.whatsapp)
       this.memberHasContact = true;
     this.isModalOpen = true;
     document.body.style.overflow = 'hidden';

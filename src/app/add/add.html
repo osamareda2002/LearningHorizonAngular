@@ -41,51 +41,27 @@
     <!-- Tabs -->
     <div class="tabs-container">
       <div class="tabs-header">
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'category'"
-          (click)="switchTab('category')"
-        >
+        <button class="tab-btn" [class.active]="activeTab === 'category'" (click)="switchTab('category')">
           <i class="bi bi-folder"></i> Category
         </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'course'"
-          (click)="switchTab('course')"
-        >
+        <button class="tab-btn" [class.active]="activeTab === 'course'" (click)="switchTab('course')">
           <i class="bi bi-mortarboard"></i> Add Course
         </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'lesson'"
-          (click)="switchTab('lesson')"
-        >
+        <button class="tab-btn" [class.active]="activeTab === 'lesson'" (click)="switchTab('lesson')">
           <i class="bi bi-film"></i>
           Add Lesson
         </button>
 
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'doctor'"
-          (click)="switchTab('doctor')"
-        >
+        <button class="tab-btn" [class.active]="activeTab === 'doctor'" (click)="switchTab('doctor')">
           <i class="bi bi-person-plus"></i>
           Add Person
         </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'slider'"
-          (click)="switchTab('slider')"
-        >
+        <button class="tab-btn" [class.active]="activeTab === 'slider'" (click)="switchTab('slider')">
           <i class="bi bi-images"></i>
           Slider
         </button>
 
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'suggestion'"
-          (click)="switchTab('suggestion')"
-        >
+        <button class="tab-btn" [class.active]="activeTab === 'suggestion'" (click)="switchTab('suggestion')">
           <i class="bi bi-lightbulb"></i>
           Suggestion
         </button>
@@ -101,25 +77,16 @@
               <div class="category-inputs">
                 <div class="form-group">
                   <label>Category Title <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    formControlName="title"
-                    placeholder="Enter category title"
+                  <input type="text" class="form-control" formControlName="title" placeholder="Enter category title"
                     [class.error]="
                       categoryForm.get('title')?.invalid && categoryForm.get('title')?.touched
-                    "
-                  />
+                    " />
                 </div>
 
                 <div class="form-group">
                   <label>About</label>
-                  <textarea
-                    class="form-control textarea"
-                    formControlName="about"
-                    placeholder="Describe this category..."
-                    rows="5"
-                  ></textarea>
+                  <textarea class="form-control textarea" formControlName="about"
+                    placeholder="Describe this category..." rows="5"></textarea>
                 </div>
               </div>
 
@@ -134,16 +101,13 @@
                     </div>
                     <div class="preview-container" *ngIf="categoryImagePreview">
                       <img [src]="categoryImagePreview" alt="Category Preview" />
-                      <button type="button" class="remove-btn" (click)="categoryImagePreview = null; categoryImage = null">
+                      <button type="button" class="remove-btn"
+                        (click)="categoryImagePreview = null; categoryImage = null">
                         <i class="bi bi-x"></i>
                       </button>
                     </div>
-                    <input
-                      type="file"
-                      class="file-input"
-                      (change)="onThumbnailSelected($event, 'category')"
-                      accept="image/jpeg, image/png"
-                    />
+                    <input type="file" class="file-input" (change)="onThumbnailSelected($event, 'category')"
+                      accept="image/jpeg, image/png" />
                   </div>
                 </div>
               </div>
@@ -153,11 +117,8 @@
               <button type="button" class="btn btn-cancel" (click)="resetCategoryForm()">
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="btn btn-publish"
-                [disabled]="categoryForm.invalid || !categoryImage || submitting"
-              >
+              <button type="submit" class="btn btn-publish"
+                [disabled]="categoryForm.invalid || !categoryImage || submitting">
                 {{ submitting ? 'Publishing...' : 'Publish Now' }}
               </button>
             </div>
@@ -171,13 +132,9 @@
             <div class="form-grid">
               <div class="form-group">
                 <label>Select Category <span class="required">*</span></label>
-                <select
-                  class="form-control"
-                  formControlName="categoryId"
-                  [class.error]="
+                <select class="form-control" formControlName="categoryId" [class.error]="
                     courseForm.get('categoryId')?.invalid && courseForm.get('categoryId')?.touched
-                  "
-                >
+                  ">
                   <option value="" disabled>Select Category</option>
                   <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.title }}</option>
                 </select>
@@ -185,40 +142,25 @@
 
               <div class="form-group">
                 <label>Course Title <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="title"
-                  placeholder="Give Your Course A Title"
+                <input type="text" class="form-control" formControlName="title" placeholder="Give Your Course A Title"
                   [class.error]="
                     courseForm.get('title')?.invalid && courseForm.get('title')?.touched
-                  "
-                />
+                  " />
               </div>
               <div class="form-group">
                 <label>Price <span class="required">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="price"
-                  placeholder="0 for free course"
+                <input type="number" class="form-control" formControlName="price" placeholder="0 for free course"
                   [class.error]="
                     courseForm.get('price')?.invalid && courseForm.get('price')?.touched
-                  "
-                />
+                  " />
               </div>
               <div class="form-group">
                 <label>Instructor Name <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="instructorName"
-                  placeholder="Your Name"
+                <input type="text" class="form-control" formControlName="instructorName" placeholder="Your Name"
                   [class.error]="
                     courseForm.get('instructorName')?.invalid &&
                     courseForm.get('instructorName')?.touched
-                  "
-                />
+                  " />
               </div>
 
               <div class="form-group full-width">
@@ -227,12 +169,8 @@
                   <i class="bi bi-image"></i>
                   <p>Upload Course Cover Image</p>
                   <p class="upload-info">PNG and JPG files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onThumbnailSelected($event, 'course')"
-                    accept="image/jpeg, image/png"
-                  />
+                  <input type="file" class="file-input" (change)="onThumbnailSelected($event, 'course')"
+                    accept="image/jpeg, image/png" />
                 </div>
 
                 <!-- ✅ Preview the selected image -->
@@ -247,11 +185,7 @@
               <button type="button" class="btn btn-cancel" (click)="resetCourseForm()">
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="courseForm.invalid || submitting"
-              >
+              <button type="submit" class="btn btn-primary" [disabled]="courseForm.invalid || submitting">
                 {{ submitting ? 'Publishing...' : 'Publish now' }}
               </button>
             </div>
@@ -265,13 +199,9 @@
             <div class="form-grid">
               <div class="form-group">
                 <label>Select Course <span class="required">*</span></label>
-                <select
-                  class="form-control"
-                  formControlName="courseId"
-                  [class.error]="
+                <select class="form-control" formControlName="courseId" [class.error]="
                     lessonForm.get('courseId')?.invalid && lessonForm.get('courseId')?.touched
-                  "
-                >
+                  ">
                   <option value="">Choose a Course</option>
                   <option *ngFor="let course of courses" [value]="course.courseId">
                     {{ course.courseTitle }}
@@ -281,39 +211,25 @@
 
               <div class="form-group">
                 <label>Lesson Title <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="title"
-                  placeholder="Lesson Title"
+                <input type="text" class="form-control" formControlName="title" placeholder="Lesson Title"
                   [class.error]="
                     lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched
-                  "
-                />
+                  " />
               </div>
 
               <div class="form-group">
                 <label>Lesson Order <span class="required">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="order"
-                  placeholder="Lesson Number"
+                <input type="number" class="form-control" formControlName="order" placeholder="Lesson Number"
                   [class.error]="
                     lessonForm.get('order')?.invalid && lessonForm.get('order')?.touched
-                  "
-                />
+                  " />
               </div>
 
               <div class="form-group">
                 <label>Is Free? <span class="required">*</span></label>
-                <select
-                  class="form-control"
-                  formControlName="isFree"
-                  [class.error]="
+                <select class="form-control" formControlName="isFree" [class.error]="
                     lessonForm.get('isFree')?.invalid && lessonForm.get('isFree')?.touched
-                  "
-                >
+                  ">
                   <option [value]="true">Free</option>
                   <option [value]="false">Premium</option>
                 </select>
@@ -325,23 +241,14 @@
                   <i class="bi bi-play-btn"></i>
                   <p>Upload Lesson Video</p>
                   <p class="upload-info">MP4 and WebM files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onVideoSelected($event, 'lesson')"
-                    accept="video/mp4, video/webm"
-                  />
+                  <input type="file" class="file-input" (change)="onVideoSelected($event, 'lesson')"
+                    accept="video/mp4, video/webm" />
                 </div>
 
                 <!-- ✅ Preview -->
                 <div *ngIf="lessonVideoPreview">
-                  <video
-                    [src]="lessonVideoPreview"
-                    width="100%"
-                    height="240"
-                    controls
-                    (loadedmetadata)="onVideoLoadedMetadata($event, 'lesson')"
-                  ></video>
+                  <video [src]="lessonVideoPreview" width="100%" height="240" controls
+                    (loadedmetadata)="onVideoLoadedMetadata($event, 'lesson')"></video>
                   <p *ngIf="lessonDurationInSeconds">
                     ⏱ Duration: {{ lessonDurationInMinutes }} Min
                   </p>
@@ -368,11 +275,7 @@
               <button type="button" class="btn btn-cancel" (click)="resetLessonForm()">
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="lessonForm.invalid || submitting"
-              >
+              <button type="submit" class="btn btn-primary" [disabled]="lessonForm.invalid || submitting">
                 {{ submitting ? 'Uploading...' : 'Submit' }}
               </button>
             </div>
@@ -381,92 +284,78 @@
 
         <!-- Doctor Tab -->
         <div class="tab-pane" *ngIf="activeTab === 'doctor'">
-          <h3 class="tab-title">Add New Doctor</h3>
+          <h3 class="tab-title">Add New Team Member</h3>
           <form [formGroup]="doctorForm" (ngSubmit)="submitDoctor()" class="form-container">
             <div class="form-grid">
+              <!-- Identity Selection -->
+              <!-- <div class="form-group">
+                <label>Person Identity</label>
+                <div class="toggle-group">
+                  <label class="toggle-switch">
+                    <input type="checkbox" formControlName="isDeveloper">
+                    <span class="slider"></span>
+                  </label>
+                  <span>{{ doctorForm.get('isDeveloper')?.value ? 'Developer' : 'Doctor' }}</span>
+                </div>
+              </div> -->
+
               <!-- Doctor Name -->
               <div class="form-group">
-                <label>Doctor's Name <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="name"
-                  placeholder="Doctor Name"
-                  [class.error]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
-                />
+                <label>Name <span class="required">*</span></label>
+                <input type="text" class="form-control" formControlName="name" placeholder="Name"
+                  [class.error]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched" />
               </div>
+              
+              <!-- Tag -->
+              <div class="form-group">
+                <label>Tag (Optional)</label>
+                <input type="text" class="form-control" formControlName="tag" placeholder="e.g. CEO, Founder" />
+              </div>
+
 
               <!-- Specialty -->
               <div class="form-group">
-                <label>Medical Specialty <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="specialty"
-                  placeholder="e.g. Neurology Specialist"
-                  [class.error]="
+                <label>Specialty <span class="required">*</span></label>
+                <input type="text" class="form-control" formControlName="specialty"
+                  placeholder="e.g. Neurology Specialist" [class.error]="
                     doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched
-                  "
-                />
+                  " />
               </div>
 
               <!-- About -->
               <div class="form-group full-width">
                 <label>About <span class="required">*</span></label>
-                <textarea
-                  class="form-control"
-                  formControlName="about"
-                  placeholder="About the doctor..."
-                  rows="4"
+                <textarea class="form-control" formControlName="about" placeholder="About the doctor..." rows="4"
                   [class.error]="
                     doctorForm.get('about')?.invalid && doctorForm.get('about')?.touched
-                  "
-                ></textarea>
+                  "></textarea>
               </div>
 
               <!-- Expertise -->
               <div class="form-group full-width">
                 <label>Expertise <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="expertise"
-                  placeholder="e.g. Sports Injury, Rehabilitation (Comma separated)"
-                  [class.error]="
+                <input type="text" class="form-control" formControlName="expertise"
+                  placeholder="e.g. Sports Injury, Rehabilitation (Comma separated)" [class.error]="
                     doctorForm.get('expertise')?.invalid && doctorForm.get('expertise')?.touched
-                  "
-                />
+                  " />
               </div>
 
               <!-- Social Media Links -->
               <div class="form-group">
                 <label>Facebook</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="facebook"
-                  placeholder="https://facebook.com/..."
-                />
+                <input type="text" class="form-control" formControlName="facebook"
+                  placeholder="https://facebook.com/..." />
               </div>
 
               <div class="form-group">
                 <label>WhatsApp</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="whatsapp"
-                  placeholder="https://wa.me/..."
-                />
+                <input type="text" class="form-control" formControlName="whatsapp" placeholder="https://wa.me/..." />
               </div>
 
               <div class="form-group">
                 <label>Instagram</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="instagram"
-                  placeholder="https://instagram.com/..."
-                />
+                <input type="text" class="form-control" formControlName="instagram"
+                  placeholder="https://instagram.com/..." />
               </div>
 
               <!-- Upload Photo -->
@@ -476,20 +365,12 @@
                   <i class="bi bi-image"></i>
                   <p>Upload Photo</p>
                   <p class="upload-info">PNG, JPEG files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onDoctorImageSelected($event)"
-                    accept="image/jpeg, image/png"
-                  />
+                  <input type="file" class="file-input" (change)="onDoctorImageSelected($event)"
+                    accept="image/jpeg, image/png" />
                 </div>
                 <!-- Preview -->
                 <div *ngIf="doctorImagePreview" class="thumbnail-preview">
-                  <img
-                    [src]="doctorImagePreview"
-                    alt="Doctor Preview"
-                    class="item-thumbnail doctor-thumbnail"
-                  />
+                  <img [src]="doctorImagePreview" alt="Doctor Preview" class="item-thumbnail doctor-thumbnail" />
                   <p class="file-name">{{ doctorImage?.name }}</p>
                 </div>
               </div>
@@ -499,11 +380,7 @@
               <button type="button" class="btn btn-cancel" (click)="resetDoctorForm()">
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="doctorForm.invalid || submitting"
-              >
+              <button type="submit" class="btn btn-primary" [disabled]="doctorForm.invalid || submitting">
                 {{ submitting ? 'Adding...' : 'Add' }}
               </button>
             </div>
@@ -627,26 +504,17 @@
               <!-- Slider Title -->
               <div class="form-group">
                 <label>Slider Title <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="title"
-                  placeholder="Enter a title for the slider (e.g., New Course: Eye Anatomy)"
-                  [class.error]="
+                <input type="text" class="form-control" formControlName="title"
+                  placeholder="Enter a title for the slider (e.g., New Course: Eye Anatomy)" [class.error]="
                     sliderForm.get('title')?.invalid && sliderForm.get('title')?.touched
-                  "
-                />
+                  " />
               </div>
 
               <!-- Redirect URL -->
               <div class="form-group">
                 <label>Redirect URL (Optional)</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="redirectUrl"
-                  placeholder="Example: /courses/1"
-                />
+                <input type="text" class="form-control" formControlName="redirectUrl"
+                  placeholder="Example: /courses/1" />
               </div>
 
               <!-- Upload Image -->
@@ -656,12 +524,8 @@
                   <i class="bi bi-image"></i>
                   <p>Upload Slider Image</p>
                   <p class="upload-info">PNG and JPG files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onSliderImageSelected($event)"
-                    accept="image/jpeg, image/png"
-                  />
+                  <input type="file" class="file-input" (change)="onSliderImageSelected($event)"
+                    accept="image/jpeg, image/png" />
                 </div>
 
                 <!-- ✅ Preview the selected image -->
@@ -676,11 +540,7 @@
               <button type="button" class="btn btn-cancel" (click)="resetSliderForm()">
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="sliderForm.invalid || submitting"
-              >
+              <button type="submit" class="btn btn-primary" [disabled]="sliderForm.invalid || submitting">
                 {{ submitting ? 'Uploading...' : 'Add Slider' }}
               </button>
             </div>
@@ -695,22 +555,13 @@
             <div class="form-grid">
               <div class="form-group">
                 <label>Title <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="title"
-                  placeholder="Video Title"
-                />
+                <input type="text" class="form-control" formControlName="title" placeholder="Video Title" />
               </div>
 
               <div class="form-group">
                 <label>Instructor Name <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="instructorName"
-                  placeholder="Instructor Name"
-                />
+                <input type="text" class="form-control" formControlName="instructorName"
+                  placeholder="Instructor Name" />
               </div>
 
               <!-- ✅ Video Upload Box -->
@@ -720,23 +571,14 @@
                   <i class="bi bi-play-btn"></i>
                   <p>Upload Suggestion Video</p>
                   <p class="upload-info">MP4 and WebM files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onVideoSelected($event, 'suggestion')"
-                    accept="video/mp4, video/webm"
-                  />
+                  <input type="file" class="file-input" (change)="onVideoSelected($event, 'suggestion')"
+                    accept="video/mp4, video/webm" />
                 </div>
 
                 <!-- ✅ Video loaded preview -->
                 <div *ngIf="suggestionVideoPreview">
-                  <video
-                    [src]="suggestionVideoPreview"
-                    width="100%"
-                    height="240"
-                    controls
-                    (loadedmetadata)="onVideoLoadedMetadata($event, 'suggestion')"
-                  ></video>
+                  <video [src]="suggestionVideoPreview" width="100%" height="240" controls
+                    (loadedmetadata)="onVideoLoadedMetadata($event, 'suggestion')"></video>
                 </div>
 
                 <!-- ✅ Upload Progress -->
@@ -751,11 +593,7 @@
               <button type="button" class="btn btn-cancel" (click)="resetSuggestionForm()">
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="suggestionForm.invalid || submitting"
-              >
+              <button type="submit" class="btn btn-primary" [disabled]="suggestionForm.invalid || submitting">
                 {{ submitting ? 'Uploading...' : 'Add Suggestion' }}
               </button>
             </div>
@@ -775,12 +613,8 @@
       <form [formGroup]="mcqForm" class="mcq-form-grid">
         <div class="mcq-question-section">
           <label>* Question Text</label>
-          <input
-            type="text"
-            class="mcq-question-input"
-            formControlName="questionText"
-            placeholder="Enter The Question Here ...."
-          />
+          <input type="text" class="mcq-question-input" formControlName="questionText"
+            placeholder="Enter The Question Here ...." />
         </div>
 
         <div class="mcq-answers-upload-wrapper">
@@ -792,45 +626,29 @@
             <div class="mcq-answer-options">
               <div class="mcq-answer-item">
                 <div class="mcq-answer-letter">A</div>
-                <input
-                  type="text"
-                  class="mcq-answer-input"
-                  formControlName="answerA"
-                  placeholder="Enter The Answers Here ...."
-                />
+                <input type="text" class="mcq-answer-input" formControlName="answerA"
+                  placeholder="Enter The Answers Here ...." />
                 <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="A" />
               </div>
 
               <div class="mcq-answer-item">
                 <div class="mcq-answer-letter">B</div>
-                <input
-                  type="text"
-                  class="mcq-answer-input"
-                  formControlName="answerB"
-                  placeholder="Enter The Answers Here ...."
-                />
+                <input type="text" class="mcq-answer-input" formControlName="answerB"
+                  placeholder="Enter The Answers Here ...." />
                 <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="B" />
               </div>
 
               <div class="mcq-answer-item">
                 <div class="mcq-answer-letter">C</div>
-                <input
-                  type="text"
-                  class="mcq-answer-input"
-                  formControlName="answerC"
-                  placeholder="Enter The Answers Here ...."
-                />
+                <input type="text" class="mcq-answer-input" formControlName="answerC"
+                  placeholder="Enter The Answers Here ...." />
                 <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="C" />
               </div>
 
               <div class="mcq-answer-item">
                 <div class="mcq-answer-letter">D</div>
-                <input
-                  type="text"
-                  class="mcq-answer-input"
-                  formControlName="answerD"
-                  placeholder="Enter The Answers Here ...."
-                />
+                <input type="text" class="mcq-answer-input" formControlName="answerD"
+                  placeholder="Enter The Answers Here ...." />
                 <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="D" />
               </div>
             </div>
@@ -842,12 +660,8 @@
               <i class="bi bi-image"></i>
               <p>Upload Files</p>
               <p class="mcq-upload-info">PNG, JPEG, and PDF files are allowed</p>
-              <input
-                type="file"
-                class="file-input"
-                (change)="onMCQImageSelected($event)"
-                accept="image/jpeg, image/png, application/pdf"
-              />
+              <input type="file" class="file-input" (change)="onMCQImageSelected($event)"
+                accept="image/jpeg, image/png, application/pdf" />
             </div>
             <div *ngIf="mcqImagePreview" class="mcq-image-preview">
               <img [src]="mcqImagePreview" alt="MCQ Image Preview" />
@@ -857,11 +671,8 @@
 
         <div class="mcq-explanation-section">
           <label>* Enter Explanation</label>
-          <textarea
-            class="mcq-explanation-textarea"
-            formControlName="explanation"
-            placeholder="Enter The Explanation Here ...."
-          ></textarea>
+          <textarea class="mcq-explanation-textarea" formControlName="explanation"
+            placeholder="Enter The Explanation Here ...."></textarea>
         </div>
       </form>
 
@@ -895,28 +706,15 @@
             </div>
           </div>
           <div class="mcq-list-item-actions">
-            <button
-              type="button"
-              class="mcq-list-action-btn mcq-list-action-delete"
-              (click)="deleteMCQ(i)"
-              title="Delete MCQ"
-            >
+            <button type="button" class="mcq-list-action-btn mcq-list-action-delete" (click)="deleteMCQ(i)"
+              title="Delete MCQ">
               <i class="bi bi-trash"></i>
             </button>
-            <button
-              type="button"
-              class="mcq-list-action-btn mcq-list-action-edit"
-              (click)="editMCQ(i)"
-              title="Edit MCQ"
-            >
+            <button type="button" class="mcq-list-action-btn mcq-list-action-edit" (click)="editMCQ(i)"
+              title="Edit MCQ">
               <i class="bi bi-pencil"></i>
             </button>
-            <button
-              type="button"
-              class="mcq-list-action-btn mcq-list-action-reorder"
-              title="Reorder MCQ"
-              disabled
-            >
+            <button type="button" class="mcq-list-action-btn mcq-list-action-reorder" title="Reorder MCQ" disabled>
               <i class="bi bi-list"></i>
             </button>
           </div>

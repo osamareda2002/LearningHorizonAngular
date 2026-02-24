@@ -181,6 +181,7 @@ export class Add implements OnInit {
       facebook: [''],
       whatsapp: [''],
       instagram: [''],
+      tag: [''],
     });
   }
 
@@ -901,6 +902,7 @@ export class Add implements OnInit {
     formData.append('facebookUrl', this.doctorForm.value.facebook);
     formData.append('whatsappUrl', this.doctorForm.value.whatsapp);
     formData.append('instgramUrl', this.doctorForm.value.instagram);
+    formData.append('tag', this.doctorForm.value.tag || '');
     formData.append('image', this.doctorImage);
 
     this.submitting = true;

@@ -10,7 +10,7 @@ import { TeamMember } from '../models/team.model';
 export class TeamService {
   private apiUrl = `${environment.horizon}`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Get all team members (instructors) from the backend API
@@ -25,6 +25,8 @@ export class TeamService {
           imageUrl: instructor.imageUrl || null,
           about: instructor.description,
           expertise: instructor.expertise ? instructor.expertise.split(',').map((e: string) => e.trim()) : [],
+          isDeveloper: instructor.isDeveloper ?? false,
+          tag: instructor.tag || null,
           contact: {
             instagram: instructor.instgramUrl || undefined,
             whatsapp: instructor.whatsappUrl || undefined,

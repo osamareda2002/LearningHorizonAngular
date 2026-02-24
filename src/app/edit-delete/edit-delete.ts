@@ -341,7 +341,7 @@ export class EditDelete implements OnInit {
     this.loadingDoctors = true;
     this.teamService.getAllTeamMembers().subscribe({
       next: (res: any) => {
-        this.doctors = res || [];
+        this.doctors = (res || []).filter((member: any) => !member.isDeveloper);
         this.loadingDoctors = false;
       },
       error: (err) => {

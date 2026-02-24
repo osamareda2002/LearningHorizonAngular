@@ -13,7 +13,10 @@
         <button class="menu-toggle-btn" (click)="toggleSidebar()">
           <i class="bi bi-list"></i>
         </button>
-        <h2 class="page-title">Team Doctor</h2>
+        <div class="tabs-nav">
+          <h2 class="page-title tab-item" [class.active]="activeTab === 'doctor'" (click)="switchTeamTab('doctor')">Team Doctor</h2>
+          <h2 class="page-title tab-item" [class.active]="activeTab === 'developer'" (click)="switchTeamTab('developer')">Developer Team</h2>
+        </div>
       </div>
       <div class="user-menu">
         <span class="user-name">{{ userName }}</span>
@@ -31,18 +34,21 @@
 
     <!-- Team Grid -->
     <div class="team-section">
-      <div *ngIf="teamMembers.length === 0" class="no-members">
+      <div *ngIf="filteredMembers.length === 0" class="no-members">
         <i class="bi bi-people"></i>
         <p>No team members found</p>
       </div>
 
       <div class="team-grid">
         <div 
-          *ngFor="let member of teamMembers" 
+          *ngFor="let member of filteredMembers" 
           class="team-card" 
           (click)="openMemberDetail(member)"
         >
           <div class="card-image">
+            <div class="ribbon" *ngIf="member.tag">
+              <span>{{ member.tag }}</span>
+            </div>
             <img 
               *ngIf="member.imageUrl" 
               [src]="member.imageUrl" 
@@ -74,6 +80,9 @@
 
       <div class="modal-body">
         <div class="modal-image">
+          <div class="ribbon large" *ngIf="selectedMember.tag">
+            <span>{{ selectedMember.tag }}</span>
+          </div>
           <img 
             *ngIf="selectedMember.imageUrl" 
             [src]="selectedMember.imageUrl" 
