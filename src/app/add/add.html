@@ -287,17 +287,6 @@
           <h3 class="tab-title">Add New Team Member</h3>
           <form [formGroup]="doctorForm" (ngSubmit)="submitDoctor()" class="form-container">
             <div class="form-grid">
-              <!-- Identity Selection -->
-              <!-- <div class="form-group">
-                <label>Person Identity</label>
-                <div class="toggle-group">
-                  <label class="toggle-switch">
-                    <input type="checkbox" formControlName="isDeveloper">
-                    <span class="slider"></span>
-                  </label>
-                  <span>{{ doctorForm.get('isDeveloper')?.value ? 'Developer' : 'Doctor' }}</span>
-                </div>
-              </div> -->
 
               <!-- Doctor Name -->
               <div class="form-group">
@@ -305,7 +294,7 @@
                 <input type="text" class="form-control" formControlName="name" placeholder="Name"
                   [class.error]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched" />
               </div>
-              
+
               <!-- Tag -->
               <div class="form-group">
                 <label>Tag (Optional)</label>

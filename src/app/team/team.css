@@ -10,6 +10,19 @@
   overflow: hidden;
 }
 
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  backdrop-filter: blur(2px);
+}
+
 /* Main Content */
 .main-content {
   margin-left: 280px;
@@ -223,10 +236,10 @@
   padding: 8px 0;
   background-color: #ff6b9d;
   background-image: linear-gradient(135deg, #ff6b9d 0%, #ee0979 100%);
-  box-shadow: 0 5px 10px rgba(0,0,0,.1);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
   color: #fff;
   font: 700 13px 'Arial', sans-serif;
-  text-shadow: 0 1px 1px rgba(0,0,0,.2);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
   text-transform: uppercase;
   text-align: center;
   right: -25px;
@@ -284,7 +297,7 @@
   left: 0;
   right: 0;
   padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
   color: white;
 }
 
@@ -413,9 +426,17 @@
   transform: scale(1.1);
 }
 
-.contact-icon.instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%); }
-.contact-icon.whatsapp { background: #25D366; }
-.contact-icon.facebook { background: #1877F2; }
+.contact-icon.instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.contact-icon.whatsapp {
+  background: #25D366;
+}
+
+.contact-icon.facebook {
+  background: #1877F2;
+}
 
 .modal-close {
   position: absolute;
@@ -432,7 +453,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Styles */
@@ -450,7 +471,23 @@
 
   .modal-image {
     width: 100%;
-    height: 400px;
+    height: 300px;
+    /* Reduced from 400px */
+  }
+
+  .detail-name {
+    font-size: 28px;
+    /* Reduced from 36px */
+  }
+
+  .detail-specialty {
+    font-size: 16px;
+    /* Reduced from 18px */
+    margin-bottom: 20px;
+  }
+
+  .team-container.sidebar-open .sidebar-overlay {
+    display: block;
   }
 }
 
@@ -459,8 +496,13 @@
     display: block;
   }
 
+  .user-navbar {
+    padding: 10px 0;
+    margin-bottom: 20px;
+  }
+
   .page-title {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .tabs-nav {
@@ -469,6 +511,33 @@
 
   .navbar-left {
     gap: 15px;
+  }
+
+  /* Smaller Ribbon on Mobile */
+  .ribbon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .ribbon span {
+    width: 150px;
+    padding: 6px 0;
+    font-size: 10px;
+    top: 20px;
+    right: -15px;
+  }
+
+  .ribbon.large {
+    width: 120px;
+    height: 120px;
+  }
+
+  .ribbon.large span {
+    width: 180px;
+    padding: 8px 0;
+    font-size: 12px;
+    top: 25px;
+    right: -20px;
   }
 
   .team-grid {
@@ -484,5 +553,19 @@
 
   .user-name {
     display: none;
+  }
+
+  .modal-image {
+    height: 250px;
+    /* Even smaller on mobile */
+  }
+
+  .modal-content {
+    padding: 10px;
+    max-height: 95vh;
+  }
+
+  .detail-name {
+    font-size: 24px;
   }
 }
