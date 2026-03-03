@@ -149,6 +149,7 @@ export class EditDelete implements OnInit {
       specialty: ['', Validators.required],
       about: ['', Validators.required],
       expertise: ['', Validators.required],
+      tag: [''],
       facebook: [''],
       whatsapp: [''],
       instagram: [''],
@@ -359,6 +360,7 @@ export class EditDelete implements OnInit {
       specialty: doctor.specialty,
       about: doctor.about,
       expertise: doctor.expertise.join(', '), // Convert array to comma-separated string
+      tag: doctor.tag || '',
       facebook: doctor.contact?.facebook || '',
       whatsapp: doctor.contact?.whatsapp || '',
       instagram: doctor.contact?.instagram || '',
@@ -401,6 +403,7 @@ export class EditDelete implements OnInit {
     formData.append('specialty', this.editDoctorForm.value.specialty);
     formData.append('description', this.editDoctorForm.value.about);
     formData.append('expertise', this.editDoctorForm.value.expertise);
+    formData.append('tag', this.editDoctorForm.value.tag);
     formData.append('facebookUrl', this.editDoctorForm.value.facebook);
     formData.append('whatsappUrl', this.editDoctorForm.value.whatsapp);
     formData.append('instgramUrl', this.editDoctorForm.value.instagram);
