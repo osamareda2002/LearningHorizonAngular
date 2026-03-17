@@ -3,6 +3,7 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 bootstrapApplication(App, {
   providers: [...appConfig.providers, provideHttpClient(withInterceptorsFromDi())],
@@ -10,3 +11,4 @@ bootstrapApplication(App, {
 
 // Initialize Vercel Web Analytics
 inject();
+injectSpeedInsights();
