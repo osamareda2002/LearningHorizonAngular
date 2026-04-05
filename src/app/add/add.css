@@ -648,19 +648,75 @@
 }
 
 /* MCQ Form Grid */
+.mcq-modal-form-outer {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .mcq-form-grid {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
-.mcq-answers-upload-wrapper {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  /* 2 parts for answers, 1 part for upload */
-  gap: 25px;
-  align-items: start;
-  /* Align items to the top */
+/* Mobile-first: stack columns; widen on large screens */
+.mcq-modal-two-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mcq-modal-col {
+  min-width: 0;
+}
+
+.mcq-lesson-quote-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.mcq-quote-field label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.mcq-quote-body-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mcq-quote-body-textarea:focus {
+  outline: none;
+  border-color: #503e9d;
+  box-shadow: 0 0 0 3px rgba(80, 62, 157, 0.1);
+}
+
+@media (min-width: 900px) {
+  .mcq-modal-two-col {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
 }
 
 /* Question Section */
@@ -1405,33 +1461,25 @@
     flex-direction: column;
   }
 
-  .mcq-answers-upload-wrapper {
-    grid-template-columns: 1fr;
-    /* Single column layout */
+  .mcq-modal-two-col {
+    gap: 20px;
   }
 
-  /* The answers section takes precedence on mobile */
-  .mcq-answers-section {
-    order: 1;
+  .mcq-quote-body-textarea {
+    min-height: 120px;
   }
 
-  /* Upload box should come after answers on mobile */
   .mcq-upload-container {
-    order: 2;
-    /* Center the upload box in the single column */
     align-items: center;
   }
 
   .mcq-upload-box {
     max-width: 300px;
-    /* Give it a maximum width for better visual appeal */
     margin: 0 auto 15px auto;
-    /* Center it */
   }
 
   .mcq-upload-label {
     text-align: center;
-    /* Center the label on mobile */
   }
 }
 

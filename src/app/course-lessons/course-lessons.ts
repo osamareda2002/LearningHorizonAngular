@@ -35,6 +35,8 @@ interface MCQQuestion {
   questionText: string;
   explanation: string;
   imageLink: string;
+  quoteSubject?: string | null;
+  quoteBody?: string | null;
   answers: MCQAnswer[];
 }
 
@@ -81,6 +83,8 @@ export class CourseLessonsComponent implements OnInit {
   loadError: string = '';
 
   videoKey: number = 0;
+
+  showMcqQuoteModal = false;
 
   constructor(
     private auth: AuthService,
@@ -194,6 +198,7 @@ export class CourseLessonsComponent implements OnInit {
     // Update current lesson info
     this.currentLessonId = lesson.id;
     this.currentLesson = lesson;
+    this.closeMcqQuoteModal();
 
     // Reset quiz state when switching lessons
     this.resetQuiz();
@@ -233,6 +238,7 @@ export class CourseLessonsComponent implements OnInit {
       return;
     }
 
+    this.closeMcqQuoteModal();
     this.showQuiz = true;
     this.currentQuestionIndex = 0;
     this.selectedAnswer = null;
@@ -267,6 +273,7 @@ export class CourseLessonsComponent implements OnInit {
   }
 
   nextQuestion() {
+    this.closeMcqQuoteModal();
     this.currentQuestionIndex++;
     this.selectedAnswer = null;
   }
@@ -281,6 +288,7 @@ export class CourseLessonsComponent implements OnInit {
   }
 
   resetQuiz() {
+    this.closeMcqQuoteModal();
     this.showQuiz = false;
     this.currentQuestionIndex = 0;
     this.selectedAnswer = null;
@@ -290,6 +298,7 @@ export class CourseLessonsComponent implements OnInit {
   }
 
   retakeQuiz() {
+    this.closeMcqQuoteModal();
     this.currentQuestionIndex = 0;
     this.selectedAnswer = null;
     this.quizResults = [];
@@ -327,5 +336,19 @@ export class CourseLessonsComponent implements OnInit {
       !question.imageLink.includes('null') &&
       !question.imageLink.endsWith('/')
     );
+  }
+
+  hasCurrentQuestionQuoteBody(): boolean {
+    const body = this.currentQuestion?.quoteBody;
+    return typeof body === 'string' && body.trim().length > 0;
+  }
+
+  openMcqQuoteModal(): void {
+    if (!this.hasCurrentQuestionQuoteBody() || !this.currentQuestion) return;
+    this.showMcqQuoteModal = true;
+  }
+
+  closeMcqQuoteModal(): void {
+    this.showMcqQuoteModal = false;
   }
 }

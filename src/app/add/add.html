@@ -599,51 +599,75 @@
         <h2 class="mcq-modal-title">The Details MCQ</h2>
       </div>
 
-      <form [formGroup]="mcqForm" class="mcq-form-grid">
-        <div class="mcq-question-section">
-          <label>* Question Text</label>
-          <input type="text" class="mcq-question-input" formControlName="questionText"
-            placeholder="Enter The Question Here ...." />
-        </div>
-
-        <div class="mcq-answers-upload-wrapper">
-          <div class="mcq-answers-section">
-            <div class="mcq-answers-header">
-              <span class="mcq-answers-title">* Answers Text , Select Correct Answer</span>
-            </div>
-
-            <div class="mcq-answer-options">
-              <div class="mcq-answer-item">
-                <div class="mcq-answer-letter">A</div>
-                <input type="text" class="mcq-answer-input" formControlName="answerA"
-                  placeholder="Enter The Answers Here ...." />
-                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="A" />
+      <form [formGroup]="mcqForm" class="mcq-modal-form-outer">
+        <div class="mcq-modal-two-col">
+          <div class="mcq-modal-col mcq-modal-col-main">
+            <div class="mcq-form-grid">
+              <div class="mcq-question-section">
+                <label>* Question Text</label>
+                <input type="text" class="mcq-question-input" formControlName="questionText"
+                  placeholder="Enter The Question Here ...." />
               </div>
 
-              <div class="mcq-answer-item">
-                <div class="mcq-answer-letter">B</div>
-                <input type="text" class="mcq-answer-input" formControlName="answerB"
-                  placeholder="Enter The Answers Here ...." />
-                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="B" />
+              <div class="mcq-answers-section">
+                <div class="mcq-answers-header">
+                  <span class="mcq-answers-title">* Answers Text , Select Correct Answer</span>
+                </div>
+
+                <div class="mcq-answer-options">
+                  <div class="mcq-answer-item">
+                    <div class="mcq-answer-letter">A</div>
+                    <input type="text" class="mcq-answer-input" formControlName="answerA"
+                      placeholder="Enter The Answers Here ...." />
+                    <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="A" />
+                  </div>
+
+                  <div class="mcq-answer-item">
+                    <div class="mcq-answer-letter">B</div>
+                    <input type="text" class="mcq-answer-input" formControlName="answerB"
+                      placeholder="Enter The Answers Here ...." />
+                    <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="B" />
+                  </div>
+
+                  <div class="mcq-answer-item">
+                    <div class="mcq-answer-letter">C</div>
+                    <input type="text" class="mcq-answer-input" formControlName="answerC"
+                      placeholder="Enter The Answers Here ...." />
+                    <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="C" />
+                  </div>
+
+                  <div class="mcq-answer-item">
+                    <div class="mcq-answer-letter">D</div>
+                    <input type="text" class="mcq-answer-input" formControlName="answerD"
+                      placeholder="Enter The Answers Here ...." />
+                    <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="D" />
+                  </div>
+                </div>
               </div>
 
-              <div class="mcq-answer-item">
-                <div class="mcq-answer-letter">C</div>
-                <input type="text" class="mcq-answer-input" formControlName="answerC"
-                  placeholder="Enter The Answers Here ...." />
-                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="C" />
-              </div>
-
-              <div class="mcq-answer-item">
-                <div class="mcq-answer-letter">D</div>
-                <input type="text" class="mcq-answer-input" formControlName="answerD"
-                  placeholder="Enter The Answers Here ...." />
-                <input type="radio" class="mcq-radio" formControlName="correctAnswer" value="D" />
+              <div class="mcq-explanation-section">
+                <label>* Enter Explanation</label>
+                <textarea class="mcq-explanation-textarea" formControlName="explanation"
+                  placeholder="Enter The Explanation Here ...."></textarea>
               </div>
             </div>
           </div>
 
-          <div class="mcq-upload-container">
+          <div class="mcq-modal-col mcq-modal-col-side">
+            <div class="mcq-lesson-quote-fields">
+              <div class="mcq-quote-field">
+                <label for="mcq-quote-subject">* Quotes Subject</label>
+                <input id="mcq-quote-subject" type="text" class="mcq-question-input" formControlName="quoteSubject"
+                  placeholder="Enter The Quotes Here ...." />
+              </div>
+              <div class="mcq-quote-field">
+                <label for="mcq-quote-body">* Enter Quotes</label>
+                <textarea id="mcq-quote-body" class="mcq-quote-body-textarea" formControlName="quoteBody" rows="8"
+                  placeholder="Enter The Quotes Here ...."></textarea>
+              </div>
+            </div>
+
+            <div class="mcq-upload-container">
             <span class="mcq-upload-label">* Upload Image</span>
             <div class="mcq-upload-box">
               <i class="bi bi-image"></i>
@@ -657,11 +681,6 @@
             </div>
           </div>
         </div>
-
-        <div class="mcq-explanation-section">
-          <label>* Enter Explanation</label>
-          <textarea class="mcq-explanation-textarea" formControlName="explanation"
-            placeholder="Enter The Explanation Here ...."></textarea>
         </div>
       </form>
 

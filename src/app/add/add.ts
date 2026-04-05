@@ -21,6 +21,8 @@ interface DtoExerciseAnswer {
 interface DtoLessonExercise {
   questionText?: string;
   explanation?: string;
+  quoteSubject?: string;
+  quoteBody?: string;
   image: File | null; // Required property, value can be null
   answers: DtoExerciseAnswer[];
 }
@@ -28,6 +30,8 @@ interface DtoLessonExercise {
 interface DtoLessonExerciseJson {
   questionText?: string;
   explanation?: string;
+  quoteSubject?: string;
+  quoteBody?: string;
   answers: DtoExerciseAnswer[];
 }
 @Component({
@@ -194,6 +198,8 @@ export class Add implements OnInit {
       answerD: ['', Validators.required],
       correctAnswer: ['', Validators.required],
       explanation: ['', Validators.required],
+      quoteSubject: [''],
+      quoteBody: [''],
     });
   }
 
@@ -520,6 +526,47 @@ export class Add implements OnInit {
     });
   }
 
+  /**
+   * Builds multipart/form-data for AddLesson so each MCQ can include IFormFile image.
+   * Backend must use [FromForm] DtoAddLesson (not [FromBody]) so files bind.
+   */
+  private buildAddLessonFormData(params: {
+    title: string;
+    isFree: boolean;
+    courseId: number;
+    durationInSeconds: number;
+    lessonOrder: number;
+    guid: string;
+    libraryId: number;
+    exercises: DtoLessonExercise[];
+  }): FormData {
+    const fd = new FormData();
+    fd.append('title', params.title);
+    fd.append('isFree', params.isFree ? 'true' : 'false');
+    fd.append('courseId', String(params.courseId));
+    fd.append('durationInSeconds', String(params.durationInSeconds));
+    fd.append('lessonOrder', String(params.lessonOrder));
+    fd.append('guid', params.guid);
+    fd.append('libraryId', String(params.libraryId));
+
+    params.exercises.forEach((exercise, i) => {
+      const prefix = `lessonExercises[${i}]`;
+      fd.append(`${prefix}.questionText`, exercise.questionText ?? '');
+      fd.append(`${prefix}.explanation`, exercise.explanation ?? '');
+      fd.append(`${prefix}.quoteSubject`, (exercise.quoteSubject ?? '').toString().trim());
+      fd.append(`${prefix}.quoteBody`, (exercise.quoteBody ?? '').toString().trim());
+      if (exercise.image) {
+        fd.append(`${prefix}.image`, exercise.image, exercise.image.name);
+      }
+      exercise.answers.forEach((answer, j) => {
+        fd.append(`${prefix}.answers[${j}].answerText`, answer.answerText ?? '');
+        fd.append(`${prefix}.answers[${j}].isCorrect`, answer.isCorrect ? 'true' : 'false');
+      });
+    });
+
+    return fd;
+  }
+
   async submitLesson() {
     if (this.lessonForm.invalid || !this.lessonVideo) {
       this.errorMessage = 'Please fill in all required fields and upload a video.';
@@ -546,30 +593,23 @@ export class Add implements OnInit {
       this.bunnyUploadStatus = 'Uploading video to Bunny...';
       await this.uploadToBunny(this.lessonVideo, token);
 
-      // 3️⃣ Save lesson data in backend
+      // 3️⃣ Save lesson data in backend (multipart: MCQ images are files — they cannot be sent in JSON)
       this.bunnyUploadStatus = 'Saving lesson data...';
 
-      const lessonExercisesJson = this.lessonExercises.map((exercise) => ({
-        questionText: exercise.questionText || '',
-        explanation: exercise.explanation || '',
-        answers: exercise.answers.map((answer) => ({
-          answerText: answer.answerText || '',
-          isCorrect: answer.isCorrect,
-        })),
-      }));
-
-      const body = {
+      const isFree =
+        this.lessonForm.value.isFree === 'true' || this.lessonForm.value.isFree === true;
+      const formData = this.buildAddLessonFormData({
         title: lessonTitle,
-        isFree: this.lessonForm.value.isFree === 'true' || this.lessonForm.value.isFree === true,
+        isFree,
         courseId: Number(courseId),
         durationInSeconds: this.lessonDurationInSeconds,
         lessonOrder: Number(this.lessonForm.value.order),
         guid: token.videoId,
         libraryId: Number(token.libraryId),
-        lessonExercises: lessonExercisesJson,
-      };
+        exercises: this.lessonExercises,
+      });
 
-      await this.http.post(`${this.apiUrl}/AddLesson`, body).toPromise();
+      await this.http.post(`${this.apiUrl}/AddLesson`, formData).toPromise();
 
       this.successMessage = '✅ Lesson uploaded successfully!';
       this.errorMessage = '';
@@ -634,6 +674,8 @@ export class Add implements OnInit {
       answerD: exercise.answers[3]?.answerText || '',
       correctAnswer: correctAnswerLetter,
       explanation: exercise.explanation || '',
+      quoteSubject: exercise.quoteSubject || '',
+      quoteBody: exercise.quoteBody || '',
     });
 
     // Handle image preview
@@ -727,6 +769,8 @@ export class Add implements OnInit {
     const exercise: DtoLessonExercise = {
       questionText: formValue.questionText,
       explanation: formValue.explanation,
+      quoteSubject: (formValue.quoteSubject ?? '').toString().trim(),
+      quoteBody: (formValue.quoteBody ?? '').toString().trim(),
       image: this.currentMcqImageFile, // Use the stored File object
       answers: answers,
     };

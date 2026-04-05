@@ -31,6 +31,8 @@ interface LessonExercise {
   id?: number;
   questionText: string;
   explanation?: string;
+  quoteSubject?: string | null;
+  quoteBody?: string | null;
   imageLink?: string;
   imageUrl?: string;
   answers: ExerciseAnswer[];
@@ -71,6 +73,9 @@ export class CourseVideos implements OnInit {
   quizSubmitted = false;
   quizScore = { correct: 0, total: 0 };
 
+  showMcqQuoteModal = false;
+  mcqQuoteModalExercise: LessonExercise | null = null;
+
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -83,7 +88,6 @@ export class CourseVideos implements OnInit {
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
-
     // Get course ID from route
     this.route.params.subscribe((params) => {
       this.courseId = +params['id'];
@@ -139,6 +143,8 @@ export class CourseVideos implements OnInit {
             id: mcq.id,
             questionText: mcq.questionText,
             explanation: mcq.explanation,
+            quoteSubject: mcq.quoteSubject ?? null,
+            quoteBody: mcq.quoteBody ?? null,
             imageLink: mcq.imageLink,
             imageUrl: mcq.imageLink, // Use imageLink as imageUrl
             answers: (mcq.answers || []).map((ans: any) => ({
@@ -204,6 +210,7 @@ export class CourseVideos implements OnInit {
     }
 
     this.currentLesson = lesson;
+    this.closeMcqQuoteModal();
 
     // Reset quiz state first
     this.showMCQQuiz = false;
@@ -213,7 +220,7 @@ export class CourseVideos implements OnInit {
 
     // Load MCQs directly from lesson object
     this.currentExercises = lesson.mcq || lesson.exercises || [];
-
+    console.log('currentExercises', this.currentExercises);
     // Update video URL (sanitize for iframe)
     this.currentVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(lesson.videoUrl);
     this.videoKey = Date.now();
@@ -227,6 +234,7 @@ export class CourseVideos implements OnInit {
       alert('No questions available for this lesson.');
       return;
     }
+    this.closeMcqQuoteModal();
     this.showMCQQuiz = true;
     this.currentQuestionIndex = 0;
     this.selectedAnswers = {};
@@ -246,6 +254,7 @@ export class CourseVideos implements OnInit {
 
   nextQuestion() {
     if (this.currentQuestionIndex < this.currentExercises.length - 1) {
+      this.closeMcqQuoteModal();
       this.currentQuestionIndex++;
       const questionElement = document.getElementById(`question-${this.currentQuestionIndex}`);
       if (questionElement) {
@@ -256,6 +265,7 @@ export class CourseVideos implements OnInit {
 
   previousQuestion() {
     if (this.currentQuestionIndex > 0) {
+      this.closeMcqQuoteModal();
       this.currentQuestionIndex--;
       const questionElement = document.getElementById(`question-${this.currentQuestionIndex}`);
       if (questionElement) {
@@ -286,6 +296,7 @@ export class CourseVideos implements OnInit {
   }
 
   closeQuiz() {
+    this.closeMcqQuoteModal();
     this.showMCQQuiz = false;
     this.currentQuestionIndex = 0;
     this.selectedAnswers = {};
@@ -399,6 +410,22 @@ export class CourseVideos implements OnInit {
 
   closeLockedModal() {
     this.showLockedModal = false;
+  }
+
+  hasExerciseQuoteBody(exercise: LessonExercise): boolean {
+    const body = exercise.quoteBody;
+    return typeof body === 'string' && body.trim().length > 0;
+  }
+
+  openMcqQuoteModal(exercise: LessonExercise): void {
+    if (!this.hasExerciseQuoteBody(exercise)) return;
+    this.mcqQuoteModalExercise = exercise;
+    this.showMcqQuoteModal = true;
+  }
+
+  closeMcqQuoteModal(): void {
+    this.showMcqQuoteModal = false;
+    this.mcqQuoteModalExercise = null;
   }
 
   enrollFromModal() {

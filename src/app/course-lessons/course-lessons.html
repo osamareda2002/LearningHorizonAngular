@@ -41,8 +41,15 @@
         <!-- Quiz Section -->
         <div class="quiz-container" *ngIf="showQuiz && !quizCompleted">
           <div class="quiz-header">
-            <i class="bi bi-diamond-fill quiz-icon"></i>
-            <h2>Question:</h2>
+            <div class="quiz-header-main">
+              <i class="bi bi-diamond-fill quiz-icon"></i>
+              <h2>Question:</h2>
+            </div>
+            <button type="button" class="btn-read-quotes" *ngIf="hasCurrentQuestionQuoteBody()"
+              (click)="openMcqQuoteModal()" title="Read quote for this question">
+              <i class="bi bi-file-earmark-text"></i>
+              Read Quotes
+            </button>
           </div>
 
           <div class="quiz-progress">
@@ -138,4 +145,19 @@
       </div>
     </div>
   </main>
+
+  <div class="lesson-quote-overlay" *ngIf="showMcqQuoteModal" (click)="closeMcqQuoteModal()">
+    <div class="lesson-quote-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+      aria-labelledby="mcq-quote-title-cl">
+      <button type="button" class="lesson-quote-close" (click)="closeMcqQuoteModal()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <h2 id="mcq-quote-title-cl" class="lesson-quote-title">
+        {{ currentQuestion?.quoteSubject?.trim() || 'Reading' }}
+      </h2>
+      <div class="lesson-quote-body-scroll">
+        <p class="lesson-quote-body">{{ currentQuestion?.quoteBody }}</p>
+      </div>
+    </div>
+  </div>
 </div>

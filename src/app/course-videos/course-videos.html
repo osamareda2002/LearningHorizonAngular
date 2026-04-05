@@ -54,6 +54,14 @@
         <div class="mcq-question-container">
           <div *ngFor="let exercise of currentExercises; let questionIndex = index" class="mcq-question-card"
             [id]="'question-' + questionIndex" [class.active]="currentQuestionIndex === questionIndex">
+            <div class="mcq-question-card-toolbar"
+              *ngIf="currentQuestionIndex === questionIndex && hasExerciseQuoteBody(exercise)">
+              <button type="button" class="btn-read-quotes" (click)="openMcqQuoteModal(exercise)"
+                title="Read quote for this question">
+                <i class="bi bi-file-earmark-text"></i>
+                Read Quotes
+              </button>
+            </div>
             <!-- Question Text -->
             <div class="mcq-question-header">
               <div class="mcq-question-icon">
@@ -162,6 +170,22 @@
             <i *ngIf="!canAccessLesson(lesson)" class="bi bi-lock-fill lesson-lock-icon"></i>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Per-question MCQ quote modal -->
+  <div class="lesson-quote-overlay" *ngIf="showMcqQuoteModal" (click)="closeMcqQuoteModal()">
+    <div class="lesson-quote-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+      aria-labelledby="mcq-quote-title">
+      <button type="button" class="lesson-quote-close" (click)="closeMcqQuoteModal()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <h2 id="mcq-quote-title" class="lesson-quote-title">
+        {{ mcqQuoteModalExercise?.quoteSubject?.trim() || 'Reading' }}
+      </h2>
+      <div class="lesson-quote-body-scroll">
+        <p class="lesson-quote-body">{{ mcqQuoteModalExercise?.quoteBody }}</p>
       </div>
     </div>
   </div>
