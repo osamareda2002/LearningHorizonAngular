@@ -390,6 +390,10 @@
   background: #f5f5f5;
 }
 
+.book-thumbnail {
+  object-fit: contain;
+}
+
 .doctor-thumbnail {
   object-position: top center;
   height: 250px;
