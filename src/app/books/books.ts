@@ -15,6 +15,9 @@ import { SidebarComponent } from '../shared/sidebar/sidebar';
   styleUrl: './books.css',
 })
 export class Books implements OnInit {
+  private readonly titlePreviewLimit = 55;
+  private readonly descriptionPreviewLimit = 120;
+
   isDropdownOpen = false;
   isSidebarOpen = false;
   isLoggedIn = false;
@@ -121,6 +124,20 @@ export class Books implements OnInit {
     if (book.fileLink) {
       window.open(book.fileLink, '_blank');
     }
+  }
+
+  getDescriptionPreview(description: string | null | undefined): string {
+    const text = description?.trim() || '';
+    return text.length > this.descriptionPreviewLimit
+      ? `${text.slice(0, this.descriptionPreviewLimit)}...`
+      : text;
+  }
+
+  getTitlePreview(title: string | null | undefined): string {
+    const text = title?.trim() || '';
+    return text.length > this.titlePreviewLimit
+      ? `${text.slice(0, this.titlePreviewLimit)}...`
+      : text;
   }
 
   // ----------------------------

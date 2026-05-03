@@ -101,8 +101,10 @@
             <img [src]="book.posterLink" [alt]="book.title" />
           </div>
           <div class="book-info">
-            <h3 class="book-title">{{ book.title }}</h3>
-            <p class="book-description" *ngIf="book.description">{{ book.description }}</p>
+            <h3 class="book-title">{{ getTitlePreview(book.title) }}</h3>
+            <p class="book-description" *ngIf="book.description">
+              {{ getDescriptionPreview(book.description) }}
+            </p>
           </div>
           <div class="book-footer">
             <button class="btn-visit" (click)="visitBook(book)">

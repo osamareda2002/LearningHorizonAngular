@@ -1344,15 +1344,20 @@
   }
 
   .tabs-header {
-    flex-wrap: wrap;
-    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    gap: 4px;
+    padding-bottom: 4px;
   }
 
   .tab-btn {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     font-size: 13px;
-    padding: 12px 8px;
-    min-width: 100px;
+    padding: 12px 14px;
+    min-width: 118px;
     gap: 5px;
   }
 
@@ -1371,6 +1376,7 @@
 
   .form-container {
     width: 100%;
+    max-width: none;
   }
 
   .form-grid {
@@ -1697,16 +1703,15 @@
   }
 
   .tab-btn {
-    flex: 1 1 100%;
+    flex: 0 0 auto;
     font-size: 11px;
-    padding: 10px 6px;
+    padding: 10px 12px;
     margin-bottom: -1px;
-    min-width: auto;
+    min-width: 100px;
   }
 
   .tab-btn i {
     font-size: 14px;
-    display: none;
   }
 
   .tabs-content {
@@ -1846,9 +1851,10 @@
   }
 
   .tab-btn {
-    flex: 1 1 100%;
+    flex: 0 0 auto;
     font-size: 10px;
-    padding: 8px 4px;
+    padding: 8px 10px;
+    min-width: 92px;
   }
 
   .tabs-content {

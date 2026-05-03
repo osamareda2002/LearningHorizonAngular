@@ -20,6 +20,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class EditDelete implements OnInit {
   private apiUrl = `${environment.horizon}`;
+  private readonly titlePreviewLimit = 55;
+  private readonly descriptionPreviewLimit = 120;
 
   activeTab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | 'book' = 'category';
   isLoggedIn = false;
@@ -701,6 +703,20 @@ export class EditDelete implements OnInit {
     this.currentDeleteItem = bookId;
     this.deleteType = 'book';
     this.showDeleteConfirm = true;
+  }
+
+  getDescriptionPreview(description: string | null | undefined): string {
+    const text = description?.trim() || '';
+    return text.length > this.descriptionPreviewLimit
+      ? `${text.slice(0, this.descriptionPreviewLimit)}...`
+      : text;
+  }
+
+  getTitlePreview(title: string | null | undefined): string {
+    const text = title?.trim() || '';
+    return text.length > this.titlePreviewLimit
+      ? `${text.slice(0, this.titlePreviewLimit)}...`
+      : text;
   }
 
   deleteDoctor(doctorId: string) {

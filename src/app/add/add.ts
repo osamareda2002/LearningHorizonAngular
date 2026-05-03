@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, viewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -43,6 +43,9 @@ interface DtoLessonExerciseJson {
 })
 export class Add implements OnInit {
   private apiUrl = `${environment.horizon}`;
+
+  readonly bookCoverFileInput = viewChild<ElementRef<HTMLInputElement>>('bookCoverInput');
+  readonly bookPdfFileInput = viewChild<ElementRef<HTMLInputElement>>('bookPdfInput');
 
   activeTab: 'category' | 'course' | 'lesson' | 'book' | 'slider' | 'suggestion' | 'doctor' = 'category';
   isLoggedIn = false;
@@ -917,6 +920,11 @@ export class Add implements OnInit {
     this.bookForm.reset();
     this.bookCover = null;
     this.bookPdf = null;
+    this.bookCoverPreview = null;
+    const coverEl = this.bookCoverFileInput()?.nativeElement;
+    const pdfEl = this.bookPdfFileInput()?.nativeElement;
+    if (coverEl) coverEl.value = '';
+    if (pdfEl) pdfEl.value = '';
   }
 
   resetDoctorForm() {

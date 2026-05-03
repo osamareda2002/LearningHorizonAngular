@@ -114,7 +114,12 @@
               <img [src]="cat.imageUrl" [alt]="cat.title" class="item-thumbnail" />
               <div class="item-content">
                 <h4 class="item-title">{{ cat.title }}</h4>
-                <p class="item-meta">{{ cat.about }}</p>
+                <p
+                  class="item-meta item-description-preview"
+                  [attr.title]="cat.about?.trim() ? cat.about : null"
+                >
+                  {{ cat.about }}
+                </p>
               </div>
               <div class="item-actions">
                 <button class="btn-icon btn-edit" (click)="openEditCategoryModal(cat)" title="Edit">
@@ -421,8 +426,12 @@
                 class="item-thumbnail"
               />
               <div class="item-content">
-                <h4 class="item-title">{{ book.title }}</h4>
-                <p class="item-meta">{{ book.description }}</p>
+                <h4 class="item-title">{{ getTitlePreview(book.title) }}</h4>
+                <p
+                  class="item-meta item-description-preview"
+                >
+                  {{ getDescriptionPreview(book.description) }}
+                </p>
               </div>
               <div class="item-actions">
                 <button
