@@ -82,6 +82,15 @@
           <i class="bi bi-lightbulb"></i>
           Suggestions
         </button>
+
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'book'"
+          (click)="switchTab('book')"
+        >
+          <i class="bi bi-book"></i>
+          Books
+        </button>
       </div>
 
       <!-- Tab Content -->
@@ -381,6 +390,44 @@
                 <button
                   class="btn-icon btn-delete"
                   (click)="deleteDoctor(doctor.id)"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Books Tab -->
+        <div class="tab-pane" *ngIf="activeTab === 'book'">
+          <h3 class="tab-title">Manage Books</h3>
+
+          <div *ngIf="loadingBooks" class="loading-state">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Loading books...</p>
+          </div>
+
+          <div *ngIf="!loadingBooks && books.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No books found</p>
+          </div>
+
+          <div *ngIf="!loadingBooks && books.length > 0" class="items-grid">
+            <div *ngFor="let book of books" class="item-card">
+              <img
+                [src]="book.posterLink"
+                [alt]="book.title"
+                class="item-thumbnail"
+              />
+              <div class="item-content">
+                <h4 class="item-title">{{ book.title }}</h4>
+                <p class="item-meta">{{ book.description }}</p>
+              </div>
+              <div class="item-actions">
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="deleteBook(book.id)"
                   title="Delete"
                 >
                   <i class="bi bi-trash"></i>

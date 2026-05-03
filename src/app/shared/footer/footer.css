@@ -1,0 +1,57 @@
+.app-footer {
+  background-color: #1e1136; /* Dark purple matching image */
+  border-top: 2px solid #ff7f50; /* Orange border matching image */
+  padding: 12px 40px;
+  margin-top: auto;
+  margin-left: 280px; /* Offset for desktop sidebar */
+  transition: margin-left 0.25s ease;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: flex-end; /* Align to the right as in screenshot */
+  align-items: center;
+  gap: 12px;
+}
+
+.app-footer p {
+  margin: 0;
+  color: #a099b8; /* Light grey/purple */
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.app-footer a {
+  color: #ffffff; /* White text for @codex */
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.app-footer a:hover {
+  color: #ff7f50; /* Change to orange on hover */
+}
+
+.footer-sparkle {
+  color: #a099b8;
+  width: 24px;
+  height: 24px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .app-footer {
+    margin-left: 0; /* Sidebar becomes overlay */
+  }
+}
+
+@media (max-width: 480px) {
+  .app-footer {
+    padding: 12px 20px;
+  }
+  
+  .footer-content {
+    justify-content: center; /* Center the content on mobile */
+  }
+}
+

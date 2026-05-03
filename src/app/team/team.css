@@ -65,34 +65,7 @@
   gap: 30px;
 }
 
-.tabs-nav {
-  display: flex;
-  gap: 30px;
-  align-items: baseline;
-}
 
-.tab-item {
-  cursor: pointer;
-  padding-bottom: 10px;
-  position: relative;
-  transition: all 0.3s ease;
-  color: #999;
-}
-
-.tab-item.active {
-  color: #503e9d;
-}
-
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: #503e9d;
-  border-radius: 3px;
-}
 
 .page-title {
   font-size: 28px;

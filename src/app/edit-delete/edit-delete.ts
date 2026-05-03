@@ -8,6 +8,7 @@ import { environment } from '../services/enviroment';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
 import { TeamService } from '../services/team.service';
 import { CategoryService } from '../services/category.service';
+import { BookService } from '../services/books';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
@@ -20,7 +21,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class EditDelete implements OnInit {
   private apiUrl = `${environment.horizon}`;
 
-  activeTab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' = 'category';
+  activeTab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | 'book' = 'category';
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
@@ -37,6 +38,7 @@ export class EditDelete implements OnInit {
   sliders: any[] = [];
   suggestions: any[] = [];
   doctors: any[] = [];
+  books: any[] = [];
 
   // Filter
   selectedCourseId: string = '';
@@ -48,6 +50,7 @@ export class EditDelete implements OnInit {
   loadingSliders = false;
   loadingSuggestions = false;
   loadingDoctors = false;
+  loadingBooks = false;
 
   // Forms
   editCategoryForm!: FormGroup;
@@ -74,7 +77,7 @@ export class EditDelete implements OnInit {
   currentEditSuggestion: any = null;
   currentEditDoctor: any = null;
   currentDeleteItem: any = null;
-  deleteType: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | null = null;
+  deleteType: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | 'book' | null = null;
 
   // File uploads
   editCategoryImage: File | null = null;
@@ -93,6 +96,7 @@ export class EditDelete implements OnInit {
     private http: HttpClient,
     private teamService: TeamService,
     private categoryService: CategoryService,
+    private bookService: BookService,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -156,10 +160,13 @@ export class EditDelete implements OnInit {
     });
   }
 
-  switchTab(tab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor') {
+  switchTab(tab: 'category' | 'course' | 'lesson' | 'slider' | 'suggestion' | 'doctor' | 'book') {
     this.activeTab = tab;
     this.errorMessage = '';
     this.successMessage = '';
+    if (tab === 'book') {
+      this.loadBooks();
+    }
   }
 
   toggleDropdown() {
@@ -183,6 +190,7 @@ export class EditDelete implements OnInit {
     this.loadSliders();
     this.loadSuggestions();
     this.loadDoctors();
+    this.loadBooks();
   }
 
   loadCategories() {
@@ -674,6 +682,27 @@ export class EditDelete implements OnInit {
     this.showDeleteConfirm = true;
   }
 
+  // ✅ Books
+  loadBooks() {
+    this.loadingBooks = true;
+    this.bookService.getAllBooks().subscribe({
+      next: (res: any) => {
+        this.books = res || [];
+        this.loadingBooks = false;
+      },
+      error: (err) => {
+        console.error('Failed to load books:', err);
+        this.loadingBooks = false;
+      },
+    });
+  }
+
+  deleteBook(bookId: number) {
+    this.currentDeleteItem = bookId;
+    this.deleteType = 'book';
+    this.showDeleteConfirm = true;
+  }
+
   deleteDoctor(doctorId: string) {
     this.currentDeleteItem = doctorId;
     this.deleteType = 'doctor';
@@ -712,6 +741,22 @@ export class EditDelete implements OnInit {
       case 'doctor':
         endpoint = `${this.apiUrl}/DeleteInstructor?id=${this.currentDeleteItem}`;
         break;
+      case 'book':
+        // DeleteBook uses HttpDelete with bookId query param — handle separately
+        this.http.delete(`${this.apiUrl}/DeleteBook?bookId=${this.currentDeleteItem}`).subscribe({
+          next: (res: any) => {
+            this.successMessage = 'Book deleted successfully!';
+            this.submitting = false;
+            this.closeModals();
+            this.loadBooks();
+          },
+          error: (err) => {
+            this.errorMessage = 'Failed to delete book.';
+            this.submitting = false;
+            console.error(err);
+          },
+        });
+        return; // Early return — we handle the request above
     }
 
     this.http.get(endpoint).subscribe({

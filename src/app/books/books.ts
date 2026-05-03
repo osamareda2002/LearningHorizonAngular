@@ -1,20 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
-import { BookService } from '../services/books';
+import { BookService, DtoGetBook } from '../services/books';
+import { CategoryService } from '../services/category.service';
 import { SidebarComponent } from '../shared/sidebar/sidebar';
-
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  coverImage: string;
-  readUrl?: string;
-  visitUrl?: string;
-  downloadUrl?: string;
-}
 
 @Component({
   selector: 'app-books',
@@ -29,64 +20,112 @@ export class Books implements OnInit {
   isLoggedIn = false;
   isAdmin = false;
   userName = 'Guest';
-  searchQuery = '';
-  loading = true;
 
-  allBooks: Book[] = [];
-  filteredBooks: Book[] = [];
+  // Two-step navigation (mirrors Material page)
+  viewMode: 'categories' | 'books' = 'categories';
+  categories: any[] = [];
+  selectedCategory: any = null;
+  loadingCategories = false;
+  loadingBooks = false;
+
+  allBooks: DtoGetBook[] = [];
+  filteredBooks: DtoGetBook[] = [];
+  searchQuery = '';
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private bookService: BookService
+    private bookService: BookService,
+    private categoryService: CategoryService,
   ) {}
 
   ngOnInit() {
     this.isLoggedIn = this.auth.isLoggedIn();
     this.userName = this.auth.getUserName();
     this.isAdmin = this.auth.isAdmin();
-
-    // Load books from backend
-    this.loadBooks();
+    this.loadCategories();
   }
 
-  loadBooks() {
-    this.loading = true;
-
-    this.bookService.getAllBooks().subscribe({
-      next: (result: any[]) => {
-        result.map((res) => {
-          let book: Book = {
-            id: res.id,
-            title: res.title,
-            description: res.description,
-            coverImage: this.bookService.getCoverImage(res.id),
-            visitUrl: this.bookService.getBookFile(res.id),
-          };
-          this.allBooks.push(book);
-        });
+  // ----------------------------
+  // Load all categories
+  // ----------------------------
+  loadCategories() {
+    this.loadingCategories = true;
+    this.categoryService.getAllCategories().subscribe({
+      next: (res: any) => {
+        this.categories = res || [];
+        this.loadingCategories = false;
+      },
+      error: (err) => {
+        console.error('Failed to load categories:', err);
+        this.loadingCategories = false;
       },
     });
-
-    setTimeout(() => {
-      this.filteredBooks = [...this.allBooks];
-      this.loading = false;
-    }, 1000);
   }
 
+  // ----------------------------
+  // User selects a category → load books
+  // ----------------------------
+  selectCategory(category: any) {
+    this.selectedCategory = category;
+    this.viewMode = 'books';
+    this.loadingBooks = true;
+    this.allBooks = [];
+    this.filteredBooks = [];
+    this.searchQuery = '';
+
+    this.bookService.getBooksByCategory(category.id).subscribe({
+      next: (res: DtoGetBook[]) => {
+        this.allBooks = res || [];
+        this.filteredBooks = [...this.allBooks];
+        this.loadingBooks = false;
+      },
+      error: (err) => {
+        console.error('Failed to load books:', err);
+        this.loadingBooks = false;
+      },
+    });
+  }
+
+  // ----------------------------
+  // Back to categories
+  // ----------------------------
+  goBackToCategories() {
+    this.viewMode = 'categories';
+    this.selectedCategory = null;
+    this.allBooks = [];
+    this.filteredBooks = [];
+    this.searchQuery = '';
+  }
+
+  // ----------------------------
+  // Search books within category
+  // ----------------------------
   onSearch() {
     if (!this.searchQuery.trim()) {
       this.filteredBooks = [...this.allBooks];
       return;
     }
-
+    const q = this.searchQuery.toLowerCase();
     this.filteredBooks = this.allBooks.filter(
-      (book) =>
-        book.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        book.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+      (b) =>
+        b.title.toLowerCase().includes(q) ||
+        (b.description && b.description.toLowerCase().includes(q)),
     );
   }
 
+  // ----------------------------
+  // Open book PDF in new tab
+  // ----------------------------
+  visitBook(book: DtoGetBook) {
+    if (book.fileLink) {
+      window.open(book.fileLink, '_blank');
+    }
+  }
+
+  // ----------------------------
+  // Shared UI helpers
+  // ----------------------------
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }

@@ -6,13 +6,23 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <!-- User Navbar -->
+    <!-- Navbar -->
     <div class="user-navbar">
       <div class="navbar-left">
         <button class="menu-toggle-btn" (click)="toggleSidebar()">
           <i class="bi bi-list"></i>
         </button>
-        <h2 class="page-title">Books</h2>
+        <button
+          *ngIf="viewMode === 'books'"
+          class="btn-back"
+          (click)="goBackToCategories()"
+          title="Back to Categories"
+        >
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2 class="page-title">
+          {{ viewMode === 'categories' ? 'Books' : selectedCategory?.title || 'Books' }}
+        </h2>
       </div>
       <div class="user-menu">
         <span class="user-name">{{ userName }}</span>
@@ -28,80 +38,80 @@
       </div>
     </div>
 
-    <!-- Search Section -->
-    <div class="search-section">
-      <div class="search-box">
-        <i class="bi bi-search"></i>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (input)="onSearch()"
-          placeholder="Search books by title or description..."
-        />
+    <!-- ==================== CATEGORIES VIEW ==================== -->
+    <div *ngIf="viewMode === 'categories'" class="categories-section">
+      <div *ngIf="loadingCategories" class="loading-state">
+        <i class="bi bi-hourglass-split"></i>
+        <p>Loading categories...</p>
       </div>
-    </div>
 
-    <!-- Books Section -->
-    <section class="books-section" *ngIf="!loading; else loadingTemplate">
-      <div *ngIf="filteredBooks.length > 0; else noBooks">
-        <div class="books-list">
-          <div class="book-card" *ngFor="let book of filteredBooks">
-            <div class="book-cover">
-              <img [src]="book.coverImage" [alt]="book.title" />
-            </div>
+      <div *ngIf="!loadingCategories && categories.length === 0" class="no-items">
+        <i class="bi bi-inbox"></i>
+        <p>No categories found</p>
+      </div>
 
-            <div class="book-info">
-              <h3 class="book-title">{{ book.title }}</h3>
-              <p class="book-description">{{ book.description }}</p>
-            </div>
-
-            <div class="book-actions">
-              <a
-                *ngIf="book.readUrl"
-                [href]="book.readUrl"
-                target="_blank"
-                class="book-action-link"
-              >
-                <i class="bi bi-book"></i> Read
-              </a>
-
-              <a
-                *ngIf="book.visitUrl"
-                [href]="book.visitUrl"
-                target="_blank"
-                class="book-action-link"
-              >
-                <i class="bi bi-box-arrow-up-right"></i> Visit
-              </a>
-
-              <a
-                *ngIf="book.downloadUrl"
-                [href]="book.downloadUrl"
-                target="_blank"
-                class="book-action-link"
-              >
-                <i class="bi bi-download"></i> Download
-              </a>
-            </div>
+      <div *ngIf="!loadingCategories && categories.length > 0" class="categories-grid">
+        <div
+          *ngFor="let cat of categories"
+          class="category-card"
+          (click)="selectCategory(cat)"
+        >
+          <div class="category-image">
+            <img [src]="cat.imageUrl" [alt]="cat.title" />
+          </div>
+          <div class="category-info">
+            <h3 class="category-name">{{ cat.title }}</h3>
+            <p class="category-desc" *ngIf="cat.about">{{ cat.about }}</p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Loading Template -->
-    <ng-template #loadingTemplate>
-      <div class="loading-container">
+    <!-- ==================== BOOKS VIEW ==================== -->
+    <div *ngIf="viewMode === 'books'" class="books-section">
+      <!-- Search -->
+      <div class="search-section">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearch()"
+            placeholder="Search books in {{ selectedCategory?.title }}..."
+          />
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loadingBooks" class="loading-state">
         <div class="spinner"></div>
         <p>Loading books...</p>
       </div>
-    </ng-template>
 
-    <!-- No Books Template -->
-    <ng-template #noBooks>
-      <div class="no-books">
-        <i class="bi bi-emoji-frown"></i>
-        <p>No books found.</p>
+      <!-- Empty -->
+      <div *ngIf="!loadingBooks && filteredBooks.length === 0" class="no-items">
+        <i class="bi bi-book"></i>
+        <p>No books found in this category</p>
       </div>
-    </ng-template>
+
+      <!-- Books Grid -->
+      <div *ngIf="!loadingBooks && filteredBooks.length > 0" class="books-grid">
+        <div class="book-card" *ngFor="let book of filteredBooks">
+          <div class="book-cover">
+            <img [src]="book.posterLink" [alt]="book.title" />
+          </div>
+          <div class="book-info">
+            <h3 class="book-title">{{ book.title }}</h3>
+            <p class="book-description" *ngIf="book.description">{{ book.description }}</p>
+          </div>
+          <div class="book-footer">
+            <button class="btn-visit" (click)="visitBook(book)">
+              <i class="bi bi-box-arrow-up-right"></i>
+              Visit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </div>

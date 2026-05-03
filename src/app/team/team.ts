@@ -25,7 +25,7 @@ export class TeamComponent implements OnInit {
   isModalOpen = false;
   memberHasContact = false;
 
-  activeTab: 'doctor' | 'developer' = 'doctor';
+
 
   constructor(
     private auth: AuthService,
@@ -52,16 +52,7 @@ export class TeamComponent implements OnInit {
     });
   }
 
-  get filteredMembers(): TeamMember[] {
-    if (this.activeTab === 'developer') {
-      return this.teamMembers.filter(m => m.isDeveloper);
-    }
-    return this.teamMembers.filter(m => !m.isDeveloper);
-  }
 
-  switchTeamTab(tab: 'doctor' | 'developer') {
-    this.activeTab = tab;
-  }
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;

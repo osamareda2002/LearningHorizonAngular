@@ -161,10 +161,8 @@ export class Add implements OnInit {
 
     this.bookForm = this.fb.group({
       title: ['', Validators.required],
-      description: ['', Validators.required],
-      authorName: ['', Validators.required],
-      price: [0, Validators.required],
-      pages: [0, Validators.required],
+      description: [''],
+      categoryId: ['', Validators.required],
     });
 
     this.sliderForm = this.fb.group({
@@ -823,25 +821,20 @@ export class Add implements OnInit {
     }
 
     const formData = new FormData();
-    Object.entries(this.bookForm.value).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
+    formData.append('title', this.bookForm.value.title);
+    formData.append('description', this.bookForm.value.description || '');
+    formData.append('categoryId', this.bookForm.value.categoryId);
     formData.append('bookFile', this.bookPdf);
-    formData.append('bookImage', this.bookCover);
+    formData.append('coverImage', this.bookCover);
 
     this.submitting = true;
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.auth.getToken()}`,
-    });
 
-    this.http.post(`${this.apiUrl}/AddBook`, formData, { headers }).subscribe({
+    this.http.post(`${this.apiUrl}/AddNewBook`, formData).subscribe({
       next: (res) => {
         this.successMessage = '✅ Book added successfully!';
         this.errorMessage = '';
         this.submitting = false;
-        this.bookForm.reset();
-        this.bookPdf = null;
-        this.bookCover = null;
+        this.resetBookForm();
       },
       error: (err) => {
         this.submitting = false;

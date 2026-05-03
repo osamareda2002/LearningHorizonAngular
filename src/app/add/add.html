@@ -52,6 +52,11 @@
           Add Lesson
         </button>
 
+        <button class="tab-btn" [class.active]="activeTab === 'book'" (click)="switchTab('book')">
+          <i class="bi bi-book"></i>
+          Add Book
+        </button>
+
         <button class="tab-btn" [class.active]="activeTab === 'doctor'" (click)="switchTab('doctor')">
           <i class="bi bi-person-plus"></i>
           Add Person
@@ -377,112 +382,84 @@
         </div>
 
         <!-- Book Tab -->
-        <!-- <div class="tab-pane" *ngIf="activeTab === 'book'">
-          <h3 class="tab-title">The Details Book</h3>
+        <div class="tab-pane" *ngIf="activeTab === 'book'">
+          <h3 class="tab-title">Add New Book</h3>
           <form [formGroup]="bookForm" (ngSubmit)="submitBook()" class="form-container">
             <div class="form-grid">
+
+              <!-- Category -->
+              <div class="form-group">
+                <label>Select Category <span class="required">*</span></label>
+                <select class="form-control" formControlName="categoryId"
+                  [class.error]="bookForm.get('categoryId')?.invalid && bookForm.get('categoryId')?.touched">
+                  <option value="" disabled>Select Category</option>
+                  <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.title }}</option>
+                </select>
+              </div>
+
+              <!-- Title -->
               <div class="form-group">
                 <label>Book Title <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="title"
-                  placeholder="Give Your Book A Title"
-                  [class.error]="bookForm.get('title')?.invalid && bookForm.get('title')?.touched"
-                />
+                <input type="text" class="form-control" formControlName="title" placeholder="Give Your Book A Title"
+                  [class.error]="bookForm.get('title')?.invalid && bookForm.get('title')?.touched" />
               </div>
 
-              <div class="form-group">
-                <label>Price <span class="required">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="price"
-                  placeholder="0 for free book"
-                  [class.error]="bookForm.get('price')?.invalid && bookForm.get('price')?.touched"
-                />
-              </div>
-
-              <div class="form-group">
-                <label>Author Name <span class="required">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="authorName"
-                  placeholder="Author Name"
-                  [class.error]="
-                    bookForm.get('authorName')?.invalid && bookForm.get('authorName')?.touched
-                  "
-                />
-              </div>
-
-              <div class="form-group">
-                <label>Number of Pages <span class="required">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="pages"
-                  placeholder="Number of Pages"
-                  [class.error]="bookForm.get('pages')?.invalid && bookForm.get('pages')?.touched"
-                />
-              </div>
-
+              <!-- Description -->
               <div class="form-group full-width">
-                <label>Description <span class="required">*</span></label>
-                <textarea
-                  class="form-control textarea"
-                  formControlName="description"
-                  placeholder="Write Description About Your Book"
-                  rows="5"
-                  [class.error]="
-                    bookForm.get('description')?.invalid && bookForm.get('description')?.touched
-                  "
-                ></textarea>
+                <label>Description</label>
+                <textarea class="form-control textarea" formControlName="description"
+                  placeholder="Write a short description about this book..." rows="5"></textarea>
               </div>
 
+              <!-- File Uploads: side by side -->
               <div class="form-group full-width">
-                <label>Book Cover <span class="required">*</span></label>
-                <div class="upload-box">
-                  <i class="bi bi-image"></i>
-                  <p>Upload Book Cover</p>
-                  <p class="upload-info">PNG, JPG, and GIF files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onThumbnailSelected($event, 'book')"
-                    accept="image/*"
-                  />
-                </div>
-              </div>
+                <div class="book-files-row">
 
-              <div class="form-group full-width">
-                <label>Book PDF <span class="required">*</span></label>
-                <div class="upload-box">
-                  <i class="bi bi-file-pdf"></i>
-                  <p>Upload Book PDF</p>
-                  <p class="upload-info">PDF files are allowed</p>
-                  <input
-                    type="file"
-                    class="file-input"
-                    (change)="onBookPdfSelected($event)"
-                    accept=".pdf"
-                  />
+                  <!-- Cover Image -->
+                  <div class="book-file-field">
+                    <label>Book Cover Image <span class="required">*</span></label>
+                    <div class="upload-box">
+                      <i class="bi bi-image"></i>
+                      <p>Upload Book Cover</p>
+                      <p class="upload-info">PNG and JPG files are allowed</p>
+                      <input type="file" class="file-input" (change)="onThumbnailSelected($event, 'book')"
+                        accept="image/jpeg, image/png" />
+                    </div>
+                    <div *ngIf="bookCoverPreview" class="thumbnail-preview">
+                      <img [src]="bookCoverPreview" alt="Cover Preview" />
+                      <p class="file-name">{{ bookCover?.name }}</p>
+                    </div>
+                  </div>
+
+                  <!-- PDF File -->
+                  <div class="book-file-field">
+                    <label>Book PDF <span class="required">*</span></label>
+                    <div class="upload-box">
+                      <i class="bi bi-file-earmark-pdf"></i>
+                      <p>Upload Book PDF</p>
+                      <p class="upload-info">PDF files only</p>
+                      <input type="file" class="file-input" (change)="onBookPdfSelected($event)"
+                        accept="application/pdf" />
+                    </div>
+                    <div *ngIf="bookPdf" class="thumbnail-preview">
+                      <p class="file-name"><i class="bi bi-check-circle-fill" style="color:#4caf50"></i> {{ bookPdf.name
+                        }}</p>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
 
             <div class="form-actions">
               <button type="button" class="btn btn-cancel" (click)="resetBookForm()">Cancel</button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="bookForm.invalid || submitting"
-              >
-                {{ submitting ? 'Publishing...' : 'Publish now' }}
+              <button type="submit" class="btn btn-primary"
+                [disabled]="bookForm.invalid || !bookPdf || !bookCover || submitting">
+                {{ submitting ? 'Publishing...' : 'Publish Now' }}
               </button>
             </div>
           </form>
-        </div> -->
+        </div>
 
         <!-- Slider Tab -->
         <div class="tab-pane" *ngIf="activeTab === 'slider'">
@@ -668,19 +645,19 @@
             </div>
 
             <div class="mcq-upload-container">
-            <span class="mcq-upload-label">* Upload Image</span>
-            <div class="mcq-upload-box">
-              <i class="bi bi-image"></i>
-              <p>Upload Files</p>
-              <p class="mcq-upload-info">PNG, JPEG, and PDF files are allowed</p>
-              <input type="file" class="file-input" (change)="onMCQImageSelected($event)"
-                accept="image/jpeg, image/png, application/pdf" />
-            </div>
-            <div *ngIf="mcqImagePreview" class="mcq-image-preview">
-              <img [src]="mcqImagePreview" alt="MCQ Image Preview" />
+              <span class="mcq-upload-label">* Upload Image</span>
+              <div class="mcq-upload-box">
+                <i class="bi bi-image"></i>
+                <p>Upload Files</p>
+                <p class="mcq-upload-info">PNG, JPEG, and PDF files are allowed</p>
+                <input type="file" class="file-input" (change)="onMCQImageSelected($event)"
+                  accept="image/jpeg, image/png, application/pdf" />
+              </div>
+              <div *ngIf="mcqImagePreview" class="mcq-image-preview">
+                <img [src]="mcqImagePreview" alt="MCQ Image Preview" />
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </form>
 
